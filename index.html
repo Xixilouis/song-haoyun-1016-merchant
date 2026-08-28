@@ -647,7 +647,10 @@
       font-size: 17px;
       font-style: normal;
       font-weight: 800;
+      overflow: hidden;
     }
+    .home-benefit-icon.has-image { background: #eef5f8; }
+    .home-benefit-icon.has-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .home-benefit-row:nth-child(2) .home-benefit-icon { color: #287b52; background: #e8f7ef; }
     .home-benefit-row:nth-child(3) .home-benefit-icon { color: #805f00; background: #fff3c2; }
     .home-benefit-row:nth-child(4) .home-benefit-icon { color: #944436; background: #ffebe6; }
@@ -722,6 +725,30 @@
     .wfd-followup::before { content: "问好运 · "; color: #7a94a4; font-weight: 500; }
     .wfd-concept-merch { display: grid; grid-template-columns: 86px 1fr; gap: 11px; align-items: center; padding: 11px; border-radius: 16px; background: linear-gradient(135deg, #fff5c9, #eef9ff); }
     .wfd-concept-merch img { width: 82px; height: 82px; object-fit: contain; filter: drop-shadow(0 8px 12px rgba(28,84,115,.14)); }
+    .wfd-reference-visual {
+      position: relative;
+      overflow: hidden;
+      margin: 12px 0 0;
+      border: 1px solid #d6e8f2;
+      border-radius: 16px;
+      background: #eef7fb;
+    }
+    .wfd-reference-visual img {
+      width: 100%;
+      height: 158px;
+      display: block;
+      object-fit: cover;
+    }
+    .wfd-reference-visual figcaption {
+      padding: 8px 10px 9px;
+      color: #607786;
+      background: rgba(255,255,255,.96);
+      font-size: 10px;
+      line-height: 1.45;
+    }
+    .wfd-reference-visual figcaption strong { color: #173f58; }
+    .wfd-reference-visual.is-merch { border-color: #f0c8d2; background: #fff0f3; }
+    .wfd-reference-visual.is-merch img { height: 172px; object-position: center 52%; }
     @media (max-width: 380px) {
       .home-float-note { padding: 7px 8px; font-size: 9px; }
       .home-character-stage { height: 194px; }
@@ -804,17 +831,17 @@
         </button>
         <div id="home-activity-body" class="home-activity-body">
           <button class="home-benefit-row" type="button" onclick="openWfdBenefit('material')">
-            <i class="home-benefit-icon">✦</i>
+            <span class="home-benefit-icon has-image"><img src="song-haoyun-assets/2026-km-public-welfare-poster-reference.jpg" alt="公益商家海报参考"></span>
             <span class="home-benefit-copy"><strong>为你定制公益专属海报</strong><small>让每家小店的善意都有自己的样子</small></span>
             <span class="home-benefit-go" aria-hidden="true">›</span>
           </button>
           <button class="home-benefit-row" type="button" onclick="openWfdBenefit('health')">
-            <i class="home-benefit-icon">♧</i>
+            <span class="home-benefit-icon has-image"><img src="song-haoyun-assets/2026-km-healthy-dish-poster-reference.jpg" alt="健康菜品海报参考"></span>
             <span class="home-benefit-copy"><strong>健康认证，争取专属公益流量</strong><small>上传健康菜品，通过规则与审核后参与筛选</small></span>
             <span class="home-benefit-go" aria-hidden="true">›</span>
           </button>
           <button class="home-benefit-row" type="button" onclick="openWfdBenefit('share')">
-            <i class="home-benefit-icon">◇</i>
+            <span class="home-benefit-icon has-image"><img src="song-haoyun-assets/2026-km-blindbox-merch-reference.jpg" alt="毛绒盲盒周边参考"></span>
             <span class="home-benefit-copy"><strong>毛绒盲盒周边限量送</strong><small>分享定制海报并返图，进入活动抽选流程</small></span>
             <span class="home-benefit-go" aria-hidden="true">›</span>
           </button>
@@ -2194,10 +2221,10 @@ function showEntry() {
             <div class="flex items-center justify-between gap-2"><span class="wfd-benefit-no">1</span><span class="inline-flex px-2 py-1 rounded-full bg-[#eaf7ff] text-[11px] font-bold text-[#0871c6]">专属海报</span></div>
             <h3 class="mt-1 text-[18px] font-bold text-[#12304b]">让 ${store} 的善意，有自己的样子</h3>
             <p class="mt-1 text-[13px] leading-relaxed text-[#52697b]">不是通用活动海报。你可以做强调门店信息的公益成果版，也可以做适合分享的公益故事版。</p>
-            <div class="wfd-format-grid mt-3">
-              <div class="wfd-format-sample"><b>横版 · 公益成果</b><span>适合电子屏、店铺页和公域页面</span></div>
-              <div class="wfd-format-sample is-vertical"><b>竖版 · 公益故事</b><span>适合社媒、私域和打印</span></div>
-            </div>
+            <figure class="wfd-reference-visual">
+              <img src="song-haoyun-assets/2026-km-public-welfare-poster-reference.jpg" alt="公益商家横版海报参考样张">
+              <figcaption><strong>横版参考样张</strong> · 适合电子屏、店铺页和公域页面；图中门店与数据仅作版式示意</figcaption>
+            </figure>
             <div class="wfd-guide-head"><strong>打卡攻略</strong><span>看示例 → 选版本 → 点选生成</span></div>
             <div class="wfd-process-strip">
               <span>看示例</span><span>选版本</span><span>确认门店</span><span>生成预览</span>
@@ -2217,10 +2244,10 @@ function showEntry() {
             <div class="flex items-center justify-between gap-2"><span class="wfd-benefit-no">2</span><span class="inline-flex px-2 py-1 rounded-full bg-[#eaf7ff] text-[11px] font-bold text-[#0871c6]">可选加分</span></div>
             <h3 class="mt-1 text-[18px] font-bold text-[#12304b]">健康菜品认证，有什么用？</h3>
             <p class="mt-1 text-[13px] leading-relaxed text-[#52697b]">生成专属健康菜品海报；通过活动标准与人工审核后，还可参与主会场、频道页或搜索等公益流量资源筛选。</p>
-            <div class="wfd-material-duo mt-3">
-              <figure><img src="song-haoyun-assets/2026-health-supply-horizontal-final.png" alt="2026世界粮食日健康供给横版示例"><figcaption>横版 · 电子屏/店铺页</figcaption></figure>
-              <figure><img src="song-haoyun-assets/2026-health-supply-vertical-final.png" alt="2026世界粮食日健康供给竖版示例"><figcaption>竖版 · 社媒/分享</figcaption></figure>
-            </div>
+            <figure class="wfd-reference-visual">
+              <img src="song-haoyun-assets/2026-km-healthy-dish-poster-reference.jpg" alt="健康菜品横版海报参考样张">
+              <figcaption><strong>健康菜品画面参考</strong> · 菜品名称、图片与认证结果将在正式流程中按门店实际信息生成</figcaption>
+            </figure>
             <div class="wfd-guide-head"><strong>打卡攻略</strong><span>先看示例，再准备一道代表菜</span></div>
             <div class="wfd-process-strip">
               <span>上传菜品</span><span>规则认证</span><span>人工审核</span><span>生成海报</span>
@@ -2238,10 +2265,10 @@ function showEntry() {
           <div class="wfd-benefit-card">
             <div class="flex items-center justify-between gap-2"><span class="wfd-benefit-no">3</span><span class="inline-flex px-2 py-1 rounded-full bg-[#fff8cf] text-[11px] font-bold text-[#725900]">分享返图</span></div>
             <h3 class="mt-1 text-[18px] font-bold text-[#12304b]">分享海报，进入盲盒周边抽选流程</h3>
-            <div class="wfd-concept-merch mt-3">
-              <img src="song-haoyun-assets/song-haoyun-wave-no-glasses-v3.png" alt="宋好运毛绒盲盒周边概念示意">
-              <div><strong class="text-[#12304b]">宋好运毛绒盲盒</strong><p class="mt-1 text-[11px] leading-relaxed text-[#607786]">周边形象与数量以最终活动页面为准；这里先帮助商家理解参与方式。</p></div>
-            </div>
+            <figure class="wfd-reference-visual is-merch">
+              <img src="song-haoyun-assets/2026-km-blindbox-merch-reference.jpg" alt="2026世界粮食日毛绒盲盒周边视觉参考">
+              <figcaption><strong>毛绒盲盒周边参考</strong> · 款式、数量、抽选及发放规则以正式活动页和真实通知为准</figcaption>
+            </figure>
             <div class="wfd-guide-head"><strong>打卡攻略</strong><span>发布前先保存专属海报</span></div>
             <div class="wfd-process-strip">
               <span>生成海报</span><span>发布分享</span><span>回传截图</span><span>等待抽选</span>
