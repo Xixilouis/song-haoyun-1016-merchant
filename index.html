@@ -1,0 +1,3427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>宋好运｜1016 世界粮食日</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&amp;family=Noto+Serif+SC:wght@400;600&amp;display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Noto Sans SC', sans-serif; }
+    .hero-gradient {
+      background: linear-gradient(135deg, #FFD93D 0%, #FFC107 50%, #FFB300 100%);
+    }
+    .level-text {
+      background: linear-gradient(90deg, #FF6B35 0%, #FF8C42 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .progress-track {
+      background: linear-gradient(90deg, #FF6B35 0%, #FFB347 100%);
+    }
+    .scroll-hide::-webkit-scrollbar { display: none; }
+    .scroll-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    .gradient-card {
+      background: linear-gradient(135deg, #f0f7ff 0%, #fffbeb 50%, #fff7ed 100%);
+    }
+    .task-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+    .chat-bubble-user {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+    .sheet-overlay {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .sheet-overlay.active {
+      opacity: 1;
+    }
+    .sheet-container {
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    .sheet-overlay.active .sheet-container {
+      transform: translateY(0);
+    }
+    .view-transition {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .view-hidden {
+      display: none !important;
+    }
+    .view-enter {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    .view-enter-active {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .step-progress { display: flex; gap: 6px; margin-bottom: 16px; }
+    .step-progress-bar { flex: 1; height: 4px; border-radius: 2px; background: #e5e7eb; }
+    .step-progress-bar.active { background: #3b82f6; }
+    .tag-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag-btn { padding: 5px 12px; border-radius: 999px; border: 1px solid #e5e7eb; background: white; font-size: 12px; color: #374151; cursor: pointer; transition: all 0.15s; }
+    .tag-btn:hover { border-color: #3b82f6; color: #3b82f6; }
+    .tag-btn.active { border-color: #3b82f6; background: #eff6ff; color: #2563eb; font-weight: 500; }
+    .color-picker { display: flex; gap: 10px; }
+    .color-option { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.15s; position: relative; }
+    .color-option.active { border-color: #374151; }
+    .color-option.active::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 1.5px solid #9ca3af; }
+    .quote-box { border-left: 3px solid #3b82f6; padding-left: 12px; color: #374151; font-size: 13px; line-height: 1.6; }
+    .cert-item { display: flex; gap: 10px; padding: 12px; background: #f9fafb; border-radius: 10px; margin-bottom: 8px; }
+    .cert-icon { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; flex-shrink: 0; }
+    .cert-icon.ok { background: #dcfce7; color: #16a34a; }
+    .cert-icon.info { background: #fef3c7; color: #d97706; }
+    .ai-tip { background: #f0f9ff; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: #0369a1; display: flex; gap: 6px; align-items: flex-start; line-height: 1.5; }
+    .demo-notice { background: #fefce8; border: 1px solid #fef08a; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: #a16207; line-height: 1.5; }
+    .sheet-actions { display: flex; gap: 10px; }
+    .sheet-actions .btn-secondary { flex: 1; padding: 11px; border-radius: 10px; border: none; background: #f3f4f6; color: #374151; font-size: 14px; font-weight: 500; cursor: pointer; }
+    .sheet-actions .btn-primary { flex: 1; padding: 11px; border-radius: 10px; border: none; background: #3b82f6; color: white; font-size: 14px; font-weight: 500; cursor: pointer; }
+    .sheet-final-actions { display: flex; gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb; }
+    :root {
+      --wfd-sky: #0a9ff2;
+      --wfd-blue: #086dcc;
+      --wfd-ink: #12304b;
+      --wfd-yellow: #ffd400;
+      --wfd-green: #69cf58;
+      --wfd-cloud: #f2fbff;
+    }
+    .song-agent-card {
+      background:
+        radial-gradient(circle at 14% 10%, rgba(255,255,255,.52), transparent 26%),
+        linear-gradient(155deg, #42c8ff 0%, #0a9ff2 54%, #0877db 100%);
+      border: 1px solid rgba(255,255,255,.72);
+      box-shadow: 0 18px 42px rgba(6, 103, 184, .22);
+      color: white;
+    }
+    .song-agent-avatar {
+      box-shadow: 0 14px 30px rgba(3, 75, 134, .24);
+      border: 3px solid rgba(255,255,255,.94);
+    }
+    .song-agent-stage {
+      position: relative;
+      min-height: 190px;
+      overflow: hidden;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 20% 12%, rgba(255,255,255,.68), transparent 28%),
+        linear-gradient(160deg, #8de0ff 0%, #22b5fa 48%, #0787e5 100%);
+    }
+    .song-agent-stage::after {
+      content: '';
+      position: absolute;
+      left: -8%; right: -8%; bottom: -46px;
+      height: 86px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.96);
+      transform: rotate(-2deg);
+    }
+    .song-agent-stage .song-stage-avatar {
+      position: absolute;
+      z-index: 2;
+      left: 18px;
+      bottom: 8px;
+      width: 118px;
+      height: 118px;
+      border-radius: 34px;
+      object-fit: cover;
+    }
+    .song-stage-copy {
+      position: relative;
+      z-index: 3;
+      margin-left: 140px;
+      padding: 60px 10px 48px 0;
+      color: white;
+    }
+    .song-speech-chip {
+      display: inline-flex;
+      min-height: 34px;
+      align-items: center;
+      padding: 7px 11px;
+      border-radius: 999px 999px 999px 6px;
+      background: rgba(255,255,255,.92);
+      color: #0866b8;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 8px 20px rgba(0,91,160,.12);
+    }
+    .song-intent-chip {
+      min-height: 42px;
+      padding: 9px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(255,255,255,.98);
+      color: #075fa9;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: left;
+      box-shadow: 0 5px 16px rgba(0,80,145,.08);
+      transition: transform .16s ease, background .16s ease;
+    }
+    .song-intent-chip:hover { background: white; transform: translateY(-1px); }
+    .wfd-agent-message { max-width: min(88%, 460px); }
+    .wfd-primary {
+      min-height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #0877db, #075cae);
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 9px 20px rgba(6, 96, 172, .22);
+    }
+    .wfd-primary:hover { background: #075cae; }
+    .wfd-secondary {
+      min-height: 44px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.86);
+      border: 1px solid #b8dcf6;
+      color: #0866b8;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .wfd-step {
+      min-height: 58px;
+      border-radius: 13px;
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(255,255,255,.9);
+      padding: 9px 6px;
+      text-align: center;
+      color: #75643c;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .wfd-step strong { display: block; color: #302719; font-size: 13px; margin-bottom: 2px; }
+    .wfd-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 92px;
+      transform: translate(-50%, 12px);
+      z-index: 100;
+      max-width: calc(100vw - 40px);
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(31, 27, 21, .92);
+      color: white;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+    .wfd-toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .wfd-kv {
+      width: 100%;
+      aspect-ratio: 924 / 520;
+      object-fit: cover;
+      display: block;
+      border-radius: 16px;
+      background: #dbeafe;
+    }
+    .wfd-benefits-grid { display: grid; gap: 10px; }
+    .wfd-benefit-tile {
+      position: relative;
+      min-height: 126px;
+      padding: 13px 13px 12px;
+      border-radius: 18px;
+      text-align: left;
+      border: 1px solid #d9ecf9;
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(6,92,154,.07);
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+    .wfd-benefit-tile:hover { transform: translateY(-1px); box-shadow: 0 11px 26px rgba(6,92,154,.12); }
+    .wfd-benefit-tile strong { display: block; color: var(--wfd-ink); font-size: 15px; line-height: 1.4; }
+    .wfd-benefit-tile > span:not(.wfd-benefit-no):not(.wfd-benefit-kind) { display: block; margin-top: 4px; color: #52697b; font-size: 12px; line-height: 1.5; }
+    .wfd-benefit-no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      margin-bottom: 7px;
+      border-radius: 10px;
+      background: var(--wfd-blue);
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .wfd-benefit-kind {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: inline-flex;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #eaf7ff;
+      color: #0874c9;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .wfd-benefit-route {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 5px;
+      margin-top: 9px;
+    }
+    .wfd-benefit-route span {
+      min-width: 0;
+      padding: 7px 6px;
+      border-radius: 10px;
+      background: #f3f9fd;
+      color: #496174;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .wfd-benefit-route b { display: inline-block; min-width: 38px; color: #0a6bb8; font-size: 11px; margin-right: 3px; }
+    .wfd-status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.88);
+      color: #4b5563;
+      font-size: 12px;
+      border: 1px solid rgba(255,255,255,.92);
+    }
+    .wfd-benefit-card {
+      background: white;
+      border: 1px solid #dcecf7;
+      border-radius: 20px;
+      padding: 15px;
+      color: #374151;
+      box-shadow: 0 8px 24px rgba(7,87,145,.08);
+    }
+    .wfd-material-frame {
+      overflow: hidden;
+      border-radius: 16px;
+      background: #e8f5ff;
+      border: 1px solid #dbeafe;
+    }
+    .wfd-material-frame img { display: block; width: 100%; height: auto; }
+    .wfd-material-duo {
+      display: grid;
+      grid-template-columns: 1.45fr .75fr;
+      gap: 8px;
+      align-items: stretch;
+    }
+    .wfd-material-duo figure {
+      overflow: hidden;
+      min-width: 0;
+      margin: 0;
+      border-radius: 15px;
+      background: #e9f7ff;
+      border: 1px solid #cde9fa;
+    }
+    .wfd-material-duo img { width: 100%; height: 160px; object-fit: contain; display: block; }
+    .wfd-material-duo figcaption { padding: 7px 8px; color: #587083; font-size: 11px; }
+    .wfd-story-poster {
+      position: relative;
+      overflow: hidden;
+      padding: 18px;
+      border-radius: 18px;
+      color: white;
+      background:
+        radial-gradient(circle at 86% 18%, rgba(255,255,255,.34), transparent 24%),
+        linear-gradient(155deg, #48c8ff, #087cd9 64%, #075dab);
+    }
+    .wfd-story-poster::after {
+      content: '';
+      position: absolute;
+      width: 170px; height: 62px;
+      right: -26px; bottom: -31px;
+      border-radius: 50%;
+      background: var(--wfd-yellow);
+      transform: rotate(-8deg);
+    }
+    .wfd-story-copy { font-family: 'Noto Serif SC', serif; line-height: 1.85; }
+    .wfd-role-row {
+      display: grid;
+      grid-template-columns: 66px minmax(0, 1fr);
+      gap: 9px;
+      padding: 10px 0;
+      border-bottom: 1px solid #edf2f6;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .wfd-role-row:last-child { border-bottom: 0; }
+    .wfd-role-row b { color: #0871c6; }
+    .wfd-flow-row {
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      padding: 10px 0;
+      border-bottom: 1px solid #f1f2f4;
+    }
+    .wfd-flow-row:last-child { border-bottom: 0; }
+    .wfd-flow-no {
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      background: #1677ff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .wfd-metric {
+      border-radius: 14px;
+      padding: 11px 8px;
+      text-align: center;
+      background: #fff8db;
+      border: 1px solid #f5df82;
+    }
+    .wfd-metric strong { display: block; color: #7a5700; font-size: 19px; line-height: 1.15; }
+    .wfd-metric span { display: block; margin-top: 4px; color: #756631; font-size: 12px; }
+    @media (max-width: 420px) {
+      .wfd-agent-message { max-width: calc(100% - 38px); }
+      .song-intent-chip { font-size: 12px; }
+      .wfd-benefit-tile { min-height: 122px; padding: 12px; }
+      .wfd-benefit-route span { padding: 6px 8px; }
+    }
+
+    /* ===== 1016 Merchant Agent Home: one agent, one activity card, four flows ===== */
+    #entry-view.agent-home {
+      --home-blue: #117cc5;
+      --home-deep: #10547f;
+      --home-sky: #eaf6fc;
+      --home-yellow: #ffc933;
+      --home-green: #2e9d66;
+      --home-coral: #ee6a55;
+      --home-ink: #18384d;
+      --home-muted: #6d8290;
+      background:
+        radial-gradient(circle at 6% 2%, rgba(255, 201, 51, .18), transparent 210px),
+        radial-gradient(circle at 96% 8%, rgba(76, 188, 242, .18), transparent 240px),
+        linear-gradient(180deg, #f7fcff 0%, #f4f8fa 100%);
+      color: var(--home-ink);
+      scrollbar-width: none;
+    }
+    #entry-view.agent-home::-webkit-scrollbar { display: none; }
+    #entry-view.agent-home button:focus-visible,
+    #chat-view button:focus-visible,
+    #chat-view select:focus-visible,
+    #chat-view input:focus-visible { outline: 3px solid rgba(17, 124, 197, .26); outline-offset: 2px; }
+    .home-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      background: rgba(247, 252, 255, .86);
+      backdrop-filter: blur(18px);
+    }
+    .home-brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: #fff;
+      background: var(--home-blue);
+      box-shadow: 0 7px 18px rgba(17, 124, 197, .18);
+      font-size: 18px;
+    }
+    .home-identity { min-width: 0; }
+    .home-identity strong { display: block; font-size: 15px; line-height: 1.2; }
+    .home-identity span { display: block; margin-top: 3px; color: var(--home-muted); font-size: 10px; }
+    .home-message-button {
+      position: relative;
+      min-width: 38px;
+      height: 38px;
+      margin-left: auto;
+      display: grid;
+      place-items: center;
+      border: 1px solid #dce9ef;
+      border-radius: 13px;
+      background: rgba(255,255,255,.92);
+      color: var(--home-ink);
+    }
+    .home-message-button svg { width: 19px; height: 19px; }
+    .home-message-dot {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 8px;
+      height: 8px;
+      border: 2px solid white;
+      border-radius: 50%;
+      background: var(--home-coral);
+    }
+    .home-main { padding: 0 15px 112px; }
+    .home-agent-hero { padding-top: 1px; text-align: center; }
+    .home-character-stage {
+      position: relative;
+      height: 205px;
+      max-width: 430px;
+      margin: 0 auto;
+    }
+    .home-character-halo {
+      position: absolute;
+      left: 50%;
+      bottom: 10px;
+      width: 174px;
+      height: 174px;
+      border-radius: 48% 52% 50% 50%;
+      background: linear-gradient(150deg, #ffdf66, #ffc72f);
+      box-shadow: 0 22px 44px rgba(248, 183, 36, .22);
+      transform: translateX(-50%) rotate(-4deg);
+    }
+    .home-character-halo::before,
+    .home-character-halo::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,.72);
+    }
+    .home-character-halo::before { width: 34px; height: 34px; left: -10px; top: 35px; }
+    .home-character-halo::after { width: 17px; height: 17px; right: -5px; bottom: 30px; }
+    .home-character {
+      position: absolute;
+      z-index: 2;
+      left: 50%;
+      bottom: 0;
+      width: 168px;
+      height: 196px;
+      object-fit: contain;
+      object-position: center bottom;
+      filter: drop-shadow(0 14px 18px rgba(18, 82, 120, .15));
+      transform: translateX(-50%);
+      animation: home-character-greet 4.6s ease-in-out infinite;
+    }
+    @keyframes home-character-greet {
+      0%, 100% { transform: translateX(-50%) translateY(0) rotate(0); }
+      45% { transform: translateX(-50%) translateY(-4px) rotate(.7deg); }
+    }
+    .home-float-note {
+      position: absolute;
+      z-index: 3;
+      min-height: 34px;
+      padding: 8px 11px;
+      border: 1px solid rgba(173, 208, 227, .9);
+      border-radius: 15px 15px 15px 5px;
+      color: var(--home-deep);
+      background: rgba(255,255,255,.94);
+      box-shadow: 0 8px 22px rgba(42, 102, 137, .1);
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .home-float-note:nth-of-type(1) { left: 0; top: 27px; transform: rotate(-2deg); }
+    .home-float-note:nth-of-type(2) { right: 0; top: 54px; border-radius: 15px 15px 5px 15px; transform: rotate(2deg); }
+    .home-float-note:nth-of-type(3) { left: 6px; bottom: 20px; }
+    .home-hero-copy { margin-top: -1px; }
+    .home-hero-copy h1 { margin: 0; font-size: 23px; line-height: 1.25; letter-spacing: -.55px; }
+    .home-hero-copy p { margin: 7px 0 0; color: var(--home-muted); font-size: 12px; line-height: 1.55; }
+    .home-recommendations { display: grid; gap: 8px; margin-top: 15px; }
+    .home-recommendation {
+      width: 100%;
+      min-height: 44px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 11px;
+      border: 1px solid #dce9ef;
+      border-radius: 15px;
+      background: rgba(255,255,255,.92);
+      color: var(--home-ink);
+      text-align: left;
+      box-shadow: 0 5px 16px rgba(36, 87, 116, .05);
+    }
+    .home-recommendation:hover { border-color: #b9daed; background: white; }
+    .home-recommendation .home-new-label { transition: opacity .18s ease; }
+    .home-recommendation.is-read .home-new-label { opacity: .38; }
+    .home-recommendation-title { font-size: 12px; font-weight: 700; }
+    .home-recommendation-arrow { color: #92a7b3; font-size: 17px; }
+    .home-new-label {
+      min-width: 27px;
+      padding: 4px 6px;
+      border-radius: 999px;
+      color: #8b3000;
+      background: #ffe7d9;
+      text-align: center;
+      font-size: 9px;
+      font-weight: 800;
+    }
+    .home-new-label.is-blue { color: #0e5b8c; background: #e5f4fc; }
+    .home-new-label.is-yellow { color: #735700; background: #fff3bd; }
+    .home-activity-card {
+      overflow: hidden;
+      margin-top: 16px;
+      border: 1px solid rgba(17, 124, 197, .16);
+      border-radius: 23px;
+      background: white;
+      box-shadow: 0 17px 38px rgba(25, 88, 126, .12);
+    }
+    .home-activity-toggle {
+      width: 100%;
+      min-height: 78px;
+      display: grid;
+      grid-template-columns: 48px 1fr auto;
+      align-items: center;
+      gap: 11px;
+      padding: 12px 14px;
+      border: 0;
+      color: var(--home-ink);
+      background:
+        radial-gradient(circle at 93% 10%, rgba(255,201,51,.36), transparent 86px),
+        linear-gradient(125deg, #eef9ff, #fffdf4);
+      text-align: left;
+    }
+    .home-activity-date {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      color: white;
+      background: var(--home-blue);
+      font-size: 13px;
+      font-weight: 800;
+      box-shadow: 0 9px 20px rgba(17, 124, 197, .2);
+    }
+    .home-activity-heading small { display: block; color: var(--home-blue); font-size: 10px; font-weight: 800; }
+    .home-activity-heading strong { display: block; margin-top: 4px; font-size: 15px; line-height: 1.35; }
+    .home-activity-heading span { display: block; margin-top: 4px; color: var(--home-muted); font-size: 9px; }
+    .home-collapse-arrow {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      color: var(--home-deep);
+      background: rgba(255,255,255,.78);
+      transform: rotate(180deg);
+      transition: transform .22s ease;
+    }
+    .home-activity-card.is-collapsed .home-collapse-arrow { transform: rotate(0); }
+    .home-activity-body { max-height: 390px; overflow: hidden; transition: max-height .3s ease, opacity .22s ease; }
+    .home-activity-card.is-collapsed .home-activity-body { max-height: 0; opacity: 0; }
+    .home-benefit-row {
+      width: 100%;
+      min-height: 65px;
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 13px;
+      border: 0;
+      border-top: 1px solid #edf2f5;
+      background: white;
+      text-align: left;
+    }
+    .home-benefit-row:hover { background: #fbfdfe; }
+    .home-benefit-icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      color: #0c6ba5;
+      background: #e7f5fd;
+      font-size: 17px;
+      font-style: normal;
+      font-weight: 800;
+    }
+    .home-benefit-row:nth-child(2) .home-benefit-icon { color: #287b52; background: #e8f7ef; }
+    .home-benefit-row:nth-child(3) .home-benefit-icon { color: #805f00; background: #fff3c2; }
+    .home-benefit-row:nth-child(4) .home-benefit-icon { color: #944436; background: #ffebe6; }
+    .home-benefit-copy { min-width: 0; }
+    .home-benefit-copy strong { display: block; font-size: 12px; line-height: 1.35; }
+    .home-benefit-copy small { display: block; margin-top: 4px; overflow: hidden; color: var(--home-muted); font-size: 9px; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+    .home-benefit-go { color: #97aab4; font-size: 18px; }
+    .home-quick-area { margin-top: 15px; }
+    .home-section-head { display: flex; align-items: baseline; justify-content: space-between; margin: 0 2px 8px; }
+    .home-section-head h2 { margin: 0; font-size: 13px; }
+    .home-section-head span { color: #8aa0ac; font-size: 9px; }
+    .home-quick-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .home-quick {
+      min-height: 54px;
+      padding: 8px 5px;
+      border: 1px solid #dce9ef;
+      border-radius: 15px;
+      background: rgba(255,255,255,.9);
+      color: var(--home-deep);
+      text-align: center;
+    }
+    .home-quick i { display: block; font-style: normal; font-size: 15px; }
+    .home-quick strong { display: block; margin-top: 3px; font-size: 10px; }
+    .home-service-note { margin: 11px 2px 0; color: #8497a2; text-align: center; font-size: 9px; line-height: 1.45; }
+    .home-agent-launcher {
+      position: absolute;
+      z-index: 25;
+      left: 12px;
+      right: 12px;
+      bottom: max(10px, env(safe-area-inset-bottom));
+      display: grid;
+      grid-template-columns: 37px 1fr 40px;
+      align-items: center;
+      gap: 8px;
+      min-height: 59px;
+      padding: 7px 7px 7px 9px;
+      border: 1px solid #d8e7ef;
+      border-radius: 19px;
+      background: rgba(255,255,255,.97);
+      box-shadow: 0 13px 34px rgba(30, 91, 129, .17);
+      backdrop-filter: blur(14px);
+      text-align: left;
+    }
+    .home-launcher-avatar {
+      width: 37px;
+      height: 37px;
+      overflow: hidden;
+      border-radius: 13px;
+      background: var(--home-yellow);
+    }
+    .home-launcher-avatar img { width: 100%; height: 115%; object-fit: cover; object-position: 50% 14%; }
+    .home-agent-placeholder { color: #7d919d; font-size: 12px; }
+    .home-agent-send {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      color: white;
+      background: var(--home-blue);
+      font-size: 17px;
+    }
+    .wfd-format-grid { display: grid; grid-template-columns: 1.42fr .78fr; gap: 8px; }
+    .wfd-format-sample { position: relative; overflow: hidden; min-height: 130px; padding: 11px; border-radius: 15px; color: white; background: linear-gradient(145deg, #4fc9f7, #117cc5); }
+    .wfd-format-sample.is-vertical { min-height: 155px; background: linear-gradient(155deg, #117cc5, #07537e); }
+    .wfd-format-sample::after { content: ""; position: absolute; right: -26px; bottom: -24px; width: 95px; height: 65px; border-radius: 50%; background: var(--home-yellow); }
+    .wfd-format-sample b, .wfd-format-sample span { position: relative; z-index: 1; display: block; }
+    .wfd-format-sample b { font-size: 12px; }
+    .wfd-format-sample span { margin-top: 6px; font-size: 9px; line-height: 1.45; opacity: .9; }
+    .wfd-process-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 10px; }
+    .wfd-process-strip span { padding: 7px 3px; border-radius: 9px; color: #537083; background: #f2f7fa; text-align: center; font-size: 9px; }
+    .wfd-concept-merch { display: grid; grid-template-columns: 86px 1fr; gap: 11px; align-items: center; padding: 11px; border-radius: 16px; background: linear-gradient(135deg, #fff5c9, #eef9ff); }
+    .wfd-concept-merch img { width: 82px; height: 82px; object-fit: contain; filter: drop-shadow(0 8px 12px rgba(28,84,115,.14)); }
+    @media (max-width: 380px) {
+      .home-float-note { padding: 7px 8px; font-size: 9px; }
+      .home-character-stage { height: 194px; }
+      .home-character { height: 185px; }
+      .home-character-halo { width: 162px; height: 162px; }
+    }
+    @media (max-height: 760px) {
+      .home-character-stage { height: 188px; }
+      .home-character { height: 179px; }
+      .home-character-halo { width: 156px; height: 156px; }
+      .home-recommendations { margin-top: 11px; gap: 6px; }
+      .home-recommendation { min-height: 40px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body class="bg-gray-100 h-screen overflow-hidden flex justify-center">
+
+  <!-- ========== Entry View: Song Haoyun 1016 Merchant Agent ========== -->
+  <div id="entry-view" class="agent-home w-full max-w-[600px] h-full shadow-2xl relative overflow-y-auto">
+
+    <header class="home-topbar">
+      <div class="home-brand-mark" aria-hidden="true">♧</div>
+      <div class="home-identity">
+        <strong>宋好运</strong>
+        <span>公益商家专属 AI 伙伴</span>
+      </div>
+      <button class="home-message-button" type="button" aria-label="查看活动消息" onclick="openHomeMessages()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M18 8a6 6 0 00-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/>
+        </svg>
+        <span class="home-message-dot" id="home-message-dot"></span>
+      </button>
+    </header>
+
+    <main class="home-main">
+      <section class="home-agent-hero" aria-labelledby="home-agent-title">
+        <div class="home-character-stage">
+          <div class="home-character-halo" aria-hidden="true"></div>
+          <button class="home-float-note" type="button" onclick="openHomeRecommendation(this,'material')">公益定制物料我来做</button>
+          <button class="home-float-note" type="button" onclick="openHomeRecommendation(this,'health')">加入健康倡议伙伴</button>
+          <button class="home-float-note" type="button" onclick="openHomeRecommendation(this,'material')">公益故事我来写</button>
+          <img class="home-character" src="song-haoyun-assets/song-haoyun-wave-no-glasses-v3.png" alt="挥手打招呼的宋好运">
+        </div>
+        <div class="home-hero-copy">
+          <h1 id="home-agent-title">Hi，我是宋好运</h1>
+          <p>做好事有好运，公益商家的事就找宋好运～<br>我会陪你一步步参加 1016 世界粮食日活动。</p>
+        </div>
+        <div class="home-recommendations" aria-label="近期活动推荐">
+          <button class="home-recommendation" data-home-update="rights" type="button" onclick="openHomeRecommendation(this,'overview')">
+            <span class="home-new-label">爆</span>
+            <span class="home-recommendation-title">成为健康倡议伙伴，看看 4 大活动权益</span>
+            <span class="home-recommendation-arrow" aria-hidden="true">›</span>
+          </button>
+          <button class="home-recommendation" data-home-update="health" type="button" onclick="openHomeRecommendation(this,'health')">
+            <span class="home-new-label is-blue">荐</span>
+            <span class="home-recommendation-title">健康菜品认证有什么用？</span>
+            <span class="home-recommendation-arrow" aria-hidden="true">›</span>
+          </button>
+          <button class="home-recommendation" data-home-update="material" type="button" onclick="openHomeRecommendation(this,'material')">
+            <span class="home-new-label is-yellow">新</span>
+            <span class="home-recommendation-title">新上线：活动限定物料定制</span>
+            <span class="home-recommendation-arrow" aria-hidden="true">›</span>
+          </button>
+        </div>
+      </section>
+
+      <article id="home-activity-card" class="home-activity-card">
+        <button id="home-activity-toggle" class="home-activity-toggle" type="button" aria-expanded="true" aria-controls="home-activity-body" onclick="toggleHomeActivityCard()">
+          <span class="home-activity-date">10·16</span>
+          <span class="home-activity-heading">
+            <small>2026 世界粮食日</small>
+            <strong>AI 让每一家小店的善意<br>都有自己的样子</strong>
+            <span>参与数据待活动系统接入</span>
+          </span>
+          <span class="home-collapse-arrow" aria-hidden="true">⌄</span>
+        </button>
+        <div id="home-activity-body" class="home-activity-body">
+          <button class="home-benefit-row" type="button" onclick="openWfdBenefit('material')">
+            <i class="home-benefit-icon">✦</i>
+            <span class="home-benefit-copy"><strong>为你定制公益专属海报</strong><small>让每家小店的善意都有自己的样子</small></span>
+            <span class="home-benefit-go" aria-hidden="true">›</span>
+          </button>
+          <button class="home-benefit-row" type="button" onclick="openWfdBenefit('health')">
+            <i class="home-benefit-icon">♧</i>
+            <span class="home-benefit-copy"><strong>健康认证，争取专属公益流量</strong><small>上传健康菜品，通过规则与审核后参与筛选</small></span>
+            <span class="home-benefit-go" aria-hidden="true">›</span>
+          </button>
+          <button class="home-benefit-row" type="button" onclick="openWfdBenefit('share')">
+            <i class="home-benefit-icon">◇</i>
+            <span class="home-benefit-copy"><strong>毛绒盲盒周边限量送</strong><small>分享定制海报并返图，进入活动抽选流程</small></span>
+            <span class="home-benefit-go" aria-hidden="true">›</span>
+          </button>
+          <button class="home-benefit-row" type="button" onclick="openWfdBenefit('proof')">
+            <i class="home-benefit-icon">◎</i>
+            <span class="home-benefit-copy"><strong>探店活动，帮你的善意被看见</strong><small>布置物料并返图，进入达人与官方传播候选池</small></span>
+            <span class="home-benefit-go" aria-hidden="true">›</span>
+          </button>
+        </div>
+      </article>
+
+      <section class="home-quick-area" aria-labelledby="home-quick-title">
+        <div class="home-section-head"><h2 id="home-quick-title">快捷服务</h2><span>所有操作都由好运在对话里带你完成</span></div>
+        <div class="home-quick-row">
+          <button class="home-quick" type="button" onclick="openWorldFoodDayAgent('progress')"><i>⌁</i><strong>查参与进度</strong></button>
+          <button class="home-quick" type="button" onclick="openWorldFoodDayAgent('intro')"><i>↗</i><strong>看完整流程</strong></button>
+          <button class="home-quick" type="button" onclick="showChat()"><i>···</i><strong>问宋好运</strong></button>
+        </div>
+      </section>
+
+      <p class="home-service-note">活动体验版 · 可完整了解流程和预览物料；报名、审核、抽选及权益结果以正式系统回执为准</p>
+    </main>
+
+    <button class="home-agent-launcher" type="button" onclick="showChat()">
+      <span class="home-launcher-avatar"><img src="song-haoyun-assets/song-haoyun-wave-no-glasses-v3.png" alt=""></span>
+      <span class="home-agent-placeholder">问好运：我适合先参加哪一项？</span>
+      <span class="home-agent-send" aria-hidden="true">↑</span>
+    </button>
+  </div>
+
+  <!-- ========== Chat View ========== -->
+  <div id="chat-view" class="view-hidden w-full max-w-[600px] bg-gray-50 h-full shadow-2xl flex flex-col">
+    <!-- Agent Identity Bar -->
+      <div class="flex items-center px-4 py-2 bg-white border-b shrink-0 relative">
+        <button onclick="showEntry()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition mr-1">
+          <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <div class="font-semibold text-gray-900 text-[15px]">宋好运</div>
+        <button onclick="toggleMenu()" class="ml-auto w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+          <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+          </svg>
+        </button>
+        <!-- Dropdown Menu -->
+        <div id="dropdown-menu" class="hidden absolute right-4 top-12 mt-1 w-36 bg-white rounded-xl shadow-lg border border-gray-100 z-50 overflow-hidden">
+          <button onclick="confirmNewChat()" class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 transition flex items-center gap-2">
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            新建会话
+          </button>
+          <div class="h-px bg-gray-100 mx-2"></div>
+          <button onclick="showPrivacy()" class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 transition flex items-center gap-2">
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+            隐私协议
+          </button>
+        </div>
+      </div>
+
+    <!-- Scrollable Main Content -->
+    <div class="flex-1 overflow-y-auto" id="main-scroll">
+      <div class="px-4 pt-3 pb-1">
+        <div class="flex items-center justify-between gap-3 rounded-2xl border border-[#d6eaf4] bg-white px-3 py-2.5 shadow-sm">
+          <div class="min-w-0">
+            <div class="text-[10px] font-bold text-[#117cc5]">2026 世界粮食日 · 10月16日</div>
+            <div class="mt-0.5 text-[12px] font-semibold text-[#18384d]">让每一家小店的善意都有自己的样子</div>
+          </div>
+          <button onclick="openStorePicker()" class="shrink-0 rounded-full bg-[#eef8fd] px-2.5 py-1.5 text-[#10547f]">
+            <span id="current-store-name" class="text-[10px] font-bold">暖食记·望江路店（体验）</span>
+            <span class="text-[10px]" aria-hidden="true">⌄</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 世界粮食日活动由宋好运在会话中承接，避免独立工作台式入口 -->
+      <!-- Chat Area -->
+      <div class="px-4 pb-4">
+        <!-- History hint -->
+        <div class="flex items-center justify-center gap-2 py-2 text-[10px] text-gray-400">宋好运会把每一步放进对话卡片里</div>
+        <div class="flex gap-2" id="welcome-msg">
+          <img data-song-avatar src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+               class="w-8 h-8 rounded-full object-cover shrink-0 mt-1 border-2 border-white shadow-sm" alt="宋好运">
+          <div class="wfd-agent-message">
+            <div class="bg-white rounded-2xl rounded-tl-md p-3.5 text-[14px] text-gray-700 leading-relaxed shadow-sm border border-gray-100">
+              <p><strong class="text-gray-900">老板你好 🍀 今天也是好运满满的一天。</strong><br>我可以先讲清活动，也可以直接带你做海报、健康菜品、分享返图或探店报名准备。</p>
+              <div class="mt-3 rounded-2xl border border-[#d7eaf4] bg-[#f4fbff] p-3">
+                <p class="text-[11px] font-bold text-[#117cc5]">建议从最轻的一步开始</p>
+                <h2 class="mt-1 text-[16px] leading-snug font-bold text-[#18384d]">先看两个海报示例，再选择你想做的版本</h2>
+                <div class="mt-2 wfd-process-strip">
+                  <span>看示例</span><span>选版本</span><span>确认信息</span><span>生成预览</span>
+                </div>
+                <button onclick="startWfdStoryFlow()" class="w-full wfd-primary mt-3">先做我的公益海报</button>
+                <button type="button" onclick="showWorldFoodDayOverview()" class="w-full wfd-secondary mt-2">先听好运讲 4 大权益</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="messages" class="space-y-3 mt-3"></div>
+
+        <div id="typing" class="hidden flex gap-3 mt-3">
+          <img data-song-avatar src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+               class="w-7 h-7 rounded-full object-cover shrink-0 mt-1">
+          <div class="bg-white rounded-2xl rounded-tl-md px-4 pt-0.5 pb-1.5 flex items-center gap-1 shadow-sm border border-gray-100">
+            <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></div>
+            <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay:0.1s"></div>
+            <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay:0.2s"></div>
+          </div>
+        </div>
+
+        <!-- Feedback Entry -->
+        <div class="mt-4 flex items-center justify-center">
+          <button onclick="quickAsk('我要反馈')" class="flex items-center gap-1.5 text-[12px] text-gray-400 hover:text-gray-600 transition px-3 py-1.5 rounded-full hover:bg-gray-100">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+            </svg>
+            对回答不满意？点击反馈
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Bottom: Quick Actions + Input -->
+    <div class="bg-white border-t shrink-0">
+      <div class="px-4 pt-2 pb-2">
+        <div class="flex gap-2 overflow-x-auto" style="scrollbar-width:none;-ms-overflow-style:none;">
+          <button onclick="showWorldFoodDayOverview()" class="shrink-0 min-h-[40px] px-3.5 py-2 bg-[#fff3b2] text-[#735600] text-[13px] font-semibold rounded-full border border-[#eed26e] hover:shadow-md transition whitespace-nowrap">
+            看参与流程
+          </button>
+          <button onclick="openWfdBenefit('material')" class="shrink-0 min-h-[40px] px-3.5 py-2 bg-[#eef8fd] text-[#10547f] text-[13px] font-semibold rounded-full border border-[#d4e9f4] whitespace-nowrap">做公益海报</button>
+          <button onclick="openWfdBenefit('health')" class="shrink-0 min-h-[40px] px-3.5 py-2 bg-[#eef8fd] text-[#10547f] text-[13px] font-semibold rounded-full border border-[#d4e9f4] whitespace-nowrap">健康菜品</button>
+          <button onclick="openWfdBenefit('share')" class="shrink-0 min-h-[40px] px-3.5 py-2 bg-[#eef8fd] text-[#10547f] text-[13px] font-semibold rounded-full border border-[#d4e9f4] whitespace-nowrap">盲盒周边</button>
+          <button onclick="openWfdBenefit('proof')" class="shrink-0 min-h-[40px] px-3.5 py-2 bg-[#eef8fd] text-[#10547f] text-[13px] font-semibold rounded-full border border-[#d4e9f4] whitespace-nowrap">探店返图</button>
+        </div>
+      </div>
+
+      <div class="px-3 pb-1">
+        <div class="flex items-center gap-1 bg-white border border-gray-200 rounded-full px-2 py-0.5 focus-within:border-blue-300 focus-within:ring-1 focus-within:ring-blue-100 transition">
+          <button onclick="openWfdBenefit('health')" class="w-5 h-5 flex items-center justify-center rounded-full hover:bg-gray-100 transition shrink-0" title="上传健康菜品">
+            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          </button>
+          <input type="file" id="dish-image-input" accept="image/*" class="hidden" onchange="onDishImageSelected(event)">
+          <input type="file" id="wfd-health-input" accept="image/*" class="hidden" onchange="handleWfdHealthSelected(event)">
+          <input type="file" id="wfd-share-input" accept="image/*" class="hidden" onchange="handleWfdShareSelected(event)">
+          <input type="file" id="wfd-proof-input" accept="image/*" class="hidden" onchange="handleWfdProofSelected(event)">
+          <input type="text" id="user-input" placeholder="问我"
+                 class="flex-1 text-base bg-transparent outline-none text-gray-700 placeholder-gray-400 min-w-0"
+                 onkeydown="if(event.key==='Enter')sendMessage()">
+          <button onclick="sendMessage()" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap transition shrink-0">发送</button>
+        </div>
+        <div class="flex items-center justify-center mt-1">
+          <span class="text-[12px] text-gray-400">AI 生成内容需由商家确认</span>
+          <button onclick="showPrivacy()" class="text-[12px] text-gray-400 hover:text-gray-600 underline font-medium">AI隐私协议</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="wfd-toast" class="wfd-toast" role="status" aria-live="polite"></div>
+
+    <!-- Store Picker View -->
+    <div id="store-view" class="view-hidden w-full max-w-[600px] bg-white h-full shadow-2xl flex flex-col">
+      <!-- Header -->
+      <div class="flex items-center px-4 py-3 border-b border-gray-100 shrink-0">
+        <button onclick="closeStoreSheet()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition mr-2">
+          <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <h3 class="text-base font-bold text-gray-900">切换门店</h3>
+      </div>
+      <!-- Search -->
+      <div class="px-4 py-3 shrink-0">
+        <div class="flex items-center gap-2 bg-gray-100 rounded-lg px-3 py-2.5">
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <input type="text" id="store-search" placeholder="请输入关键字进行查询"
+                 class="flex-1 text-sm bg-transparent outline-none text-gray-700 placeholder-gray-400"
+                 oninput="filterStores(this.value)">
+          <button onclick="document.getElementById('store-search').value='';filterStores('')" class="text-xs text-gray-500">取消</button>
+        </div>
+      </div>
+      <!-- List -->
+      <div id="store-list" class="flex-1 overflow-y-auto px-4 pb-5"></div>
+    </div>
+
+    <!-- Bottom Sheet -->
+    <div id="task-sheet" class="sheet-overlay hidden fixed inset-0 z-50 flex flex-col justify-end items-center">
+      <div class="absolute inset-0 bg-black/50" onclick="closeSheet()"></div>
+      <div class="sheet-container relative bg-white w-full max-w-[600px] rounded-t-2xl max-h-[85vh] flex flex-col">
+        <div class="flex justify-center pt-3 pb-1" onclick="closeSheet()">
+          <div class="w-10 h-1 bg-gray-300 rounded-full"></div>
+        </div>
+        <div class="flex items-center justify-between px-5 pt-2 pb-3 border-b border-gray-100 shrink-0">
+          <h3 id="sheet-title" class="text-lg font-bold text-gray-900"></h3>
+          <button onclick="closeSheet()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+        <div id="sheet-content" class="flex-1 overflow-y-auto px-5 py-4 text-sm text-gray-600 leading-relaxed"></div>
+        <div class="px-5 pb-5 pt-2 shrink-0 border-t border-gray-100" id="sheet-footer">
+          <button onclick="closeSheet()" class="w-full py-3.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium transition active:scale-[0.98]">我知道了</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== DOM Fix: ensure store-view and task-sheet are siblings of chat-view =====
+    (function() {
+      const chat = document.getElementById('chat-view');
+      const body = document.body;
+      const storeView = document.getElementById('store-view');
+      const taskSheet = document.getElementById('task-sheet');
+      if (storeView && storeView.parentNode !== body) {
+        body.appendChild(storeView);
+      }
+      if (taskSheet && taskSheet.parentNode !== body) {
+        body.appendChild(taskSheet);
+      }
+    })();
+
+    // ===== View Switching =====
+function showChat() {
+document.getElementById('entry-view').classList.add('view-hidden');
+const chat = document.getElementById('chat-view');
+chat.classList.remove('view-hidden');
+chat.classList.add('view-enter');
+requestAnimationFrame(() => {
+chat.classList.add('view-enter-active');
+chat.classList.remove('view-enter');
+});
+setTimeout(() => chat.classList.remove('view-enter-active'), 300);
+}
+
+function showEntry() {
+      document.getElementById('chat-view').classList.add('view-hidden');
+      document.getElementById('entry-view').classList.remove('view-hidden');
+    }
+
+
+    // ===== 1016 Home Updates: connect homepage cards to original Agent flows =====
+    const HOME_READ_KEY = 'songhao_home_updates_read';
+
+    function getHomeReadUpdates() {
+      try { return JSON.parse(localStorage.getItem(HOME_READ_KEY) || '[]'); }
+      catch (e) { return []; }
+    }
+
+    function markHomeUpdateRead(button) {
+      if (!button) return;
+      button.classList.add('is-read');
+      const key = button.dataset.homeUpdate;
+      const read = new Set(getHomeReadUpdates());
+      if (key) read.add(key);
+      try { localStorage.setItem(HOME_READ_KEY, JSON.stringify(Array.from(read))); } catch (e) {}
+      const unread = document.querySelectorAll('.home-recommendation[data-home-update]:not(.is-read)');
+      const dot = document.getElementById('home-message-dot');
+      if (dot && unread.length === 0) dot.style.display = 'none';
+    }
+
+    function openHomeRecommendation(button, type) {
+      markHomeUpdateRead(button);
+      if (type === 'overview') {
+        showChat();
+        setTimeout(showWorldFoodDayOverview, 320);
+      } else {
+        openWfdBenefit(type);
+      }
+    }
+
+    function openHomeMessages() {
+      document.querySelectorAll('.home-recommendation[data-home-update]').forEach(markHomeUpdateRead);
+      showChat();
+      setTimeout(showWorldFoodDayOverview, 320);
+    }
+
+    function toggleHomeActivityCard() {
+      const card = document.getElementById('home-activity-card');
+      const toggle = document.getElementById('home-activity-toggle');
+      if (!card || !toggle) return;
+      const collapsed = card.classList.toggle('is-collapsed');
+      toggle.setAttribute('aria-expanded', String(!collapsed));
+    }
+
+    function restoreHomeUpdateState() {
+      const read = new Set(getHomeReadUpdates());
+      document.querySelectorAll('.home-recommendation[data-home-update]').forEach(button => {
+        if (read.has(button.dataset.homeUpdate)) button.classList.add('is-read');
+      });
+      const unread = document.querySelectorAll('.home-recommendation[data-home-update]:not(.is-read)');
+      const dot = document.getElementById('home-message-dot');
+      if (dot && unread.length === 0) dot.style.display = 'none';
+    }
+
+    restoreHomeUpdateState();
+
+    // ===== Chat Logic =====
+    const AVATAR = 'song-haoyun-assets/song-haoyun-wave-no-glasses-v3.png';
+    document.querySelectorAll('[data-song-avatar]').forEach(img => { img.src = AVATAR; });
+    const REPLIES = {
+      '生成公益故事': '可以。先看公益成果版和公益故事版两个示例，再选择版本；确认门店与表达后，我会直接生成海报预览。真实公益数据需要获得授权并由活动系统回读。',
+      '认证健康菜品': '收到！健康菜品认证需要您上传一道代表菜品的图片，并回答以下问题：\n\n• 菜品名称是什么？\n• 使用了哪些健康食材或烹饪方式？\n• 希望突出什么健康卖点？\n\n您可以先上传菜品图片，我再帮您完善信息～',
+      '查看活动权益': '4大权益不要求一次全部完成：①生成门店专属公益海报；②上传健康菜品，通过规则与审核后参与公益流量筛选；③分享海报并返图，进入盲盒周边抽选流程；④布置门店并返图，进入达人或官方传播候选池。报名、审核、抽选与权益结果以正式系统回执为准。',
+      '健康菜品认证有什么用': '通过活动标准与人工审核后，健康菜品可生成专属横版/竖版海报，并参与主会场、频道页或搜索等公益流量资源筛选。是否入选及实际曝光以正式审核结果为准。',
+      '申领实体物料': '我可以先展示可申领清单和完整步骤。真实申领需要核对资格、收货信息并取得提交回执；当前体验版不会代替正式提交。',
+      '世界粮食日': '10月16日是世界粮食日。宋好运会陪商家从专属公益海报开始，再按需完成健康菜品、线上分享或门店返图，帮助每一家小店把自己的善意讲清楚。',
+      '世界粮食日活动规则': '参与流程分为：看示例与权益 → 选择一个任务 → 确认门店或菜品信息 → 生成物料 → 在线上分享或门店铺设 → 回传凭证。报名、审核、抽选、流量和探店结果以正式系统回执为准。'
+    };
+    const DEFAULT_REPLY = '我先帮你把问题归到 1016 活动流程里。你可以问我：怎么参加、四大权益、公益海报、健康菜品、盲盒周边、探店活动，或查询当前体验进度。';
+
+    // ===== Task Progress State =====
+    let taskState = { story: false, dish: false };
+    let wfdState = {
+      stage: 'idle', joined: false, downloaded: false,
+      storyAngle: '', storyGenerated: false,
+      healthSelected: false, shareSelected: false, proofSelected: false
+    };
+
+    // ===== Chat History State =====
+    let chatHistory = [];
+    const CHAT_KEY = 'songhao_current_chat';
+    const SESSIONS_KEY = 'songhao_chat_sessions';
+
+    function saveCurrentChat() {
+      try { localStorage.setItem(CHAT_KEY, JSON.stringify(chatHistory)); } catch (e) {}
+    }
+    function loadCurrentChat() {
+      try {
+        const raw = localStorage.getItem(CHAT_KEY);
+        if (raw) chatHistory = JSON.parse(raw) || [];
+      } catch (e) { chatHistory = []; }
+    }
+    function getSessions() {
+      try {
+        const raw = localStorage.getItem(SESSIONS_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) { return []; }
+    }
+    function saveSessions(list) {
+      try { localStorage.setItem(SESSIONS_KEY, JSON.stringify(list)); } catch (e) {}
+    }
+
+    function updateProgress() {
+      const done = (taskState.story ? 1 : 0) + (taskState.dish ? 1 : 0);
+      const total = 2;
+      const pct = Math.round((done / total) * 100);
+      const fill = document.getElementById('progress-fill');
+      const label = document.getElementById('progress-label');
+      const reward = document.getElementById('progress-reward');
+      if (fill) fill.style.width = pct + '%';
+      if (label) {
+        if (done === 0) label.textContent = '完成 0/2 项任务';
+        else if (done === 1) label.textContent = '完成 1/2 项任务';
+        else label.textContent = '已完成 2/2 项任务';
+      }
+      if (reward) {
+        if (done === 0) reward.textContent = '开始第一项任务，生成专属公益物料';
+        else if (done === 1) reward.textContent = '再完成 1 项，可预览完整传播物料包';
+        else reward.textContent = '已完成两项体验，可查看完整物料预览';
+      }
+      updateTaskCards();
+    }
+
+    function updateTaskCards() {
+      const storyBtn = document.getElementById('story-task-btn');
+      const storyHint = document.getElementById('story-task-hint');
+      const dishBtn = document.getElementById('dish-task-btn');
+      const dishHint = document.getElementById('dish-task-hint');
+      if (storyBtn) storyBtn.textContent = taskState.story ? '查看结果' : '去生成';
+      if (storyHint) storyHint.textContent = taskState.story ? '已完成 ✓' : '约 3 分钟';
+      if (dishBtn) dishBtn.textContent = taskState.dish ? '查看结果' : '去认证';
+      if (dishHint) dishHint.textContent = taskState.dish ? '已完成 ✓' : '约 2 分钟';
+    }
+
+    const TASK_CONTENT = {
+      benefits: {
+        title: '任务与权益说明',
+        content: `<div class="space-y-4">
+          <div>
+            <div class="font-medium text-gray-900 mb-2">🎁 主任务完成后</div>
+            <div class="text-sm text-gray-600 space-y-1">
+              <div>• 带门店名称和专属表达的电子公益物料</div>
+              <div>• 可下载、打印，并用于线上或门店展示</div>
+            </div>
+          </div>
+          <div>
+            <div class="font-medium text-gray-900 mb-2">🏆 按需继续参与</div>
+            <div class="text-sm text-gray-600 space-y-1">
+              <div>• 上传健康供给：通过规则与审核后，参与专属公益流量筛选</div>
+              <div>• 分享活动物料：回传发布截图后，进入盲盒周边抽选流程</div>
+              <div>• 使用后返图：公益氛围浓的门店进入达人或官方传播候选池</div>
+            </div>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-3 text-xs text-gray-500">
+            资格、名额、抽选、流量、探店和审核结果以正式活动规则与系统回执为准；当前体验只记录本机进度。
+          </div>
+        </div>`
+      }
+    };
+
+        // ===== Story Flow =====
+    let storyData = { answer: '', style: '温暖真诚', color: 'blue', size: 'horizontal', scope: 'single', storeName: '暖食记·望江路店', quizAnswers: [] };
+
+    function storyProgress(step) {
+      return `<div class="step-progress">
+        <div class="step-progress-bar ${step>=0?'active':''}"></div>
+        <div class="step-progress-bar ${step>=1?'active':''}"></div>
+        <div class="step-progress-bar ${step>=2?'active':''}"></div>
+        <div class="step-progress-bar ${step>=3?'active':''}"></div>
+        <div class="step-progress-bar ${step>=4?'active':''}"></div>
+        <div class="step-progress-bar ${step>=5?'active':''}"></div>
+      </div>`;
+    }
+
+    function storyStep0() {
+      return `<div class="space-y-4">
+        ${storyProgress(0)}
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="text-base font-bold text-gray-900">公益电子物料预览</h3>
+            <span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[12px] font-medium rounded-full">第零步</span>
+          </div>
+          <p class="text-xs text-gray-500">以下为您将生成的公益电子物料样式，确认后即可开始定制。</p>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <div class="rounded-xl overflow-hidden border border-gray-200 mb-1.5 bg-gray-50">
+              <img src="song-haoyun-assets/2026-health-supply-horizontal-final.png" class="w-full h-28 object-cover" alt="横版海报预览">
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-[12px] text-gray-500">横版 · 店铺页/公域</span>
+              <span class="text-[12px] text-gray-400">16:9</span>
+            </div>
+          </div>
+          <div>
+            <div class="rounded-xl overflow-hidden border border-gray-200 mb-1.5 bg-gray-50">
+              <img src="song-haoyun-assets/2026-health-supply-vertical-final.png" class="w-full h-28 object-cover" alt="竖版海报预览">
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-[12px] text-gray-500">竖版 · 私域/门店</span>
+              <span class="text-[12px] text-gray-400">9:16</span>
+            </div>
+          </div>
+        </div>
+        <div class="bg-blue-50 rounded-lg p-3 text-xs text-blue-700">
+          <p>AI 将根据您的商家数据和回答，自动生成包含门店名称、公益故事的专属物料。</p>
+        </div>
+        <div class="pt-2">
+          <button onclick="storyGoStep1()" class="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium transition">开始定制</button>
+        </div>
+      </div>`;
+    }
+
+    function storyGoStep1() {
+      document.getElementById('sheet-content').innerHTML = storyStep1();
+    }
+
+    function storyStep1() {
+      const isAll = storyData.scope === 'all';
+      return `<div class="space-y-4">
+        ${storyProgress(1)}
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="text-base font-bold text-gray-900">确认商家信息</h3>
+            <span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[12px] font-medium rounded-full">第 1 步</span>
+          </div>
+          <p class="text-xs text-gray-500">系统自动获取，店名可直接修改，其他数据不可更改。</p>
+        </div>
+        <div class="space-y-2.5">
+          <button onclick="selectStoryScope('all')" class="w-full text-left p-4 rounded-xl border-2 ${isAll?'border-blue-400 bg-blue-50/50':'border-gray-200 bg-white'} hover:border-blue-300 transition-all duration-200 group">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 ${isAll?'bg-blue-500 text-white':'bg-blue-50 text-blue-500 group-hover:bg-blue-100'} rounded-xl flex items-center justify-center transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-semibold ${isAll?'text-blue-700':'text-gray-900'} transition">全部门店统一生成</div>
+                <div class="text-xs text-gray-500 mt-0.5">共 <span class="font-semibold text-gray-700">3</span> 家门店</div>
+                ${isAll?'<div class="text-[12px] text-amber-600 mt-1">⚠ 若门店名称不一致，需提前确认</div>':''}
+              </div>
+              <div class="w-5 h-5 rounded-full border-2 ${isAll?'border-blue-500 bg-blue-500':'border-gray-300'} flex items-center justify-center shrink-0">
+                ${isAll?'<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>':''}
+              </div>
+            </div>
+          </button>
+          <button onclick="selectStoryScope('single')" class="w-full text-left p-4 rounded-xl border-2 ${!isAll?'border-blue-400 bg-blue-50/50':'border-gray-200 bg-white'} hover:border-blue-300 transition-all duration-200 group">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 ${!isAll?'bg-blue-500 text-white':'bg-blue-50 text-blue-500 group-hover:bg-blue-100'} rounded-xl flex items-center justify-center transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-semibold ${!isAll?'text-blue-700':'text-gray-900'} transition">单个门店专属生成</div>
+                <div class="text-xs text-gray-500 mt-0.5">当前选择 <span class="font-semibold text-gray-700" id="story-scope-store">暖食记·望江路店</span><span onclick="openStorePicker()" class="text-[12px] text-blue-500 hover:text-blue-600 font-medium px-1 py-0 bg-transparent hover:bg-blue-50 rounded transition ml-0.5 cursor-pointer">切换</span></div>
+              </div>
+              <div class="w-5 h-5 rounded-full border-2 ${!isAll?'border-blue-500 bg-blue-500':'border-gray-300'} flex items-center justify-center shrink-0">
+                ${!isAll?'<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>':''}
+              </div>
+            </div>
+          </button>
+        </div>
+        <div class="border border-gray-200 rounded-xl p-4 bg-white">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center text-white text-xs font-bold">暖食记</div>
+            <div class="flex-1 min-w-0">
+              <div class="font-semibold text-gray-900 text-sm flex items-center gap-2">
+                <input type="text" id="edit-store-name" value="${storyData.storeName || '暖食记·望江路店'}"
+                       class="font-semibold text-gray-900 text-sm bg-transparent border-b border-dashed border-gray-300 focus:border-blue-400 focus:outline-none px-0 py-0 w-full max-w-[200px]"
+                       onchange="storyData.storeName=this.value">
+              </div>
+              <div class="text-xs text-gray-500">POI 1108**** · 杭州市拱墅区</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 text-xs text-gray-500">
+            <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span>店名可直接修改，其他数据由系统自动读取，不可更改。</span>
+          </div>
+        </div>
+        <div class="sheet-actions pt-2">
+          <button onclick="document.getElementById('sheet-content').innerHTML = storyStep0()" class="btn-secondary">上一步</button>
+          <button onclick="storyGoStep2()" class="btn-primary">确认信息，继续</button>
+        </div>
+      </div>`;
+    }
+
+    function selectStoryScope(scope) {
+      storyData.scope = scope;
+      document.getElementById('sheet-content').innerHTML = storyStep1();
+    }
+
+    function storyGoStep2() {
+      document.getElementById('sheet-content').innerHTML = storyStep2();
+    }
+
+    function storyStep2() {
+      const q1 = storyData.quizAnswers[0] || '';
+      const q2 = storyData.quizAnswers[1] || '';
+      const q3 = storyData.quizAnswers[2] || '';
+      const q4 = storyData.quizAnswers[3] || '';
+      return `<div class="space-y-4">
+        ${storyProgress(2)}
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="text-base font-bold text-gray-900">快速问答</h3>
+            <span class="px-2 py-0.5 bg-green-50 text-green-600 text-[12px] font-medium rounded-full">第 2 步</span>
+          </div>
+          <p class="text-xs text-gray-500">回答 4 个问题，AI 将为您生成专属公益故事。</p>
+        </div>
+        <div class="space-y-3">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">1. 您参与公益多久了？</label>
+            <div class="tag-group" id="quiz-q1">
+              <button onclick="selectQuiz(0,'刚加入')" class="tag-btn ${q1==='刚加入'?'active':''}">刚加入</button>
+              <button onclick="selectQuiz(0,'半年左右')" class="tag-btn ${q1==='半年左右'?'active':''}">半年左右</button>
+              <button onclick="selectQuiz(0,'一年以上')" class="tag-btn ${q1==='一年以上'?'active':''}">一年以上</button>
+              <button onclick="selectQuiz(0,'多年坚持')" class="tag-btn ${q1==='多年坚持'?'active':''}">多年坚持</button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">2. 您最关注哪个公益领域？</label>
+            <div class="tag-group" id="quiz-q2">
+              <button onclick="selectQuiz(1,'儿童成长')" class="tag-btn ${q2==='儿童成长'?'active':''}">儿童成长</button>
+              <button onclick="selectQuiz(1,'乡村教育')" class="tag-btn ${q2==='乡村教育'?'active':''}">乡村教育</button>
+              <button onclick="selectQuiz(1,'环境保护')" class="tag-btn ${q2==='环境保护'?'active':''}">环境保护</button>
+              <button onclick="selectQuiz(1,'社区关怀')" class="tag-btn ${q2==='社区关怀'?'active':''}">社区关怀</button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">3. 您希望通过什么方式传递善意？</label>
+            <div class="tag-group" id="quiz-q3">
+              <button onclick="selectQuiz(2,'每笔订单捐赠')" class="tag-btn ${q3==='每笔订单捐赠'?'active':''}">每笔订单捐赠</button>
+              <button onclick="selectQuiz(2,'参与公益活动')" class="tag-btn ${q3==='参与公益活动'?'active':''}">参与公益活动</button>
+              <button onclick="selectQuiz(2,'传播公益理念')" class="tag-btn ${q3==='传播公益理念'?'active':''}">传播公益理念</button>
+              <button onclick="selectQuiz(2,'带动顾客参与')" class="tag-btn ${q3==='带动顾客参与'?'active':''}">带动顾客参与</button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">4. 您偏好的表达风格？</label>
+            <div class="tag-group" id="quiz-q4">
+              <button onclick="selectQuiz(3,'温暖真诚')" class="tag-btn ${q4==='温暖真诚'?'active':''}">温暖真诚</button>
+              <button onclick="selectQuiz(3,'简洁有力')" class="tag-btn ${q4==='简洁有力'?'active':''}">简洁有力</button>
+              <button onclick="selectQuiz(3,'品牌调性')" class="tag-btn ${q4==='品牌调性'?'active':''}">品牌调性</button>
+            </div>
+          </div>
+        </div>
+        <div class="sheet-actions pt-2">
+          <button onclick="document.getElementById('sheet-content').innerHTML = storyStep1()" class="btn-secondary">上一步</button>
+          <button onclick="storyGoStep3()" class="btn-primary">生成寄语</button>
+        </div>
+      </div>`;
+    }
+
+    function selectQuiz(idx, val) {
+      storyData.quizAnswers[idx] = val;
+      if (idx === 3) storyData.style = val;
+      const group = document.getElementById('quiz-q' + (idx+1));
+      if (group) {
+        Array.from(group.children).forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('onclick').includes("'"+val+"'"));
+        });
+      }
+    }
+
+    function storyGoStep3() {
+      document.getElementById('sheet-content').innerHTML = `<div class="space-y-4 text-center py-8">
+        <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-3 animate-pulse">
+          <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+        </div>
+        <p class="text-gray-700 font-medium">AI 正在生成您的公益寄语...</p>
+        <p class="text-xs text-gray-400">结合商家数据与您的回答创作中</p>
+      </div>`;
+      setTimeout(() => {
+        document.getElementById('sheet-content').innerHTML = storyStep3();
+      }, 1500);
+    }
+
+    function storyStep3() {
+      const style = storyData.quizAnswers[3] || '温暖真诚';
+      const scopeLabel = storyData.scope === 'all' ? '全部门店统一' : '单个门店专属';
+      const generatedText = generateStoryText();
+      storyData.answer = generatedText;
+      return `<div class="space-y-4">
+        ${storyProgress(3)}
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="text-base font-bold text-gray-900">确认寄语</h3>
+            <span class="px-2 py-0.5 bg-green-50 text-green-600 text-[12px] font-medium rounded-full">第 3 步</span>
+          </div>
+          <p class="text-xs text-gray-500">AI 已根据您的回答生成专属寄语，满意则继续，不满意可重新生成。</p>
+        </div>
+        <div class="quote-box">
+          <div class="text-xs text-gray-400 mb-1">${style}版 · ${scopeLabel}</div>
+          ${generatedText}
+        </div>
+        <div class="flex gap-2">
+          <button onclick="storyRegenerate()" class="flex-1 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition">重新生成</button>
+          <button onclick="storyGoStep4()" class="flex-1 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-medium transition">满意，继续</button>
+        </div>
+      </div>`;
+    }
+
+    function generateStoryText() {
+      const q1 = storyData.quizAnswers[0] || '刚加入';
+      const q2 = storyData.quizAnswers[1] || '儿童成长';
+      const q3 = storyData.quizAnswers[2] || '每笔订单捐赠';
+      const style = storyData.quizAnswers[3] || '温暖真诚';
+      const store = storyData.storeName || '暖食记·望江路店';
+      if (style === '简洁有力') {
+        return `<p class="text-sm text-gray-700 leading-relaxed">${store}，${q1}加入美团公益。以${q3}的方式，守护${q2}。善意不必多言，行动即是答案。</p>`;
+      } else if (style === '品牌调性') {
+        return `<p class="text-sm text-gray-700 leading-relaxed">${store}始终相信，经营的意义不止于美味。${q1}起，我们以${q3}践行对${q2}的承诺。这是品牌的责任，也是每一天的坚持。</p>`;
+      }
+      return `<p class="text-sm text-gray-700 leading-relaxed">${store}${q1}加入美团公益计划，希望通过${q3}的方式，为${q2}贡献一份力量。我们相信，每一份善意都值得被看见，每一次行动都能带来改变。愿这份温暖，从门店传递到更远的地方。</p>`;
+    }
+
+    function storyRegenerate() {
+      const styles = ['温暖真诚', '简洁有力', '品牌调性'];
+      const current = storyData.quizAnswers[3] || '温暖真诚';
+      const next = styles[(styles.indexOf(current) + 1) % styles.length];
+      storyData.quizAnswers[3] = next;
+      storyData.style = next;
+      document.getElementById('sheet-content').innerHTML = storyStep3();
+    }
+
+    function storyGoStep4() {
+      document.getElementById('sheet-content').innerHTML = storyStep4();
+    }
+
+    function storyStep4() {
+      const isH = storyData.size === 'horizontal';
+      const scopeLabel = storyData.scope === 'all' ? '全部门店统一' : '单个门店专属';
+      return `<div class="space-y-4">
+        ${storyProgress(4)}
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="text-base font-bold text-gray-900">生成海报</h3>
+            <span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[12px] font-medium rounded-full">第 4 步</span>
+          </div>
+          <p class="text-xs text-gray-500">${scopeLabel}物料，选择样式后点击生成。</p>
+        </div>
+        <div>
+          <label class="block text-xs text-gray-500 mb-2">物料尺寸</label>
+          <div class="tag-group" id="story-size-group">
+            <button onclick="selectStorySize('horizontal')" class="tag-btn ${isH?'active':''}">横版 16:9</button>
+            <button onclick="selectStorySize('vertical')" class="tag-btn ${!isH?'active':''}">竖版 9:16</button>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs text-gray-500 mb-2">表达风格</label>
+          <div class="tag-group" id="story-style-group-3">
+            <button onclick="selectStoryStyle3('温暖真诚')" class="tag-btn ${storyData.style==='温暖真诚'?'active':''}">温暖真诚</button>
+            <button onclick="selectStoryStyle3('简洁有力')" class="tag-btn ${storyData.style==='简洁有力'?'active':''}">简洁有力</button>
+            <button onclick="selectStoryStyle3('品牌调性')" class="tag-btn ${storyData.style==='品牌调性'?'active':''}">品牌调性</button>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs text-gray-500 mb-2">主色</label>
+          <div class="color-picker" id="story-color-group-3">
+            <button onclick="selectStoryColor3('blue')" class="color-option ${storyData.color==='blue'?'active':''}" style="background:#3b82f6;"></button>
+            <button onclick="selectStoryColor3('yellow')" class="color-option ${storyData.color==='yellow'?'active':''}" style="background:#f59e0b;"></button>
+            <button onclick="selectStoryColor3('green')" class="color-option ${storyData.color==='green'?'active':''}" style="background:#10b981;"></button>
+            <button onclick="selectStoryColor3('red')" class="color-option ${storyData.color==='red'?'active':''}" style="background:#ef4444;"></button>
+            <button onclick="selectStoryColor3('purple')" class="color-option ${storyData.color==='purple'?'active':''}" style="background:#8b5cf6;"></button>
+          </div>
+        </div>
+        <div class="pt-2">
+          <button onclick="storyGoStep5()" class="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium transition">生成海报</button>
+        </div>
+        <div class="sheet-actions">
+          <button onclick="document.getElementById('sheet-content').innerHTML = storyStep3()" class="btn-secondary">上一步</button>
+        </div>
+      </div>`;
+    }
+
+    function storyGoStep5() {
+      document.getElementById('sheet-content').innerHTML = `<div class="space-y-4 text-center py-8">
+        <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-3 animate-pulse">
+          <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+        </div>
+        <p class="text-gray-700 font-medium">正在生成您的专属海报...</p>
+        <p class="text-xs text-gray-400">AI正在结合商家数据创作专属内容</p>
+      </div>`;
+      setTimeout(() => {
+        taskState.story = true;
+        updateProgress();
+        document.getElementById('sheet-content').innerHTML = storyStep5();
+      }, 2000);
+    }
+
+    function storyStep5() {
+      const isH = storyData.size === 'horizontal';
+      const scopeLabel = storyData.scope === 'all' ? '全部门店统一' : '单个门店专属';
+      return `<div class="space-y-4">
+        ${storyProgress(5)}
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-bold text-gray-900">海报已生成</h3>
+            <p class="text-xs text-gray-500 mt-0.5">${scopeLabel}物料，基于商家数据与您的回答生成。</p>
+          </div>
+          <span class="px-2 py-0.5 bg-green-50 text-green-600 text-[12px] font-medium rounded-full">AI 已完成</span>
+        </div>
+        <div class="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+          <img src="${isH?'song-haoyun-assets/2026-health-supply-horizontal-final.png':'song-haoyun-assets/2026-health-supply-vertical-final.png'}" class="w-full ${isH?'h-40':'h-64'} object-cover" alt="公益海报">
+        </div>
+        <div class="flex gap-2">
+          <button onclick="storyGoStep4()" class="flex-1 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition">重新调整</button>
+          <button onclick="closeSheet()" class="flex-1 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-medium transition">下载海报</button>
+        </div>
+        <div class="sheet-final-actions">
+          <button onclick="closeSheet()" class="btn-secondary">再做一项</button>
+          <button onclick="closeSheet()" class="btn-primary">去传播并回传</button>
+        </div>
+      </div>`;
+    }
+
+    function selectStorySize(size) {
+      storyData.size = size;
+      const group = document.getElementById('story-size-group');
+      if (group) {
+        Array.from(group.children).forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('onclick').includes("'"+size+"'"));
+        });
+      }
+    }
+
+    function selectStoryStyle3(style) {
+      storyData.style = style;
+      const group = document.getElementById('story-style-group-3');
+      if (group) {
+        Array.from(group.children).forEach(btn => {
+          btn.classList.toggle('active', btn.textContent === style);
+        });
+      }
+    }
+
+    function selectStoryColor3(color) {
+      storyData.color = color;
+      const group = document.getElementById('story-color-group-3');
+      if (group) {
+        Array.from(group.children).forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('onclick').includes("'"+color+"'"));
+        });
+      }
+    }
+
+    function storyBackToStep3() {
+      document.getElementById('sheet-content').innerHTML = storyStep3();
+    }
+// ===== Dish Flow =====
+    let dishData = { hasImage: false, style: '活力清爽', color: 'blue', size: 'horizontal' };
+
+    function dishProgress(step) {
+      return `<div class="step-progress">
+        <div class="step-progress-bar ${step>=1?'active':''}"></div>
+        <div class="step-progress-bar ${step>=2?'active':''}"></div>
+        <div class="step-progress-bar ${step>=3?'active':''}"></div>
+      </div>`;
+    }
+
+    function dishStep1() {
+      const hasImg = dishData.hasImage;
+      return `<div class="space-y-4">
+        ${dishProgress(1)}
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="text-base font-bold text-gray-900">上传一道主推菜品</h3>
+            <span class="px-2 py-0.5 bg-green-50 text-green-600 text-[12px] font-medium rounded-full">第 1 步</span>
+          </div>
+          <p class="text-xs text-gray-500">一张清晰的菜品图即可。系统会结合菜品信息给出好运认证结果。</p>
+        </div>
+        <div class="border-2 border-dashed ${hasImg?'border-blue-300 bg-blue-50/30':'border-gray-200 bg-gray-50/50'} rounded-xl p-6 text-center transition">
+          <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          </div>
+          <div class="text-sm text-gray-700 font-medium mb-1">上传菜品图片</div>
+          <div class="text-xs text-gray-400 mb-3">支持 JPG、PNG，建议主体清晰、避免过多文字</div>
+          <div class="flex items-center justify-center gap-2">
+            <button onclick="selectDishImage()" class="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg">选择图片</button>
+            <span class="text-xs text-gray-400">或</span>
+            <button onclick="useDemoDish()" class="text-sm text-blue-500 font-medium">使用体验示例菜品</button>
+          </div>
+        </div>
+        ${hasImg ? `<div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
+          <div class="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden shrink-0">
+            <img src="song-haoyun-assets/2026-health-supply-horizontal-final.png" class="w-full h-full object-cover" alt="菜品">
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm text-gray-700 font-medium truncate">全部门店 (4).png</div>
+            <div class="text-xs text-green-600 flex items-center gap-1 mt-0.5">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              上传成功，可以开始认证
+            </div>
+          </div>
+        </div>` : ''}
+        <div class="pt-2">
+          <button onclick="dishGoStep2()" class="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium transition">开始好运认证</button>
+        </div>
+      </div>`;
+    }
+
+    function selectDishImage() {
+      dishData.hasImage = true;
+      document.getElementById('sheet-content').innerHTML = dishStep1();
+    }
+
+    function useDemoDish() {
+      dishData.hasImage = true;
+      document.getElementById('sheet-content').innerHTML = dishStep1();
+    }
+
+    function dishGoStep2() {
+      document.getElementById('sheet-content').innerHTML = `<div class="space-y-4 text-center py-8">
+        <div class="w-12 h-12 bg-yellow-50 rounded-full flex items-center justify-center mx-auto mb-3 animate-pulse">
+          <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <p class="text-gray-700 font-medium">正在进行好运认证...</p>
+        <p class="text-xs text-gray-400">AI正在评估您的菜品健康指数</p>
+      </div>`;
+      setTimeout(() => {
+        document.getElementById('sheet-content').innerHTML = dishStep2();
+      }, 2000);
+    }
+
+    function dishStep2() {
+      return `<div class="space-y-4">
+        ${dishProgress(2)}
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-bold text-gray-900">好运认证完成</h3>
+            <p class="text-xs text-gray-500 mt-0.5">系统根据图片与商家补充信息，给出面向消费者的健康供给表达。</p>
+          </div>
+          <span class="px-2 py-0.5 bg-green-50 text-green-600 text-[12px] font-medium rounded-full">认证通过</span>
+        </div>
+        <div class="space-y-2">
+          <div class="cert-item">
+            <div class="cert-icon ok">✓</div>
+            <div>
+              <div class="text-sm font-medium text-gray-900">食材组合较丰富</div>
+              <div class="text-xs text-gray-500 mt-0.5">识别到谷物、鸡肉、鸡蛋与多种蔬菜，适合表达"一餐多样"。</div>
+            </div>
+          </div>
+          <div class="cert-item">
+            <div class="cert-icon ok">✓</div>
+            <div>
+              <div class="text-sm font-medium text-gray-900">包含优质蛋白来源</div>
+              <div class="text-xs text-gray-500 mt-0.5">鸡肉与鸡蛋可作为海报中的健康供给亮点。</div>
+            </div>
+          </div>
+          <div class="cert-item">
+            <div class="cert-icon info">i</div>
+            <div>
+              <div class="text-sm font-medium text-gray-900">建议商家确认真实配方</div>
+              <div class="text-xs text-gray-500 mt-0.5">如有酱汁、过敏原或主食克重，请在正式发布前人工复核。</div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-notice">
+          当前识别结果仅用于体验流程，不构成营养或医疗结论。正式认证需以明确规则、可靠数据来源和人工复核结果为准。
+        </div>
+        <div>
+          <label class="block text-xs text-gray-500 mb-2">海报风格</label>
+          <div class="tag-group" id="dish-style-group">
+            <button onclick="selectDishStyle('活力清爽')" class="tag-btn active">活力清爽</button>
+            <button onclick="selectDishStyle('专业克制')" class="tag-btn">专业克制</button>
+            <button onclick="selectDishStyle('亲子友好')" class="tag-btn">亲子友好</button>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs text-gray-500 mb-2">主色</label>
+          <div class="color-picker" id="dish-color-group">
+            <button onclick="selectDishColor('blue')" class="color-option active" style="background:#3b82f6;"></button>
+            <button onclick="selectDishColor('yellow')" class="color-option" style="background:#f59e0b;"></button>
+            <button onclick="selectDishColor('green')" class="color-option" style="background:#10b981;"></button>
+            <button onclick="selectDishColor('red')" class="color-option" style="background:#ef4444;"></button>
+            <button onclick="selectDishColor('purple')" class="color-option" style="background:#8b5cf6;"></button>
+          </div>
+        </div>
+        <div class="sheet-actions pt-2">
+          <button onclick="dishBackToStep1()" class="btn-secondary">重新上传</button>
+          <button onclick="dishGoStep3()" class="btn-primary">生成健康供给海报</button>
+        </div>
+      </div>`;
+    }
+
+    function selectDishStyle(style) {
+      dishData.style = style;
+      const group = document.getElementById('dish-style-group');
+      if (group) {
+        Array.from(group.children).forEach(btn => {
+          btn.classList.toggle('active', btn.textContent === style);
+        });
+      }
+    }
+
+    function selectDishColor(color) {
+      dishData.color = color;
+      const group = document.getElementById('dish-color-group');
+      if (group) {
+        Array.from(group.children).forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('onclick').includes("'"+color+"'"));
+        });
+      }
+    }
+
+    function dishBackToStep1() {
+      dishData.hasImage = false;
+      document.getElementById('sheet-content').innerHTML = dishStep1();
+    }
+
+    function dishGoStep3() {
+      document.getElementById('sheet-content').innerHTML = `<div class="space-y-4 text-center py-8">
+        <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-3 animate-pulse">
+          <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        </div>
+        <p class="text-gray-700 font-medium">正在生成健康供给海报...</p>
+        <p class="text-xs text-gray-400">AI正在根据认证结果设计海报</p>
+      </div>`;
+      setTimeout(() => {
+        taskState.dish = true;
+        updateProgress();
+        document.getElementById('sheet-content').innerHTML = dishStep3();
+      }, 2000);
+    }
+
+    function dishStep3() {
+      const isH = dishData.size === 'horizontal';
+      return `<div class="space-y-4">
+        ${dishProgress(3)}
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-bold text-gray-900">健康供给海报已生成</h3>
+            <p class="text-xs text-gray-500 mt-0.5">已套用"${dishData.style}"风格，可按传播场景切换横版或竖版。</p>
+          </div>
+          <span class="px-2 py-0.5 bg-green-50 text-green-600 text-[12px] font-medium rounded-full">AI 已完成</span>
+        </div>
+        <div class="quote-box">
+          <span class="font-medium">好运认证表达：</span>招牌鸡肉谷物碗，包含谷物、鸡肉、鸡蛋与多种蔬菜。丰富食材，开启元气一餐。
+        </div>
+        <div>
+          <label class="block text-xs text-gray-500 mb-2">物料尺寸</label>
+          <div class="tag-group" id="dish-size-group">
+            <button onclick="selectDishSize('horizontal')" class="tag-btn ${isH?'active':''}">横版 16:9</button>
+            <button onclick="selectDishSize('vertical')" class="tag-btn ${!isH?'active':''}">竖版 9:16</button>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs text-gray-500 mb-2">海报风格</label>
+          <div class="tag-group" id="dish-style-group-3">
+            <button onclick="selectDishStyle3('活力清爽')" class="tag-btn ${dishData.style==='活力清爽'?'active':''}">活力清爽</button>
+            <button onclick="selectDishStyle3('专业克制')" class="tag-btn ${dishData.style==='专业克制'?'active':''}">专业克制</button>
+            <button onclick="selectDishStyle3('亲子友好')" class="tag-btn ${dishData.style==='亲子友好'?'active':''}">亲子友好</button>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs text-gray-500 mb-2">主色</label>
+          <div class="color-picker" id="dish-color-group-3">
+            <button onclick="selectDishColor3('blue')" class="color-option ${dishData.color==='blue'?'active':''}" style="background:#3b82f6;"></button>
+            <button onclick="selectDishColor3('yellow')" class="color-option ${dishData.color==='yellow'?'active':''}" style="background:#f59e0b;"></button>
+            <button onclick="selectDishColor3('green')" class="color-option ${dishData.color==='green'?'active':''}" style="background:#10b981;"></button>
+            <button onclick="selectDishColor3('red')" class="color-option ${dishData.color==='red'?'active':''}" style="background:#ef4444;"></button>
+            <button onclick="selectDishColor3('purple')" class="color-option ${dishData.color==='purple'?'active':''}" style="background:#8b5cf6;"></button>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <div class="rounded-xl overflow-hidden border border-gray-200 mb-1.5 bg-gray-50">
+              <img src="song-haoyun-assets/2026-health-supply-horizontal-final.png" class="w-full h-28 object-cover" alt="横版海报">
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-[12px] text-gray-500">横版 · 店铺页/公域</span>
+              <span class="text-[12px] text-gray-400">使用图片 2</span>
+            </div>
+          </div>
+          <div>
+            <div class="rounded-xl overflow-hidden border border-gray-200 mb-1.5 bg-gray-50">
+              <img src="song-haoyun-assets/2026-health-supply-vertical-final.png" class="w-full h-28 object-cover" alt="竖版海报">
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-[12px] text-gray-500">竖版 · 私域/门店</span>
+              <span class="text-[12px] text-gray-400">使用图片 3</span>
+            </div>
+          </div>
+        </div>
+        <div class="sheet-actions">
+          <button onclick="dishBackToStep2()" class="btn-secondary">查看认证结果</button>
+          <button class="btn-primary">下载当前海报</button>
+        </div>
+        <div class="sheet-final-actions">
+          <button onclick="closeSheet()" class="btn-secondary">再做一项</button>
+          <button onclick="closeSheet()" class="btn-primary">去传播并回传</button>
+        </div>
+      </div>`;
+    }
+
+    function selectDishSize(size) {
+      dishData.size = size;
+      const group = document.getElementById('dish-size-group');
+      if (group) {
+        Array.from(group.children).forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('onclick').includes("'"+size+"'"));
+        });
+      }
+    }
+
+    function selectDishStyle3(style) {
+      dishData.style = style;
+      const group = document.getElementById('dish-style-group-3');
+      if (group) {
+        Array.from(group.children).forEach(btn => {
+          btn.classList.toggle('active', btn.textContent === style);
+        });
+      }
+    }
+
+    function selectDishColor3(color) {
+      dishData.color = color;
+      const group = document.getElementById('dish-color-group-3');
+      if (group) {
+        Array.from(group.children).forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('onclick').includes("'"+color+"'"));
+        });
+      }
+    }
+
+    function dishBackToStep2() {
+      document.getElementById('sheet-content').innerHTML = dishStep2();
+    }
+
+    function quickAsk(text) {
+      document.getElementById('user-input').value = text;
+      sendMessage();
+    }
+
+    function appendUserMessage(text) {
+      const container = document.getElementById('messages');
+      const div = document.createElement('div');
+      div.className = 'flex gap-3 justify-end';
+      div.innerHTML = `
+          <div class="chat-bubble-user text-white rounded-2xl rounded-tr-md px-4 py-2 text-sm max-w-[80%] leading-relaxed shadow-sm">
+            ${text}
+          </div>
+      `;
+      container.appendChild(div);
+      document.getElementById('welcome-msg').style.display = 'none';
+      chatHistory.push({ role: 'user', text, time: Date.now() });
+      saveCurrentChat();
+      scrollToBottom();
+    }
+
+    function appendBotMessage(text) {
+      const container = document.getElementById('messages');
+      const div = document.createElement('div');
+      div.className = 'flex gap-3';
+      div.innerHTML = `
+        <img src="${AVATAR}" class="w-7 h-7 rounded-full object-cover shrink-0 mt-1">
+        <div class="bg-white rounded-2xl rounded-tl-md px-4 pt-0.5 pb-1.5 text-sm text-gray-700 max-w-[80%] leading-relaxed shadow-sm border border-gray-100 whitespace-pre-line">
+          ${text}
+        </div>
+      `;
+      container.appendChild(div);
+      chatHistory.push({ role: 'bot', text, time: Date.now() });
+      saveCurrentChat();
+      scrollToBottom();
+    }
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>'"]/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      }[ch]));
+    }
+
+    function getWfdStoreName() {
+      const node = document.getElementById('current-store-name');
+      return node ? node.textContent.trim() : '暖食记·望江路店（体验）';
+    }
+
+    function appendRichBotMessage(html) {
+      const container = document.getElementById('messages');
+      const div = document.createElement('div');
+      div.className = 'flex gap-2';
+      div.style.scrollMarginTop = '12px';
+      div.innerHTML = `
+        <img src="${AVATAR}" class="w-8 h-8 rounded-full object-cover shrink-0 mt-1 border-2 border-white shadow-sm" alt="宋好运">
+        <div class="wfd-agent-message">${html}</div>
+      `;
+      container.appendChild(div);
+      requestAnimationFrame(() => div.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    }
+
+    function showWfdToast(text) {
+      const toast = document.getElementById('wfd-toast');
+      if (!toast) return;
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(showWfdToast.timer);
+      showWfdToast.timer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    const WFD_BENEFIT_PROMPTS = {
+      material: '怎么生成我家门店的专属公益海报？',
+      health: '健康菜品认证有什么用？',
+      share: '分享海报后，怎么参与盲盒周边抽选？',
+      proof: '门店返图后，怎么进入探店候选池？'
+    };
+
+    function openWorldFoodDayAgent(mode) {
+      showChat();
+      setTimeout(() => {
+        if (mode === 'intro') showWorldFoodDayOverview();
+        else if (mode === 'progress') showWfdProgress();
+        else startWorldFoodDayAgentFlow();
+      }, 320);
+    }
+
+    function openWfdBenefit(type) {
+      showChat();
+      if (type === 'flow') setTimeout(showWorldFoodDayOverview, 320);
+      else setTimeout(() => renderWfdBenefitCard(type), 320);
+    }
+
+    function showWorldFoodDayOverview(skipUser) {
+      if (!skipUser) appendUserMessage('把参与流程和4大权益的关系讲清楚');
+      const store = escapeHtml(getWfdStoreName());
+      setTimeout(() => appendRichBotMessage(`
+        <div class="wfd-benefit-card text-[14px] leading-relaxed">
+          <div class="inline-flex px-2 py-1 rounded-full bg-[#eaf7ff] text-[11px] font-bold text-[#0871c6]">1016 世界粮食日 · 活动攻略</div>
+          <strong class="block mt-2 text-[18px] text-[#12304b]">看懂这 3 段，就知道怎么参加</strong>
+          <p class="mt-1 text-[13px] text-[#52697b]">当前体验门店：<strong>${store}</strong>。4 项权益可以按需选择，不要求一次全部完成。</p>
+          <div class="mt-3">
+            <div class="wfd-flow-row"><span class="wfd-flow-no">1</span><div><strong class="text-[#12304b]">先做一张专属公益海报</strong><p class="text-[13px] text-[#52697b]">看横竖版示例，确认门店并点选表达；正式接入后，我会读取已授权且可公开的信息生成文件。</p></div></div>
+            <div class="wfd-flow-row"><span class="wfd-flow-no">2</span><div><strong class="text-[#12304b]">再按需做健康菜品</strong><p class="text-[13px] text-[#52697b]">上传代表菜品，通过活动标准与审核后生成专属海报，并参与公益流量资源筛选。</p></div></div>
+            <div class="wfd-flow-row"><span class="wfd-flow-no">3</span><div><strong class="text-[#12304b]">最后选择一种回传</strong><p class="text-[13px] text-[#52697b]">线上分享并回传截图，可进入盲盒抽选流程；线下布置并返图，可进入探店传播候选池。</p></div></div>
+          </div>
+          <div class="mt-3 rounded-xl bg-[#fff8cf] px-3 py-2.5 text-[12px] text-[#6d5700]"><strong>一句话记住：</strong>先做海报，再挑你愿意做的健康或传播动作。</div>
+          <button type="button" data-wfd-action="story-start" class="w-full wfd-primary mt-3">先看海报示例</button>
+          <button type="button" data-wfd-action="benefit-material" class="w-full wfd-secondary mt-2">展开查看4大权益</button>
+          <p class="mt-2 text-[12px] text-center text-gray-500">报名、审核、抽选和权益结果以正式系统回执为准</p>
+        </div>
+      `), 360);
+    }
+
+    function startWorldFoodDayAgentFlow() {
+      startWfdStoryFlow();
+    }
+
+    function confirmWfdStoreAndGenerate() {
+      startWfdStoryFlow();
+    }
+
+    function appendWfdResultCard() {
+      startWfdStoryFlow(true);
+    }
+
+    function startWfdStoryFlow(skipUser) {
+      if (!skipUser) appendUserMessage('先给我看看公益海报示例，再选版本');
+      wfdState.stage = 'story-intro';
+      setTimeout(() => appendRichBotMessage(`
+        <div class="wfd-benefit-card">
+          <div class="inline-flex px-2 py-1 rounded-full bg-[#eaf7ff] text-[11px] font-bold text-[#0871c6]">公益海报 · 先看示例</div>
+          <h3 class="mt-2 text-[18px] font-bold text-[#12304b]">同一份善意，准备两种使用方式</h3>
+          <p class="mt-1 text-[13px] leading-relaxed text-[#52697b]">横版适合门店电子屏、美团或点评页面；竖版适合朋友圈、社媒和打印分享。</p>
+          <div class="wfd-format-grid mt-3">
+            <div class="wfd-format-sample">
+              <b>公益成果版 · 横版</b>
+              <span>突出门店参与信息与公益成果<br>适合公域页面和电子屏</span>
+            </div>
+            <div class="wfd-format-sample is-vertical">
+              <b>公益故事版</b>
+              <span>讲小店为什么坚持做好事<br>适合分享</span>
+            </div>
+          </div>
+          <div class="wfd-process-strip">
+            <span>选版本</span><span>确认门店</span><span>点选表达</span><span>生成预览</span>
+          </div>
+          <p class="mt-3 text-[13px] font-semibold text-[#12304b]">想先做哪一个？</p>
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <button type="button" data-wfd-action="story-builder" data-wfd-version="result" class="wfd-primary">公益成果版</button>
+            <button type="button" data-wfd-action="story-builder" data-wfd-version="story" class="wfd-secondary">公益故事版</button>
+          </div>
+          <div class="mt-3 rounded-xl bg-[#fff8cf] px-3 py-2.5 text-[12px] leading-relaxed text-[#6d5700]"><strong>不用从零写文案。</strong>确认门店后简单点选，我会把内容直接放进海报预览。</div>
+        </div>
+      `), 280);
+    }
+
+    function openWfdStoryBuilder(version) {
+      const safeVersion = version === 'result' ? 'result' : 'story';
+      const store = escapeHtml(getWfdStoreName());
+      appendUserMessage(safeVersion === 'result' ? '先做公益成果版' : '先做公益故事版');
+      wfdState.stage = safeVersion === 'result' ? 'result-builder' : 'story-builder';
+      const card = safeVersion === 'result' ? `
+        <div class="wfd-benefit-card">
+          <div class="inline-flex px-2 py-1 rounded-full bg-[#eaf7ff] text-[11px] font-bold text-[#0871c6]">公益成果版 · 确认信息</div>
+          <h3 class="mt-2 text-[18px] font-bold text-[#12304b]">先确认门店，再生成成果海报</h3>
+          <div class="mt-3 rounded-2xl bg-[#f2fbff] border border-[#d6eefc] p-3 text-[13px] text-[#52697b]">
+            <div class="flex justify-between gap-3"><span>当前门店</span><strong class="text-[#12304b]">${store}</strong></div>
+            <div class="flex justify-between gap-3 mt-2"><span>公益成果数据</span><strong class="text-[#a36b00]">待授权同步</strong></div>
+          </div>
+          <p class="mt-3 text-[12px] leading-relaxed text-[#607786]">正式产品会在获得授权后读取可公开的门店公益数据，并允许你确认或修改门店名称。当前先生成不含虚构数字的版式预览。</p>
+          <button type="button" data-wfd-action="story-generate" data-wfd-angle="公益成果" class="w-full wfd-primary mt-3">确认门店，生成版式预览</button>
+          <button type="button" data-wfd-action="store-picker" class="w-full wfd-secondary mt-2">切换门店</button>
+        </div>` : `
+        <div class="wfd-benefit-card">
+          <div class="inline-flex px-2 py-1 rounded-full bg-[#eaf7ff] text-[11px] font-bold text-[#0871c6]">公益故事版 · 简单点选</div>
+          <h3 class="mt-2 text-[18px] font-bold text-[#12304b]">告诉我小店想表达什么</h3>
+          <p class="mt-1 text-[12px] text-[#607786]">当前门店：<strong>${store}</strong></p>
+          <div class="mt-3 grid gap-2.5 text-[12px]">
+            <label class="grid gap-1"><span class="font-semibold text-[#12304b]">公益态度</span><select id="wfd-story-attitude" class="rounded-xl border border-[#d7e5ed] bg-white px-3 py-2.5"><option>把善意做进日常</option><option>让每一餐更健康</option><option>和社区一起做好事</option></select></label>
+            <label class="grid gap-1"><span class="font-semibold text-[#12304b]">想对顾客说</span><select id="wfd-story-message" class="rounded-xl border border-[#d7e5ed] bg-white px-3 py-2.5"><option>谢谢你和我们一起传递善意</option><option>认真做好每一餐，就是我们的坚持</option><option>欢迎和小店一起参与世界粮食日</option></select></label>
+            <label class="grid gap-1"><span class="font-semibold text-[#12304b]">为什么加入公益</span><select id="wfd-story-reason" class="rounded-xl border border-[#d7e5ed] bg-white px-3 py-2.5"><option>想让日常经营多一份温暖</option><option>希望健康与善意都被看见</option><option>愿意为社区多做一点小事</option></select></label>
+            <label class="grid gap-1"><span class="font-semibold text-[#12304b]">海报风格</span><select id="wfd-story-style" class="rounded-xl border border-[#d7e5ed] bg-white px-3 py-2.5"><option>温暖真诚</option><option>清爽健康</option><option>明亮活力</option></select></label>
+          </div>
+          <button type="button" data-wfd-action="story-generate-form" class="w-full wfd-primary mt-3">生成公益故事海报</button>
+          <p class="mt-2 text-[11px] text-gray-500">点击后直接进入海报预览，不再增加一层文案确认。</p>
+        </div>`;
+      setTimeout(() => appendRichBotMessage(card), 280);
+    }
+
+    function generateWfdStory(angle) {
+      const safeAngle = ['公益成果', '日常坚持', '健康理念', '社区温暖'].includes(angle) ? angle : '日常坚持';
+      wfdState.storyAngle = safeAngle;
+      appendUserMessage(safeAngle === '公益成果' ? '确认当前门店，生成公益成果版预览' : '这次公益故事想突出「' + safeAngle + '」');
+      const typing = document.getElementById('typing');
+      typing.classList.remove('hidden');
+      scrollToBottom();
+      setTimeout(() => {
+        typing.classList.add('hidden');
+        wfdState.storyGenerated = true;
+        wfdState.joined = true;
+        wfdState.stage = 'story-ready';
+        renderWfdStoryResult(safeAngle);
+      }, 720);
+    }
+
+    function generateWfdStoryFromForm() {
+      const readValue = id => document.getElementById(id)?.value || '';
+      const data = {
+        version: 'story',
+        attitude: readValue('wfd-story-attitude'),
+        message: readValue('wfd-story-message'),
+        reason: readValue('wfd-story-reason'),
+        style: readValue('wfd-story-style')
+      };
+      appendUserMessage('按这些选择生成：' + data.attitude + ' · ' + data.style);
+      const typing = document.getElementById('typing');
+      typing.classList.remove('hidden');
+      scrollToBottom();
+      setTimeout(() => {
+        typing.classList.add('hidden');
+        wfdState.storyGenerated = true;
+        wfdState.joined = true;
+        wfdState.stage = 'story-ready';
+        renderWfdStoryResult(data);
+      }, 720);
+    }
+
+    function renderWfdStoryResult(input) {
+      const store = escapeHtml(getWfdStoreName());
+      const stories = {
+        '公益成果': '我们把善意放进每一天的经营里。世界粮食日，这家小店愿意继续和顾客一起，把一件件小事认真做好。公益成果数据将在获得授权并完成核验后展示。',
+        '日常坚持': '我们把一份善意放进日常经营里。每一次认真经营，都是和顾客一起把小事做好。世界粮食日，我们会继续把好事做下去。',
+        '健康理念': '一顿好饭，也可以是一份善意。世界粮食日，我们从丰富食材与吃动平衡开始，让健康生活和公益态度一起被看见。',
+        '社区温暖': '小店连接着一条街的日常，也连接着顾客的善意。世界粮食日，我们想和每一位来到店里的朋友，一起把温暖传得更远。'
+      };
+      const isForm = input && typeof input === 'object';
+      const angle = isForm ? (input.attitude || '日常坚持') : input;
+      const story = isForm
+        ? `${escapeHtml(input.reason)}。${escapeHtml(input.message)}。世界粮食日，我们想把这份「${escapeHtml(input.attitude)}」的心意，分享给每一位来到小店的朋友。`
+        : (stories[angle] || stories['日常坚持']);
+      const versionLabel = angle === '公益成果' ? '公益成果版' : '公益故事版';
+      appendRichBotMessage(`
+        <div class="wfd-benefit-card">
+          <div class="flex items-center justify-between gap-2">
+            <div class="inline-flex px-2 py-1 rounded-full bg-[#eaf7ff] text-[11px] font-bold text-[#0871c6]">海报预览已生成</div>
+            <span class="text-[11px] text-[#5f7484]">${versionLabel}</span>
+          </div>
+          <h3 class="mt-2 text-[18px] font-bold text-[#12304b]">${store} 的专属公益海报</h3>
+          <div class="wfd-story-poster mt-3">
+            <div class="relative z-[2] text-[11px] font-bold tracking-wider text-white/84">2026 世界粮食日 · 公益故事</div>
+            <div class="relative z-[2] mt-3 text-[18px] font-bold">做好事有好运</div>
+            <p class="relative z-[2] w-[86%] mt-2 text-[13px] wfd-story-copy text-white/96">${story}</p>
+            <div class="relative z-[2] mt-3 inline-flex rounded-full bg-[#ffd400] px-3 py-1 text-[11px] font-bold text-[#075cae]">${store}</div>
+          </div>
+          <div class="mt-3">
+            <div class="wfd-role-row"><b>已有预览</b><span>已生成门店署名、故事文案与活动版式</span></div>
+            <div class="wfd-role-row"><b>正式生成</b><span>需同步可公开门店信息并接入物料生成服务</span></div>
+            <div class="wfd-role-row"><b>接下来</b><span>可以继续做健康菜品，也可以查看分享返图与探店步骤</span></div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 mt-3">
+            <button type="button" data-wfd-action="story-regenerate" class="wfd-secondary">重新选择</button>
+            <button type="button" data-wfd-action="benefit-health" class="wfd-primary">继续做健康菜品</button>
+          </div>
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <button type="button" data-wfd-action="benefit-share" class="wfd-secondary">看分享抽选步骤</button>
+            <button type="button" data-wfd-action="benefit-proof" class="wfd-secondary">看探店返图步骤</button>
+          </div>
+          <p class="mt-2 text-[12px] text-gray-500">当前生成的是可操作流程中的版式预览，不代表个性化文件已写入正式活动系统。</p>
+        </div>
+      `);
+    }
+
+    function renderWfdBenefitCard(type, skipUser) {
+      if (!skipUser) appendUserMessage(WFD_BENEFIT_PROMPTS[type] || '查看活动权益');
+      const store = escapeHtml(getWfdStoreName());
+      let card = '';
+
+      if (type === 'material') {
+        card = `
+          <div class="wfd-benefit-card">
+            <div class="flex items-center justify-between gap-2"><span class="wfd-benefit-no">1</span><span class="inline-flex px-2 py-1 rounded-full bg-[#eaf7ff] text-[11px] font-bold text-[#0871c6]">专属海报</span></div>
+            <h3 class="mt-1 text-[18px] font-bold text-[#12304b]">让 ${store} 的善意，有自己的样子</h3>
+            <p class="mt-1 text-[13px] leading-relaxed text-[#52697b]">不是通用活动海报。你可以做强调门店信息的公益成果版，也可以做适合分享的公益故事版。</p>
+            <div class="wfd-format-grid mt-3">
+              <div class="wfd-format-sample"><b>横版 · 公益成果</b><span>适合电子屏、店铺页和公域页面</span></div>
+              <div class="wfd-format-sample is-vertical"><b>竖版 · 公益故事</b><span>适合社媒、私域和打印</span></div>
+            </div>
+            <div class="mt-3">
+              <div class="wfd-role-row"><b>你来确认</b><span>门店、版本和想表达的态度</span></div>
+              <div class="wfd-role-row"><b>好运完成</b><span>故事表达、门店署名与横竖版物料预览</span></div>
+              <div class="wfd-role-row"><b>正式文件</b><span>接入物料服务后可下载、分享或打印进店</span></div>
+            </div>
+            <button type="button" data-wfd-action="story-start" class="w-full wfd-primary mt-3">看示例，选择海报版本</button>
+            <p class="mt-2 text-[12px] text-gray-500">公益成果数据只有在获得授权并完成核验后才会写入海报。</p>
+          </div>`;
+      } else if (type === 'health') {
+        card = `
+          <div class="wfd-benefit-card">
+            <div class="flex items-center justify-between gap-2"><span class="wfd-benefit-no">2</span><span class="inline-flex px-2 py-1 rounded-full bg-[#eaf7ff] text-[11px] font-bold text-[#0871c6]">可选加分</span></div>
+            <h3 class="mt-1 text-[18px] font-bold text-[#12304b]">健康菜品认证，有什么用？</h3>
+            <p class="mt-1 text-[13px] leading-relaxed text-[#52697b]">生成专属健康菜品海报；通过活动标准与人工审核后，还可参与主会场、频道页或搜索等公益流量资源筛选。</p>
+            <div class="wfd-material-duo mt-3">
+              <figure><img src="song-haoyun-assets/2026-health-supply-horizontal-final.png" alt="2026世界粮食日健康供给横版示例"><figcaption>横版 · 电子屏/店铺页</figcaption></figure>
+              <figure><img src="song-haoyun-assets/2026-health-supply-vertical-final.png" alt="2026世界粮食日健康供给竖版示例"><figcaption>竖版 · 社媒/分享</figcaption></figure>
+            </div>
+            <div class="wfd-process-strip">
+              <span>上传菜品</span><span>规则认证</span><span>人工审核</span><span>生成海报</span>
+            </div>
+            <button type="button" data-wfd-action="health-upload" class="w-full wfd-primary mt-3">上传一道菜品照片</button>
+            <div class="grid grid-cols-2 gap-2 mt-2">
+              <button type="button" data-wfd-action="download-horizontal" class="wfd-secondary">下载横版示例</button>
+              <button type="button" data-wfd-action="download-vertical" class="wfd-secondary">下载竖版示例</button>
+            </div>
+            <p class="mt-2 text-[12px] text-center text-gray-500">是否通过及实际曝光以正式审核结果为准；当前不会真实上传或提交审核。</p>
+          </div>`;
+      } else if (type === 'share') {
+        card = `
+          <div class="wfd-benefit-card">
+            <div class="flex items-center justify-between gap-2"><span class="wfd-benefit-no">3</span><span class="inline-flex px-2 py-1 rounded-full bg-[#fff8cf] text-[11px] font-bold text-[#725900]">分享返图</span></div>
+            <h3 class="mt-1 text-[18px] font-bold text-[#12304b]">分享海报，进入盲盒周边抽选流程</h3>
+            <div class="wfd-concept-merch mt-3">
+              <img src="song-haoyun-assets/song-haoyun-wave-no-glasses-v3.png" alt="宋好运毛绒盲盒周边概念示意">
+              <div><strong class="text-[#12304b]">宋好运毛绒盲盒</strong><p class="mt-1 text-[11px] leading-relaxed text-[#607786]">周边形象与数量以最终活动页面为准；这里先帮助商家理解参与方式。</p></div>
+            </div>
+            <div class="wfd-process-strip">
+              <span>生成海报</span><span>发布分享</span><span>回传截图</span><span>等待抽选</span>
+            </div>
+            <div class="mt-3 rounded-xl bg-[#f4f8fa] px-3 py-2.5 text-[12px] leading-relaxed text-[#52697b]"><strong class="text-[#12304b]">推荐分享文案</strong><br>世界粮食日，我们想把小店的一点善意分享给你。做好事有好运，也谢谢每一位顾客和我们一起把温暖传下去。</div>
+            <button type="button" data-wfd-action="share-copy" class="w-full wfd-secondary mt-3">复制分享文案</button>
+            <button type="button" data-wfd-action="share-upload" class="w-full wfd-primary mt-3">回传分享截图</button>
+            <button type="button" data-wfd-action="story-start" class="w-full wfd-secondary mt-2">我还没有物料，先生成故事</button>
+            <p class="mt-2 text-[12px] text-gray-500">只有正式抽选入选后才会收集收货信息；当前不会真实抽选或收集地址。</p>
+          </div>`;
+      } else {
+        card = `
+          <div class="wfd-benefit-card">
+            <div class="flex items-center justify-between gap-2"><span class="wfd-benefit-no">4</span><span class="inline-flex px-2 py-1 rounded-full bg-[#eaf7ff] text-[11px] font-bold text-[#0871c6]">线下回传权益</span></div>
+            <h3 class="mt-1 text-[18px] font-bold text-[#12304b]">布置门店并返图，进入探店候选池</h3>
+            <p class="mt-1 text-[13px] leading-relaxed text-[#52697b]">把活动物料打印或展示在店内，再拍一张能同时看清物料和门店环境的照片。</p>
+            <div class="mt-3 grid grid-cols-[96px_1fr] gap-3 items-center rounded-2xl bg-gradient-to-br from-[#eef9ff] to-[#fff8cf] border border-[#d4eaf8] p-3">
+              <div class="overflow-hidden rounded-xl bg-white p-1 shadow-sm"><img src="song-haoyun-assets/2026-world-food-day-main-kv.jpg" alt="门店物料返图示例" class="w-full h-[82px] object-cover rounded-lg"></div>
+              <div class="text-[12px] leading-relaxed text-[#52697b]"><strong class="text-[#12304b]">返图示例</strong><br>物料完整清楚<br>能识别门店环境<br>画面整洁明亮</div>
+            </div>
+            <div class="wfd-process-strip">
+              <span>下载物料</span><span>门店布置</span><span>拍照返图</span><span>进入候选</span>
+            </div>
+            <div class="mt-3 rounded-xl bg-[#f4f8fa] px-3 py-2.5 text-[12px] leading-relaxed text-[#52697b]">线上线下公益氛围完整的门店，会优先进入达人探店或官方账号传播候选；入选后再单独征得同意并收集联系信息。</div>
+            <button type="button" data-wfd-action="proof-upload" class="w-full wfd-primary mt-3">上传门店布置返图</button>
+            <button type="button" data-wfd-action="benefit-material" class="w-full wfd-secondary mt-2">先看可打印的专属物料</button>
+            <p class="mt-2 text-[12px] text-center text-gray-500">是否入选及探店安排以正式通知为准；当前不会真实提交或收集电话地址。</p>
+          </div>`;
+      }
+
+      setTimeout(() => appendRichBotMessage(card), skipUser ? 40 : 320);
+    }
+
+    function switchWfdStyle() {
+      openWfdBenefit('material');
+    }
+
+    function downloadWfdMaterial(kind) {
+      wfdState.downloaded = true;
+      const isVertical = kind === 'vertical';
+      showWfdToast(isVertical ? '正在下载竖版示例' : '正在下载横版示例');
+      const link = document.createElement('a');
+      link.href = isVertical
+        ? 'song-haoyun-assets/2026-health-supply-vertical-final.png'
+        : 'song-haoyun-assets/2026-health-supply-horizontal-final.png';
+      link.download = isVertical
+        ? '2026世界粮食日-健康供给-竖版物料.png'
+        : '2026世界粮食日-健康供给-横版物料.png';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
+
+    function startDishFromWfd() {
+      openWfdBenefit('health');
+    }
+
+    function handleWfdHealthSelected(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      wfdState.healthSelected = true;
+      appendUserMessage('我选择了一张健康供给菜品照片：' + file.name);
+      setTimeout(() => appendRichBotMessage(`
+        <div class="wfd-benefit-card text-[14px] leading-relaxed">
+          <strong class="text-gray-900">图片已在本机选中，完整下一步是这样：</strong>
+          <div class="wfd-process-strip"><span>识别食材</span><span>规则认证</span><span>人工审核</span><span>生成海报</span></div>
+          <p class="mt-3 text-[13px]">正式接入后，我会先整理食材与烹饪特点，再请你确认菜品表达。审核通过后生成专属横竖版海报，并进入公益流量资源筛选。</p>
+          <p class="mt-2 text-[12px] text-gray-500">当前文件没有上传到服务器，也没有发生识别、认证或审核。</p>
+        </div>`), 360);
+      event.target.value = '';
+    }
+
+    function showWfdShareInfo() {
+      openWfdBenefit('share');
+    }
+
+    async function copyWfdShareText() {
+      const text = '世界粮食日，我们想把小店的一点善意分享给你。做好事有好运，也谢谢每一位顾客和我们一起把温暖传下去。';
+      try {
+        await navigator.clipboard.writeText(text);
+        showWfdToast('分享文案已复制');
+      } catch (e) {
+        showWfdToast('长按文案即可复制');
+      }
+    }
+
+    function handleWfdShareSelected(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      wfdState.shareSelected = true;
+      appendUserMessage('我选择了一张分享截图：' + file.name);
+      setTimeout(() => appendBotMessage('截图已在本机选中，但还没有上传或进入抽选。正式接入后，提交成功会返回回传编号；只有实际入选后才会单独征得同意并收集收货信息。'), 360);
+      event.target.value = '';
+    }
+
+    function chooseWfdProof() {
+      document.getElementById('wfd-proof-input').click();
+    }
+
+    function handleWfdProofSelected(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      wfdState.proofSelected = true;
+      appendUserMessage('我选择了一张门店布置返图：' + file.name);
+      setTimeout(() => appendBotMessage('返图已在本机选中，但还没有上传或进入候选池。正式接入后，提交成功会返回回传编号；只有实际入选后才会单独征得同意并收集门店联系信息。'), 360);
+      event.target.value = '';
+    }
+
+    function showWfdProgress() {
+      appendUserMessage('查一下我的世界粮食日参与进度');
+      setTimeout(() => appendRichBotMessage(`
+        <div class="wfd-benefit-card text-[14px] text-gray-700">
+          <strong class="text-[17px] text-gray-900">本次活动体验进度</strong>
+          <div class="mt-3 space-y-2 text-[13px]">
+            <div class="rounded-xl bg-gray-50 px-3 py-2.5 flex justify-between gap-3"><span>选择活动任务</span><strong>${wfdState.joined ? '本机已选择' : '待选择'}</strong></div>
+            <div class="rounded-xl bg-gray-50 px-3 py-2.5 flex justify-between gap-3"><span>公益海报</span><strong>${wfdState.storyGenerated ? '已生成版式预览' : '待生成'}</strong></div>
+            <div class="rounded-xl bg-gray-50 px-3 py-2.5 flex justify-between gap-3"><span>活动示例物料</span><strong>${wfdState.downloaded ? '已下载示例' : '待查看'}</strong></div>
+            <div class="rounded-xl bg-gray-50 px-3 py-2.5 flex justify-between gap-3"><span>健康供给</span><strong>${wfdState.healthSelected ? '已选文件，未提交' : '待回传'}</strong></div>
+            <div class="rounded-xl bg-gray-50 px-3 py-2.5 flex justify-between gap-3"><span>分享截图</span><strong>${wfdState.shareSelected ? '已选文件，未提交' : '待回传'}</strong></div>
+            <div class="rounded-xl bg-gray-50 px-3 py-2.5 flex justify-between gap-3"><span>门店返图</span><strong>${wfdState.proofSelected ? '已选文件，未提交' : '待回传'}</strong></div>
+          </div>
+          <p class="mt-3 text-[12px] text-gray-500">这里仅记录本机体验状态，不能作为真实报名、抽选、审核、流量或探店回执。</p>
+          <button type="button" data-wfd-action="story-start" class="w-full wfd-primary mt-3">继续做公益海报</button>
+        </div>
+      `), 360);
+    }
+
+    // 动态对话卡片统一走事件代理，避免商家点击卡片后出现无响应。
+    document.addEventListener('click', event => {
+      const target = event.target.closest('[data-wfd-action]');
+      if (!target) return;
+      const action = target.dataset.wfdAction;
+      if (action === 'flow') openWfdBenefit('flow');
+      else if (action === 'join') startWorldFoodDayAgentFlow();
+      else if (action === 'story-start') startWfdStoryFlow();
+      else if (action === 'story-builder') openWfdStoryBuilder(target.dataset.wfdVersion || 'story');
+      else if (action === 'story-generate') generateWfdStory(target.dataset.wfdAngle || '日常坚持');
+      else if (action === 'story-generate-form') generateWfdStoryFromForm();
+      else if (action === 'story-regenerate') startWfdStoryFlow();
+      else if (action === 'store-picker') openStorePicker();
+      else if (action === 'download') downloadWfdMaterial('horizontal');
+      else if (action === 'download-horizontal') downloadWfdMaterial('horizontal');
+      else if (action === 'download-vertical') downloadWfdMaterial('vertical');
+      else if (action === 'benefit-material') openWfdBenefit('material');
+      else if (action === 'benefit-health') openWfdBenefit('health');
+      else if (action === 'benefit-share') openWfdBenefit('share');
+      else if (action === 'benefit-proof') openWfdBenefit('proof');
+      else if (action === 'health-upload') document.getElementById('wfd-health-input').click();
+      else if (action === 'share-copy') copyWfdShareText();
+      else if (action === 'share-upload') document.getElementById('wfd-share-input').click();
+      else if (action === 'proof-upload') chooseWfdProof();
+    });
+
+    function renderMessage(msg) {
+      const container = document.getElementById('messages');
+      const div = document.createElement('div');
+      if (msg.role === 'user') {
+        div.className = 'flex gap-3 justify-end';
+        div.innerHTML = `
+          <div class="chat-bubble-user text-white rounded-2xl rounded-tr-md px-4 py-2 text-sm max-w-[80%] leading-relaxed shadow-sm">
+            ${msg.text}
+          </div>
+        `;
+      } else {
+        div.className = 'flex gap-3';
+        div.innerHTML = `
+          <img src="${AVATAR}" class="w-7 h-7 rounded-full object-cover shrink-0 mt-1">
+          <div class="bg-white rounded-2xl rounded-tl-md px-4 pt-0.5 pb-1.5 text-sm text-gray-700 max-w-[80%] leading-relaxed shadow-sm border border-gray-100 whitespace-pre-line">
+            ${msg.text}
+          </div>
+        `;
+      }
+      container.appendChild(div);
+    }
+
+    function scrollToBottom() {
+      const container = document.getElementById('main-scroll');
+      setTimeout(() => { container.scrollTop = container.scrollHeight; }, 50);
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('user-input');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+
+      appendUserMessage(text);
+
+      document.getElementById('typing').classList.remove('hidden');
+      scrollToBottom();
+
+      setTimeout(() => {
+        document.getElementById('typing').classList.add('hidden');
+        if (/四大权益|怎么参加|参与流程|活动流程/.test(text)) {
+          showWorldFoodDayOverview(true);
+          return;
+        }
+        if (/公益海报|公益故事|限定物料|专属物料/.test(text)) {
+          renderWfdBenefitCard('material', true);
+          return;
+        }
+        if (/健康菜品|健康认证|健康供给/.test(text)) {
+          renderWfdBenefitCard('health', true);
+          return;
+        }
+        if (/盲盒|周边|分享截图/.test(text)) {
+          renderWfdBenefitCard('share', true);
+          return;
+        }
+        if (/探店|门店返图|布置返图/.test(text)) {
+          renderWfdBenefitCard('proof', true);
+          return;
+        }
+        let reply = DEFAULT_REPLY;
+        for (const key in REPLIES) {
+          if (text.includes(key) || text.includes(key.replace('查看', '').replace('申领', ''))) {
+            reply = REPLIES[key];
+            break;
+          }
+        }
+        appendBotMessage(reply);
+      }, 1200);
+    }
+
+    function startTask(type) {
+      if (type === 'story') {
+        if (!taskState.story) storyData = { answer: '', style: '温暖真诚', color: 'blue', size: 'horizontal', scope: 'single', storeName: '暖食记·望江路店', quizAnswers: [] };
+        startStoryChatFlow();
+      } else if (type === 'dish') {
+        if (!taskState.dish) dishData = { hasImage: false, style: '活力清爽', color: 'blue', size: 'horizontal' };
+        startDishChatFlow();
+      } else {
+        const sheet = document.getElementById('task-sheet');
+        document.getElementById('sheet-title').textContent = TASK_CONTENT[type].title;
+        document.getElementById('sheet-content').innerHTML = TASK_CONTENT[type].content;
+        document.getElementById('sheet-footer').style.display = 'block';
+        sheet.classList.remove('hidden');
+        void sheet.offsetWidth;
+        sheet.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    // ===== Dish Chat Flow =====
+    function startDishChatFlow() {
+      document.getElementById('welcome-msg').style.display = 'none';
+      appendBotMessage('请上传您门店的一道主推菜品图片，我会结合菜品信息为您进行好运认证～');
+    }
+
+    function handleDishImageSelect() {
+      const input = document.getElementById('dish-image-input');
+      if (input) input.click();
+    }
+
+    function onDishImageSelected(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      dishData.hasImage = true;
+      dishChatShowCert();
+      event.target.value = '';
+    }
+
+    function dishChatShowCert() {
+      const container = document.getElementById('messages');
+      appendUserMessage('已上传菜品图片');
+      setTimeout(() => {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'flex gap-3';
+        loadingDiv.innerHTML = `
+          <img src="${AVATAR}" class="w-7 h-7 rounded-full object-cover shrink-0 mt-1">
+          <div class="bg-white rounded-2xl rounded-tl-md px-4 pt-0.5 pb-1.5 text-sm text-gray-700 max-w-[80%] leading-normal shadow-sm border border-gray-100">
+            <div class="flex items-center gap-2">
+              <div class="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <span class="text-gray-600">正在进行好运认证...</span>
+            </div>
+          </div>
+        `;
+        container.appendChild(loadingDiv);
+        scrollToBottom();
+        setTimeout(() => {
+          loadingDiv.remove();
+          const botDiv = document.createElement('div');
+          botDiv.className = 'flex gap-3';
+          botDiv.innerHTML = `
+            <img src="${AVATAR}" class="w-7 h-7 rounded-full object-cover shrink-0 mt-1">
+            <div class="bg-white rounded-2xl rounded-tl-md px-4 pt-0.5 pb-1.5 text-sm text-gray-700 max-w-[80%] leading-normal shadow-sm border border-gray-100">
+              <p class="font-semibold text-gray-800 mb-1">✅ 好运认证完成</p>
+              <div class="space-y-2 mb-3">
+                <div class="flex items-start gap-2">
+                  <div class="w-4 h-4 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-[12px] shrink-0 mt-0.5">✓</div>
+                  <div>
+                    <div class="text-xs font-medium text-gray-800">食材组合较丰富</div>
+                    <div class="text-[12px] text-gray-500">识别到谷物、鸡肉、鸡蛋与多种蔬菜</div>
+                  </div>
+                </div>
+                <div class="flex items-start gap-2">
+                  <div class="w-4 h-4 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-[12px] shrink-0 mt-0.5">✓</div>
+                  <div>
+                    <div class="text-xs font-medium text-gray-800">包含优质蛋白来源</div>
+                    <div class="text-[12px] text-gray-500">鸡肉与鸡蛋可作为海报中的健康供给亮点</div>
+                  </div>
+                </div>
+              </div>
+              <div class="mb-2">
+                <label class="block text-[12px] text-gray-500 mb-1">海报风格</label>
+                <div class="flex flex-wrap gap-1.5" id="dish-chat-style-group">
+                  <button onclick="dishChatSelectStyle('活力清爽')" class="px-2 py-1 text-xs rounded-lg border ${dishData.style==='活力清爽'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">活力清爽</button>
+                  <button onclick="dishChatSelectStyle('专业克制')" class="px-2 py-1 text-xs rounded-lg border ${dishData.style==='专业克制'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">专业克制</button>
+                  <button onclick="dishChatSelectStyle('亲子友好')" class="px-2 py-1 text-xs rounded-lg border ${dishData.style==='亲子友好'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">亲子友好</button>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="block text-[12px] text-gray-500 mb-1">主色</label>
+                <div class="flex gap-2" id="dish-chat-color-group">
+                  <button onclick="dishChatSelectColor('blue')" class="w-5 h-5 rounded-full ${dishData.color==='blue'?'ring-2 ring-offset-1 ring-blue-500':''}" style="background:#3b82f6;"></button>
+                  <button onclick="dishChatSelectColor('yellow')" class="w-5 h-5 rounded-full ${dishData.color==='yellow'?'ring-2 ring-offset-1 ring-yellow-500':''}" style="background:#f59e0b;"></button>
+                  <button onclick="dishChatSelectColor('green')" class="w-5 h-5 rounded-full ${dishData.color==='green'?'ring-2 ring-offset-1 ring-green-500':''}" style="background:#10b981;"></button>
+                  <button onclick="dishChatSelectColor('red')" class="w-5 h-5 rounded-full ${dishData.color==='red'?'ring-2 ring-offset-1 ring-red-500':''}" style="background:#ef4444;"></button>
+                  <button onclick="dishChatSelectColor('purple')" class="w-5 h-5 rounded-full ${dishData.color==='purple'?'ring-2 ring-offset-1 ring-purple-500':''}" style="background:#8b5cf6;"></button>
+                </div>
+              </div>
+              <button onclick="dishChatGoGenerate()" class="w-full py-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-sm font-semibold shadow-md hover:shadow-lg transition-all active:scale-95">生成健康供给海报</button>
+            </div>
+          `;
+          container.appendChild(botDiv);
+          scrollToBottom();
+        }, 2000);
+      }, 400);
+    }
+
+    function dishChatSelectStyle(style) {
+      dishData.style = style;
+      const group = document.getElementById('dish-chat-style-group');
+      if (group) {
+        Array.from(group.children).forEach(btn => {
+          const isActive = btn.getAttribute('onclick').includes("'"+style+"'");
+          btn.className = isActive
+            ? 'px-2 py-1 text-xs rounded-lg border border-blue-500 bg-blue-50 text-blue-600'
+            : 'px-2 py-1 text-xs rounded-lg border border-gray-200 text-gray-600';
+        });
+      }
+    }
+
+    function dishChatSelectColor(color) {
+      dishData.color = color;
+      const group = document.getElementById('dish-chat-color-group');
+      if (group) {
+        Array.from(group.children).forEach(btn => {
+          const m = btn.getAttribute('onclick').match(/'([^']+)'/);
+          const btnColor = m ? m[1] : '';
+          const isActive = btnColor === color;
+          btn.className = `w-5 h-5 rounded-full ${isActive ? 'ring-2 ring-offset-1 ring-' + color + '-500' : ''}`;
+        });
+      }
+    }
+
+    function dishChatGoGenerate() {
+      const container = document.getElementById('messages');
+      appendUserMessage('生成健康供给海报');
+      setTimeout(() => {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'flex gap-3';
+        loadingDiv.innerHTML = `
+          <img src="${AVATAR}" class="w-7 h-7 rounded-full object-cover shrink-0 mt-1">
+          <div class="bg-white rounded-2xl rounded-tl-md px-4 pt-0.5 pb-1.5 text-sm text-gray-700 max-w-[80%] leading-normal shadow-sm border border-gray-100">
+            <div class="flex items-center gap-2">
+              <div class="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <span class="text-gray-600">正在生成您的健康供给海报...</span>
+            </div>
+          </div>
+        `;
+        container.appendChild(loadingDiv);
+        scrollToBottom();
+        setTimeout(() => {
+          loadingDiv.remove();
+          taskState.dish = true;
+          const botDiv = document.createElement('div');
+          botDiv.className = 'flex gap-3';
+          botDiv.innerHTML = `
+            <img src="${AVATAR}" class="w-7 h-7 rounded-full object-cover shrink-0 mt-1">
+            <div class="bg-white rounded-2xl rounded-tl-md px-4 pt-0.5 pb-1.5 text-sm text-gray-700 max-w-[80%] leading-normal shadow-sm border border-gray-100">
+              <p class="font-semibold text-gray-800 mb-1">🎉 健康供给海报已生成</p>
+              <div class="bg-gray-50 rounded-lg p-2 mb-2 text-xs text-gray-600">
+                <span class="font-medium">好运认证表达：</span>招牌鸡肉谷物碗，包含谷物、鸡肉、鸡蛋与多种蔬菜。丰富食材，开启元气一餐。
+              </div>
+              <div class="grid grid-cols-2 gap-2 mb-3">
+                <div>
+                  <div class="rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
+                    <img src="song-haoyun-assets/2026-health-supply-horizontal-final.png" class="w-full h-20 object-cover" alt="横版海报">
+                  </div>
+                  <div class="flex justify-between mt-1">
+                    <span class="text-[12px] text-gray-500">横版 16:9</span>
+                    <button onclick="showToast('海报下载功能即将上线')" class="text-[12px] text-blue-500">下载</button>
+                  </div>
+                </div>
+                <div>
+                  <div class="rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
+                    <img src="song-haoyun-assets/2026-health-supply-vertical-final.png" class="w-full h-20 object-cover" alt="竖版海报">
+                  </div>
+                  <div class="flex justify-between mt-1">
+                    <span class="text-[12px] text-gray-500">竖版 9:16</span>
+                    <button onclick="showToast('海报下载功能即将上线')" class="text-[12px] text-blue-500">下载</button>
+                  </div>
+                </div>
+              </div>
+              <p class="text-xs text-gray-500">已套用"${dishData.style}"风格，您可以直接下载使用～</p>
+            </div>
+          `;
+          container.appendChild(botDiv);
+          scrollToBottom();
+        }, 2000);
+      }, 400);
+    }
+
+    // ===== Story Chat Flow =====
+    function startStoryChatFlow() {
+      const container = document.getElementById('messages');
+      document.getElementById('welcome-msg').style.display = 'none';
+      if (taskState.story) {
+        storyChatShowPosterCard();
+        return;
+      }
+      const cardDiv = document.createElement('div');
+      cardDiv.className = 'flex gap-3';
+      cardDiv.innerHTML = `
+        <img src="${AVATAR}" class="w-7 h-7 rounded-full object-cover shrink-0 mt-1">
+        <div class="bg-white rounded-2xl rounded-tl-md px-4 pt-0.5 pb-1.5 text-sm text-gray-700 max-w-[80%] leading-normal shadow-sm border border-gray-100">
+          <p class="font-semibold text-gray-800 mb-1">🎁 公益专属物料定制</p>
+          <p class="text-xs text-gray-500 mb-3">先给您看下物料的样子～只需确认门店信息、回答 4 个简单问题，就能生成您的专属公益故事物料。</p>
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <div>
+              <div class="rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
+                <img src="song-haoyun-assets/2026-health-supply-horizontal-final.png" class="w-full h-36 object-contain" alt="横版海报预览">
+              </div>
+              <div class="flex justify-between mt-1">
+                <span class="text-[12px] text-gray-500">横版 · 店铺页/公域</span>
+                <span class="text-[12px] text-gray-400">16:9</span>
+              </div>
+            </div>
+            <div>
+              <div class="rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
+                <img src="song-haoyun-assets/2026-health-supply-vertical-final.png" class="w-full h-36 object-contain" alt="竖版海报预览">
+              </div>
+              <div class="flex justify-between mt-1">
+                <span class="text-[12px] text-gray-500">竖版 · 私域/门店</span>
+                <span class="text-[12px] text-gray-400">9:16</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="storyChatGoStep1()" class="w-full py-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-sm font-semibold shadow-md hover:shadow-lg transition-all active:scale-95">开始定制</button>
+        </div>
+      `;
+      container.appendChild(cardDiv);
+      scrollToBottom();
+    }
+
+    function storyChatGoStep1() {
+      const container = document.getElementById('messages');
+      appendUserMessage('开始定制公益物料');
+      setTimeout(() => {
+        const botDiv = document.createElement('div');
+        botDiv.className = 'flex gap-3';
+        botDiv.innerHTML = `
+          <img src="${AVATAR}" class="w-7 h-7 rounded-full object-cover shrink-0 mt-1">
+          <div class="bg-white rounded-2xl rounded-tl-md px-4 pt-0.5 pb-1.5 text-sm text-gray-700 max-w-[80%] leading-normal shadow-sm border border-gray-100">
+            <p class="font-semibold text-gray-800 mb-1">🏪 确认商家信息</p>
+            <p class="text-xs text-gray-500 mb-3">已经从系统获取了您的名称和公益信息，请确认</p>
+            <div class="space-y-2 mb-3">
+              <button onclick="storyChatSelectScope('all')" id="story-scope-all" class="w-full text-left p-3 rounded-xl border-2 ${storyData.scope==='all'?'border-blue-400 bg-blue-50/50':'border-gray-200 bg-white'} hover:border-blue-300 transition-all duration-200">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 ${storyData.scope==='all'?'bg-blue-500 text-white':'bg-blue-50 text-blue-500'} rounded-lg flex items-center justify-center text-xs font-bold">全</div>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs font-semibold ${storyData.scope==='all'?'text-blue-700':'text-gray-900'}">全部门店统一生成</div>
+                    <div class="text-[12px] text-gray-500">共 128 家门店</div>
+                  </div>
+                </div>
+              </button>
+              <button onclick="storyChatSelectScope('single')" id="story-scope-single" class="w-full text-left p-3 rounded-xl border-2 ${storyData.scope==='single'?'border-blue-400 bg-blue-50/50':'border-gray-200 bg-white'} hover:border-blue-300 transition-all duration-200">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 ${storyData.scope==='single'?'bg-blue-500 text-white':'bg-blue-50 text-blue-500'} rounded-lg flex items-center justify-center text-xs font-bold">单</div>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs font-semibold ${storyData.scope==='single'?'text-blue-700':'text-gray-900'}">单个门店专属生成</div>
+                    <div class="text-[12px] text-gray-500">${storyData.storeName || '紫燕百味鸡·望江路店'}</div>
+                  </div>
+                </div>
+              </button>
+            </div>
+            <div id="story-chat-info" class="bg-gray-50 rounded-xl p-3 mb-3">
+              ${storyChatRenderInfoHTML()}
+            </div>
+            <div class="flex gap-2">
+              <button onclick="storyChatFocusName()" class="flex-1 py-2 rounded-xl border border-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-50 transition-all active:scale-95">修改名称</button>
+              <button onclick="storyChatGoStep2()" class="flex-1 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-sm font-semibold shadow-md hover:shadow-lg transition-all active:scale-95">确认信息，继续</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(botDiv);
+        scrollToBottom();
+      }, 400);
+    }
+
+    function storyChatRenderInfoHTML() {
+      const isAll = storyData.scope === 'all';
+      if (isAll) {
+        return `
+          <div class="mb-2">
+            <div class="text-[12px] text-gray-400 mb-0.5">统一名称</div>
+            <div class="flex items-center gap-2">
+              <input id="story-name-input" type="text" value="${storyData.storeName || '紫燕百味鸡'}" onchange="storyData.storeName=this.value" class="font-semibold text-gray-900 text-sm bg-transparent border-b border-dashed border-gray-300 focus:border-blue-400 focus:outline-none px-0 py-0 w-full">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-white rounded-lg p-2 text-center">
+              <div class="text-lg font-bold text-blue-600">51<span class="text-xs font-normal">座</span></div>
+              <div class="text-[12px] text-gray-400">参与捐赠操场</div>
+            </div>
+            <div class="bg-white rounded-lg p-2 text-center">
+              <div class="text-lg font-bold text-blue-600">3000<span class="text-xs font-normal">名</span></div>
+              <div class="text-[12px] text-gray-400">帮助乡村儿童</div>
+            </div>
+            <div class="bg-white rounded-lg p-2 text-center">
+              <div class="text-lg font-bold text-blue-600">670<span class="text-xs font-normal">天</span></div>
+              <div class="text-[12px] text-gray-400">参与天数</div>
+            </div>
+            <div class="bg-white rounded-lg p-2 text-center">
+              <div class="text-lg font-bold text-blue-600">128<span class="text-xs font-normal">家</span></div>
+              <div class="text-[12px] text-gray-400">参与公益门店</div>
+            </div>
+          </div>
+        `;
+      } else {
+        return `
+          <div class="mb-2">
+            <div class="text-[12px] text-gray-400 mb-0.5">门店名称</div>
+            <div class="flex items-center gap-2">
+              <input id="story-name-input" type="text" value="${storyData.storeName || '紫燕百味鸡·望江路店'}" onchange="storyData.storeName=this.value" class="font-semibold text-gray-900 text-sm bg-transparent border-b border-dashed border-gray-300 focus:border-blue-400 focus:outline-none px-0 py-0 w-full">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-white rounded-lg p-2 text-center">
+              <div class="text-lg font-bold text-blue-600">12<span class="text-xs font-normal">座</span></div>
+              <div class="text-[12px] text-gray-400">参与捐赠操场</div>
+            </div>
+            <div class="bg-white rounded-lg p-2 text-center">
+              <div class="text-lg font-bold text-blue-600">580<span class="text-xs font-normal">名</span></div>
+              <div class="text-[12px] text-gray-400">帮助乡村儿童</div>
+            </div>
+            <div class="bg-white rounded-lg p-2 text-center">
+              <div class="text-lg font-bold text-blue-600">210<span class="text-xs font-normal">天</span></div>
+              <div class="text-[12px] text-gray-400">参与天数</div>
+            </div>
+            <div class="bg-white rounded-lg p-2 text-center">
+              <div class="text-lg font-bold text-orange-500">Lv.4</div>
+              <div class="text-[12px] text-gray-400">公益成就等级</div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function storyChatSelectScope(scope) {
+      storyData.scope = scope;
+      const isAll = scope === 'all';
+      const allBtn = document.getElementById('story-scope-all');
+      const singleBtn = document.getElementById('story-scope-single');
+      if (allBtn) {
+        allBtn.className = `w-full text-left p-3 rounded-xl border-2 ${isAll?'border-blue-400 bg-blue-50/50':'border-gray-200 bg-white'} hover:border-blue-300 transition-all duration-200`;
+        const icon = allBtn.querySelector('div > div:first-child');
+        const text = allBtn.querySelector('div > div:nth-child(2) > div:first-child');
+        if (icon) icon.className = `w-8 h-8 ${isAll?'bg-blue-500 text-white':'bg-blue-50 text-blue-500'} rounded-lg flex items-center justify-center text-xs font-bold`;
+        if (text) text.className = `text-xs font-semibold ${isAll?'text-blue-700':'text-gray-900'}`;
+      }
+      if (singleBtn) {
+        singleBtn.className = `w-full text-left p-3 rounded-xl border-2 ${!isAll?'border-blue-400 bg-blue-50/50':'border-gray-200 bg-white'} hover:border-blue-300 transition-all duration-200`;
+        const icon = singleBtn.querySelector('div > div:first-child');
+        const text = singleBtn.querySelector('div > div:nth-child(2) > div:first-child');
+        if (icon) icon.className = `w-8 h-8 ${!isAll?'bg-blue-500 text-white':'bg-blue-50 text-blue-500'} rounded-lg flex items-center justify-center text-xs font-bold`;
+        if (text) text.className = `text-xs font-semibold ${!isAll?'text-blue-700':'text-gray-900'}`;
+      }
+      const infoDiv = document.getElementById('story-chat-info');
+      if (infoDiv) infoDiv.innerHTML = storyChatRenderInfoHTML();
+    }
+
+    function storyChatFocusName() {
+      const input = document.getElementById('story-name-input');
+      if (input) {
+        input.focus();
+        input.select();
+      }
+    }
+
+    function storyChatGoStep2() {
+      const container = document.getElementById('messages');
+      appendUserMessage('确认信息，继续');
+      setTimeout(() => {
+        const q1 = storyData.quizAnswers[0] || '';
+        const q2 = storyData.quizAnswers[1] || '';
+        const q3 = storyData.quizAnswers[2] || '';
+        const q4 = storyData.quizAnswers[3] || '';
+        const botDiv = document.createElement('div');
+        botDiv.className = 'flex gap-3';
+        botDiv.innerHTML = `
+          <img src="${AVATAR}" class="w-7 h-7 rounded-full object-cover shrink-0 mt-1">
+          <div class="bg-white rounded-2xl rounded-tl-md px-4 pt-0.5 pb-1.5 text-sm text-gray-700 max-w-[80%] leading-normal shadow-sm border border-gray-100">
+            <p class="font-semibold text-gray-800 mb-1">你的公益故事</p>
+            <p class="text-xs text-gray-500 mb-3">回答几个问题，为您生成专属公益故事。</p>
+            <div class="space-y-3 mb-3">
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1.5">1. 您最初是怎么想到参与公益的？</label>
+                <div class="flex flex-wrap gap-1.5" id="story-chat-q1">
+                  <button onclick="storyChatSelectQuiz(0,'想为孩子们做点什么')" class="px-2 py-1 text-xs rounded-lg border ${q1==='想为孩子们做点什么'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">想为孩子们做点什么</button>
+                  <button onclick="storyChatSelectQuiz(0,'做生意也要回报社会')" class="px-2 py-1 text-xs rounded-lg border ${q1==='做生意也要回报社会'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">做生意也要回报社会</button>
+                  <button onclick="storyChatSelectQuiz(0,'被顾客的善意感染了')" class="px-2 py-1 text-xs rounded-lg border ${q1==='被顾客的善意感染了'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">被顾客的善意感染了</button>
+                  <button onclick="storyChatSelectQuiz(0,'一直以来就在做')" class="px-2 py-1 text-xs rounded-lg border ${q1==='一直以来就在做'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">一直以来就在做</button>
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1.5">2. 参与公益后，您觉得店里有什么变化？</label>
+                <div class="flex flex-wrap gap-1.5" id="story-chat-q2">
+                  <button onclick="storyChatSelectQuiz(1,'老顾客更支持我们了')" class="px-2 py-1 text-xs rounded-lg border ${q2==='老顾客更支持我们了'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">老顾客更支持我们了</button>
+                  <button onclick="storyChatSelectQuiz(1,'新客人因为公益找过来')" class="px-2 py-1 text-xs rounded-lg border ${q2==='新客人因为公益找过来'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">新客人因为公益找过来</button>
+                  <button onclick="storyChatSelectQuiz(1,'员工更有归属感了')" class="px-2 py-1 text-xs rounded-lg border ${q2==='员工更有归属感了'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">员工更有归属感了</button>
+                  <button onclick="storyChatSelectQuiz(1,'没什么特别的变化')" class="px-2 py-1 text-xs rounded-lg border ${q2==='没什么特别的变化'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">没什么特别的变化</button>
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1.5">3. 用一个词形容您的公益态度，会是什么？</label>
+                <div class="flex flex-wrap gap-1.5" id="story-chat-q3">
+                  <button onclick="storyChatSelectQuiz(2,'坚持')" class="px-2 py-1 text-xs rounded-lg border ${q3==='坚持'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">坚持——一直在做，不想停</button>
+                  <button onclick="storyChatSelectQuiz(2,'真心')" class="px-2 py-1 text-xs rounded-lg border ${q3==='真心'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">真心——发自内心，不是做样子</button>
+                  <button onclick="storyChatSelectQuiz(2,'顺手')" class="px-2 py-1 text-xs rounded-lg border ${q3==='顺手'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">顺手——公益就在日常经营里</button>
+                  <button onclick="storyChatSelectQuiz(2,'传承')" class="px-2 py-1 text-xs rounded-lg border ${q3==='传承'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">传承——想影响更多人加入</button>
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1.5">4. 您最想通过公益故事对顾客说什么？</label>
+                <div class="flex flex-wrap gap-1.5" id="story-chat-q4">
+                  <button onclick="storyChatSelectQuiz(3,'谢谢你们一直以来的支持')" class="px-2 py-1 text-xs rounded-lg border ${q4==='谢谢你们一直以来的支持'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">谢谢你们一直以来的支持</button>
+                  <button onclick="storyChatSelectQuiz(3,'每一份消费都在传递温暖')" class="px-2 py-1 text-xs rounded-lg border ${q4==='每一份消费都在传递温暖'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">每一份消费都在传递温暖</button>
+                  <button onclick="storyChatSelectQuiz(3,'我们会继续把好事做下去')" class="px-2 py-1 text-xs rounded-lg border ${q4==='我们会继续把好事做下去'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">我们会继续把好事做下去</button>
+                  <button onclick="storyChatSelectQuiz(3,'来店里吃饭也是在做公益')" class="px-2 py-1 text-xs rounded-lg border ${q4==='来店里吃饭也是在做公益'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">来店里吃饭也是在做公益</button>
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1.5">5. 希望用什么风格来表达您的故事？</label>
+                <div class="flex flex-wrap gap-1.5" id="story-chat-style-group">
+                  <button onclick="storyChatSelectStyle('温暖真诚')" class="px-2 py-1 text-xs rounded-lg border ${storyData.style==='温暖真诚'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">温暖真诚——像跟朋友聊天</button>
+                  <button onclick="storyChatSelectStyle('简洁有力')" class="px-2 py-1 text-xs rounded-lg border ${storyData.style==='简洁有力'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">简洁有力——直击人心</button>
+                  <button onclick="storyChatSelectStyle('活泼有趣')" class="px-2 py-1 text-xs rounded-lg border ${storyData.style==='活泼有趣'?'border-blue-500 bg-blue-50 text-blue-600':'border-gray-200 text-gray-600'}">活泼有趣——轻松接地气</button>
+                </div>
+              </div>
+            </div>
+            <button onclick="storyChatGoStep4()" class="w-full py-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-sm font-semibold shadow-md hover:shadow-lg transition-all active:scale-95">提交回答，生成故事</button>
+          </div>
+        `;
+        container.appendChild(botDiv);
+        scrollToBottom();
+      }, 400);
+    }
+
+    function storyChatSelectQuiz(idx, val) {
+      storyData.quizAnswers[idx] = val;
+      const group = document.getElementById('story-chat-q' + (idx+1));
+      if (group) {
+        Array.from(group.children).forEach(btn => {
+          const m = btn.getAttribute('onclick').match(/'([^']+)'/);
+          const btnVal = m ? m[1] : '';
+          const isActive = btnVal === val;
+          btn.className = isActive
+            ? 'px-2 py-1 text-xs rounded-lg border border-blue-500 bg-blue-50 text-blue-600'
+            : 'px-2 py-1 text-xs rounded-lg border border-gray-200 text-gray-600';
+        });
+      }
+    }
+
+    function storyChatSelectStyle(style) {
+      storyData.style = style;
+      const group = document.getElementById('story-chat-style-group');
+      if (group) {
+        Array.from(group.children).forEach(btn => {
+          const m = btn.getAttribute('onclick').match(/'([^']+)'/);
+          const btnVal = m ? m[1] : '';
+          const isActive = btnVal === style;
+          btn.className = isActive
+            ? 'px-2 py-1 text-xs rounded-lg border border-blue-500 bg-blue-50 text-blue-600'
+            : 'px-2 py-1 text-xs rounded-lg border border-gray-200 text-gray-600';
+        });
+      }
+    }
+
+    function storyChatGoStep4() {
+      const container = document.getElementById('messages');
+      appendUserMessage('生成公益故事');
+      setTimeout(() => {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'flex gap-3';
+        loadingDiv.innerHTML = `
+          <img src="${AVATAR}" class="w-7 h-7 rounded-full object-cover shrink-0 mt-1">
+          <div class="bg-white rounded-2xl rounded-tl-md px-4 pt-0.5 pb-1.5 text-sm text-gray-700 max-w-[80%] leading-normal shadow-sm border border-gray-100">
+            <div class="flex items-center gap-2">
+              <div class="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <span class="text-gray-600">AI 正在为您生成专属公益故事...</span>
+            </div>
+          </div>
+        `;
+        container.appendChild(loadingDiv);
+        scrollToBottom();
+        setTimeout(() => {
+          loadingDiv.remove();
+          storyChatShowPoemCard();
+        }, 2500);
+      }, 400);
+    }
+
+    function storyChatShowPoemCard() {
+      const container = document.getElementById('messages');
+      const botDiv = document.createElement('div');
+      botDiv.className = 'flex gap-3';
+      botDiv.innerHTML = `
+        <img src="${AVATAR}" class="w-7 h-7 rounded-full object-cover shrink-0 mt-1">
+        <div class="bg-white rounded-2xl rounded-tl-md px-4 pt-0.5 pb-1.5 text-sm text-gray-700 max-w-[80%] leading-normal shadow-sm border border-gray-100">
+          <p class="font-semibold text-gray-800 mb-3">✨ 您的公益故事</p>
+          <div class="rounded-xl p-4 mb-3 text-center" style="background: linear-gradient(180deg, #faf6f1 0%, #f5ede3 100%); border: 1px solid #e8ddd0;">
+            <div class="text-sm text-gray-700 leading-loose" style="font-family: 'Noto Serif SC', serif;">
+              <p>每一餐，都是一次传递温暖的机会</p>
+              <p>从田间到餐桌</p>
+              <p>我们用心甄选每一份食材</p>
+              <p>让顾客在品尝美味的同时</p>
+              <p>也能感受到我们对乡村儿童的关爱</p>
+              <p class="mt-3 text-gray-500">—— ${storyData.storeName || '紫燕百味鸡'}</p>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="storyChatRegenerate()" class="flex-1 py-2 rounded-xl border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-all active:scale-95">重新生成</button>
+            <button onclick="storyChatShowPosterCard()" class="flex-1 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-sm font-semibold shadow-md hover:shadow-lg transition-all active:scale-95">继续生成海报</button>
+          </div>
+        </div>
+      `;
+      container.appendChild(botDiv);
+      scrollToBottom();
+    }
+
+    function storyChatRegenerate() {
+      const container = document.getElementById('messages');
+      appendUserMessage('重新生成');
+      const loadingDiv = document.createElement('div');
+      loadingDiv.className = 'flex gap-3';
+      loadingDiv.innerHTML = `
+        <img src="${AVATAR}" class="w-7 h-7 rounded-full object-cover shrink-0 mt-1">
+        <div class="bg-white rounded-2xl rounded-tl-md px-4 pt-0.5 pb-1.5 text-sm text-gray-700 max-w-[80%] leading-normal shadow-sm border border-gray-100">
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <span class="text-gray-600">正在重新生成...</span>
+          </div>
+        </div>
+      `;
+      container.appendChild(loadingDiv);
+      scrollToBottom();
+      setTimeout(() => {
+        loadingDiv.remove();
+        storyChatShowPoemCard();
+      }, 2000);
+    }
+
+    function storyChatShowPosterCard() {
+      taskState.story = true;
+      const container = document.getElementById('messages');
+      appendUserMessage('继续生成海报');
+      setTimeout(() => {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'flex gap-3';
+        loadingDiv.innerHTML = `
+          <img src="${AVATAR}" class="w-7 h-7 rounded-full object-cover shrink-0 mt-1">
+          <div class="bg-white rounded-2xl rounded-tl-md px-4 pt-0.5 pb-1.5 text-sm text-gray-700 max-w-[80%] leading-normal shadow-sm border border-gray-100">
+            <div class="flex items-center gap-2">
+              <div class="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <span class="text-gray-600">正在生成您的专属海报...</span>
+            </div>
+          </div>
+        `;
+        container.appendChild(loadingDiv);
+        scrollToBottom();
+        setTimeout(() => {
+          loadingDiv.remove();
+          const botDiv = document.createElement('div');
+          botDiv.className = 'flex gap-3';
+          botDiv.innerHTML = `
+            <img src="${AVATAR}" class="w-7 h-7 rounded-full object-cover shrink-0 mt-1">
+            <div class="bg-white rounded-2xl rounded-tl-md px-4 pt-0.5 pb-1.5 text-sm text-gray-700 max-w-[80%] leading-normal shadow-sm border border-gray-100">
+              <p class="font-semibold text-gray-800 mb-1">🎉 公益海报已生成</p>
+              <p class="text-xs text-gray-500 mb-3">感谢您对乡村儿童的关爱，点击海报可放大查看，长按或点击下载按钮保存。</p>
+              <div class="space-y-3 mb-3">
+                <div>
+                  <div class="rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                    <img src="song-haoyun-assets/2026-health-supply-horizontal-final.png" class="w-full object-contain" alt="横版海报">
+                  </div>
+                  <div class="flex items-center justify-between mt-2 px-1">
+                    <div>
+                      <div class="text-xs font-medium text-gray-700">横版海报 · 公域</div>
+                      <div class="text-[12px] text-gray-400">适合店铺页、公众号推文</div>
+                    </div>
+                    <a href="song-haoyun-assets/2026-health-supply-horizontal-final.png" download="2026世界粮食日-健康供给横版物料.png" class="px-3 py-1.5 bg-blue-500 text-white text-xs font-medium rounded-lg hover:bg-blue-600 transition">下载</a>
+                  </div>
+                </div>
+                <div>
+                  <div class="rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                    <img src="song-haoyun-assets/2026-health-supply-vertical-final.png" class="w-full object-contain" alt="竖版海报">
+                  </div>
+                  <div class="flex items-center justify-between mt-2 px-1">
+                    <div>
+                      <div class="text-xs font-medium text-gray-700">竖版海报 · 私域</div>
+                      <div class="text-[12px] text-gray-400">适合朋友圈、门店展示</div>
+                    </div>
+                    <a href="song-haoyun-assets/2026-health-supply-vertical-final.png" download="2026世界粮食日-健康供给竖版物料.png" class="px-3 py-1.5 bg-blue-500 text-white text-xs font-medium rounded-lg hover:bg-blue-600 transition">下载</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+          container.appendChild(botDiv);
+          scrollToBottom();
+        }, 2500);
+      }, 400);
+    }
+
+    function storyChatSelectSize(size) {
+      storyData.size = size;
+      const isH = size === 'horizontal';
+      const group = document.getElementById('story-chat-size-group');
+      if (group) {
+        Array.from(group.children).forEach(btn => {
+          const m = btn.getAttribute('onclick').match(/'([^']+)'/);
+          const btnSize = m ? m[1] : '';
+          const isActive = btnSize === size;
+          btn.className = isActive
+            ? 'px-2 py-1 text-xs rounded-lg border border-blue-500 bg-blue-50 text-blue-600'
+            : 'px-2 py-1 text-xs rounded-lg border border-gray-200 text-gray-600';
+        });
+      }
+    }
+
+    function showToast(message) {
+  const toast = document.createElement('div');
+  toast.className = 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/80 text-white text-sm px-5 py-3 rounded-xl z-50 shadow-lg';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 0.3s';
+    setTimeout(() => toast.remove(), 300);
+  }, 2000);
+}
+
+function showBenefits() {
+      const sheet = document.getElementById('task-sheet');
+      document.getElementById('sheet-title').textContent = TASK_CONTENT.benefits.title;
+      document.getElementById('sheet-content').innerHTML = TASK_CONTENT.benefits.content;
+      document.getElementById('sheet-footer').style.display = 'block';
+      sheet.classList.remove('hidden');
+      void sheet.offsetWidth;
+      sheet.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeSheet() {
+      const sheet = document.getElementById('task-sheet');
+      sheet.classList.remove('active');
+      setTimeout(() => {
+        sheet.classList.add('hidden');
+        document.body.style.overflow = '';
+      }, 300);
+    }
+
+    // ===== Store Picker =====
+    const STORES = [
+      { id: 'all', name: '全部门店' },
+      { id: '1', name: '茶点小铺（南极路1号店）(1009026121719014)' },
+      { id: '2', name: '门店1(1014197511177266)' },
+      { id: '3', name: '花椒门店005(1037263571)' },
+      { id: '4', name: 'kfpttest_zl13_57(110099600)' },
+      { id: '5', name: '小大(1107718034)' },
+      { id: '6', name: '烤肉菠萝屋(111525187)' },
+      { id: '7', name: 'kfpttest_zl5_31(113022071)' },
+      { id: '8', name: 'kfpttest_zl13_3(114403688)' },
+      { id: '9', name: 'kfpttest_zl7_11(115955993)' },
+      { id: '10', name: 'kfpttest_zl6_32（望京分店）(117678400)' },
+      { id: '11', name: '小雪球(118165891)' },
+      { id: '12', name: '小冰测试商户(1273424589)' },
+      { id: '13', name: 'kfpt_test_zw_15600010059(155512135)' },
+      { id: '14', name: 't_45ZARpMO(156668220)' },
+      { id: '15', name: '星巴克（天山天池店）(157194380)' },
+      { id: '16', name: '111测试店(158881894)' },
+      { id: '17', name: '商家自助-测试门店1(159551776)' }
+    ];
+
+    let currentStoreId = '1';
+
+    function openStorePicker() {
+      document.getElementById('store-search').value = '';
+      filterStores('');
+      // 隐藏 chat-view，显示 store-view（带动画）
+      document.getElementById('chat-view').classList.add('view-hidden');
+      const storeView = document.getElementById('store-view');
+      storeView.classList.remove('view-hidden');
+      storeView.classList.add('view-enter');
+      requestAnimationFrame(() => {
+        storeView.classList.add('view-enter-active');
+        storeView.classList.remove('view-enter');
+      });
+      setTimeout(() => storeView.classList.remove('view-enter-active'), 300);
+    }
+
+    function closeStoreSheet() {
+      // 隐藏 store-view，显示 chat-view
+      document.getElementById('store-view').classList.add('view-hidden');
+      const chatView = document.getElementById('chat-view');
+      chatView.classList.remove('view-hidden');
+      chatView.classList.add('view-enter');
+      requestAnimationFrame(() => {
+        chatView.classList.add('view-enter-active');
+        chatView.classList.remove('view-enter');
+      });
+      setTimeout(() => chatView.classList.remove('view-enter-active'), 300);
+    }
+
+    function selectStore(id, name) {
+      currentStoreId = id;
+      document.getElementById('current-store-name').textContent = name.split('(')[0];
+      document.getElementById('story-scope-store').textContent = name.split('(')[0];
+      closeStoreSheet();
+    }
+
+    function filterStores(keyword) {
+      const list = document.getElementById('store-list');
+      const kw = keyword.trim().toLowerCase();
+      const filtered = kw ? STORES.filter(s => s.name.toLowerCase().includes(kw)) : STORES;
+      list.innerHTML = filtered.map(s => `
+        <button onclick="selectStore('${s.id}', '${s.name}')" class="w-full text-left px-3 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition flex items-center justify-between">
+          <span class="text-sm text-gray-700">${s.name}</span>
+          ${s.id === currentStoreId ? `<svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>` : ''}
+        </button>
+      `).join('');
+    }
+
+    // Dropdown menu
+    let menuOpen = false;
+    function toggleTaskPanel() {
+      const content = document.getElementById('task-panel-content');
+      const chevron = document.getElementById('task-panel-chevron');
+      if (!content) return;
+      if (content.style.display === 'none') {
+        content.style.display = '';
+        chevron.style.transform = '';
+      } else {
+        content.style.display = 'none';
+        chevron.style.transform = 'rotate(180deg)';
+      }
+    }
+
+    function toggleMenu() {
+      menuOpen = !menuOpen;
+      document.getElementById('dropdown-menu').classList.toggle('hidden', !menuOpen);
+    }
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('dropdown-menu');
+      const btn = e.target.closest('button[onclick="toggleMenu()"]');
+      if (menuOpen && !btn && !menu.contains(e.target)) {
+        menuOpen = false;
+        menu.classList.add('hidden');
+      }
+    });
+
+    // History sessions
+    function formatTime(ts) {
+      const d = new Date(ts);
+      const now = new Date();
+      const sameDay = d.toDateString() === now.toDateString();
+      const hm = d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0');
+      if (sameDay) return '今天 ' + hm;
+      const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
+      if (d.toDateString() === yesterday.toDateString()) return '昨天 ' + hm;
+      return (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + hm;
+    }
+
+    function showHistory() {
+      menuOpen = false;
+      document.getElementById('dropdown-menu').classList.add('hidden');
+      const sheet = document.getElementById('task-sheet');
+      document.getElementById('sheet-title').textContent = '历史会话';
+      const sessions = getSessions();
+      const footer = sheet.querySelector('.px-5.pb-5.pt-2');
+      footer.innerHTML = `<button onclick="closeSheet()" class="w-full py-3.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium transition active:scale-[0.98]">关闭</button>`;
+      if (sessions.length === 0) {
+        document.getElementById('sheet-content').innerHTML = `
+          <div class="text-center py-10">
+            <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h8M12 8v8"/>
+              </svg>
+            </div>
+            <p class="text-gray-500 text-sm">暂无历史会话</p>
+            <p class="text-xs text-gray-400 mt-1">新建会话后，旧的对话会自动归档到这里</p>
+          </div>
+        `;
+      } else {
+        document.getElementById('sheet-content').innerHTML = `<div class="space-y-2">` + sessions.map(s => `
+          <button onclick="viewHistorySession('${s.id}')" class="w-full text-left bg-gray-50 hover:bg-gray-100 rounded-xl p-3.5 transition border border-transparent hover:border-gray-200">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-sm font-medium text-gray-800 truncate">${s.title}</span>
+              <span class="text-[12px] text-gray-400 shrink-0 ml-2">${formatTime(s.updatedAt)}</span>
+            </div>
+            <div class="text-xs text-gray-500">${s.messages.length} 条消息</div>
+          </button>
+        `).join('') + `</div>`;
+      }
+      sheet.classList.remove('hidden');
+      void sheet.offsetWidth;
+      sheet.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function viewHistorySession(id) {
+      const sessions = getSessions();
+      const s = sessions.find(x => x.id === id);
+      if (!s) return;
+      const sheet = document.getElementById('task-sheet');
+      document.getElementById('sheet-title').textContent = '会话详情';
+      document.getElementById('sheet-content').innerHTML = `
+        <div class="space-y-3">
+          <div class="flex items-center justify-between text-xs text-gray-400">
+            <span>${formatTime(s.updatedAt)} · ${s.messages.length} 条消息</span>
+          </div>
+          ${s.messages.map(m => m.role === 'user'
+            ? `<div class="flex justify-end"><div class="chat-bubble-user text-white rounded-2xl rounded-tr-md px-3.5 py-2.5 text-sm max-w-[85%] leading-relaxed">${m.text}</div></div>`
+            : `<div class="flex gap-2.5"><img src="${AVATAR}" class="w-7 h-7 rounded-full object-cover shrink-0 mt-0.5"><div class="bg-white rounded-2xl rounded-tl-md px-3.5 py-2.5 text-sm text-gray-700 max-w-[85%] leading-relaxed border border-gray-100 whitespace-pre-line">${m.text}</div></div>`
+          ).join('')}
+        </div>
+      `;
+      const footer = sheet.querySelector('.px-5.pb-5.pt-2');
+      footer.innerHTML = `
+        <div class="flex gap-3">
+          <button onclick="deleteSession('${s.id}')" class="flex-1 py-3 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl font-medium transition">删除</button>
+          <button onclick="resumeSession('${s.id}')" class="flex-1 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium transition">恢复此会话</button>
+        </div>
+      `;
+    }
+
+    function resumeSession(id) {
+      const sessions = getSessions();
+      const s = sessions.find(x => x.id === id);
+      if (!s) return;
+      // 当前会话若有内容则先归档
+      if (chatHistory.length > 0) {
+        sessions.unshift({
+          id: 's' + Date.now(),
+          title: chatHistory[0] ? (chatHistory[0].text.length > 18 ? chatHistory[0].text.slice(0, 18) + '…' : chatHistory[0].text) : '会话',
+          updatedAt: Date.now(),
+          messages: chatHistory.slice()
+        });
+      }
+      // 从历史列表移除被恢复的会话
+      const remaining = sessions.filter(x => x.id !== id).slice(0, 20);
+      saveSessions(remaining);
+      chatHistory = s.messages.slice();
+      saveCurrentChat();
+      // 渲染到当前聊天区
+      document.getElementById('messages').innerHTML = '';
+      chatHistory.forEach(m => renderMessage(m));
+      document.getElementById('welcome-msg').style.display = chatHistory.length ? 'none' : 'flex';
+      closeSheet();
+      scrollToBottom();
+    }
+
+    function deleteSession(id) {
+      let sessions = getSessions();
+      sessions = sessions.filter(x => x.id !== id);
+      saveSessions(sessions);
+      showHistory();
+    }
+
+    // New Chat - show confirmation
+    function confirmNewChat() {
+      menuOpen = false;
+      document.getElementById('dropdown-menu').classList.add('hidden');
+      const sheet = document.getElementById('task-sheet');
+      document.getElementById('sheet-title').textContent = '新建会话';
+      document.getElementById('sheet-content').innerHTML = `
+        <div class="text-center py-6">
+          <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-3">
+            <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+          </div>
+          <p class="text-gray-700 font-medium">确定要开启新会话吗？</p>
+          <p class="text-xs text-gray-400 mt-2">当前对话记录将被清除</p>
+        </div>
+      `;
+      const footer = sheet.querySelector('.px-5.pb-5.pt-2');
+      footer.innerHTML = `
+        <div class="flex gap-3">
+          <button onclick="closeSheet()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition">取消</button>
+          <button onclick="doNewChat()" class="flex-1 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium transition">确定</button>
+        </div>
+      `;
+      sheet.classList.remove('hidden');
+      void sheet.offsetWidth;
+      sheet.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function doNewChat() {
+      // 归档当前会话
+      if (chatHistory.length > 0) {
+        const sessions = getSessions();
+        sessions.unshift({
+          id: 's' + Date.now(),
+          title: chatHistory[0] ? (chatHistory[0].text.length > 18 ? chatHistory[0].text.slice(0, 18) + '…' : chatHistory[0].text) : '会话',
+          updatedAt: Date.now(),
+          messages: chatHistory.slice()
+        });
+        // 最多保留 20 条历史会话
+        saveSessions(sessions.slice(0, 20));
+      }
+      chatHistory = [];
+      saveCurrentChat();
+      document.getElementById('messages').innerHTML = '';
+      document.getElementById('welcome-msg').style.display = 'flex';
+      closeSheet();
+      setTimeout(() => {
+        const footer = document.querySelector('#task-sheet .px-5.pb-5.pt-2');
+        footer.innerHTML = `<button onclick="closeSheet()" class="w-full py-3.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium transition active:scale-[0.98]">我知道了</button>`;
+      }, 350);
+    }
+
+    // Privacy Policy
+    const PRIVACY_HTML = `<div class="space-y-4">
+      <p class="text-xs text-gray-400">更新日期：2025年6月</p>
+      <div>
+        <h4 class="font-semibold text-gray-900 mb-2">一、信息收集范围</h4>
+        <p class="text-sm text-gray-600">为了向您提供公益AI助手服务，我们可能会收集以下信息：</p>
+        <ul class="text-sm text-gray-600 mt-1 space-y-1 list-disc pl-4">
+          <li>商家基础信息（门店名称、门店ID、业务线）</li>
+          <li>对话内容（用于理解您的需求并提供服务）</li>
+          <li>操作记录（任务提交、物料申领等行为数据）</li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold text-gray-900 mb-2">二、信息使用目的</h4>
+        <p class="text-sm text-gray-600">我们收集的信息仅用于：</p>
+        <ul class="text-sm text-gray-600 mt-1 space-y-1 list-disc pl-4">
+          <li>提供公益活动的咨询、申请与办理服务</li>
+          <li>生成个性化公益传播物料</li>
+          <li>优化AI助手的服务能力与响应质量</li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold text-gray-900 mb-2">三、信息共享与保护</h4>
+        <p class="text-sm text-gray-600">我们不会将您的个人信息出售给第三方。仅在以下情况下可能共享数据：</p>
+        <ul class="text-sm text-gray-600 mt-1 space-y-1 list-disc pl-4">
+          <li>获得您的明确授权</li>
+          <li>为完成公益活动所需，与内部业务部门协同</li>
+          <li>法律法规要求或政府部门依法调取</li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold text-gray-900 mb-2">四、您的权利</h4>
+        <p class="text-sm text-gray-600">您有权随时查阅、更正或删除您的个人信息。如需操作，请联系客服或通过应用内反馈入口提交申请。</p>
+      </div>
+      <div class="bg-gray-50 rounded-lg p-3 text-xs text-gray-500">
+        本页面为活动体验版本，当前不会提交报名、收货地址或审核信息；正式服务的信息处理规则以线上协议为准。
+      </div>
+    </div>`;
+
+    function showPrivacy() {
+      menuOpen = false;
+      document.getElementById('dropdown-menu').classList.add('hidden');
+      const sheet = document.getElementById('task-sheet');
+      document.getElementById('sheet-title').textContent = '隐私协议';
+      document.getElementById('sheet-content').innerHTML = PRIVACY_HTML;
+      sheet.classList.remove('hidden');
+      void sheet.offsetWidth;
+      sheet.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // ===== Init: restore current chat history =====
+    (function initChat() {
+      loadCurrentChat();
+      if (chatHistory.length > 0) {
+        document.getElementById('messages').innerHTML = '';
+        chatHistory.forEach(m => renderMessage(m));
+        document.getElementById('welcome-msg').style.display = 'none';
+      }
+      updateProgress();
+    })();
+  </script>
+    <!-- Image Lightbox -->
+    <div id="lightbox" class="hidden fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4" onclick="closeLightbox()">
+      <img id="lightbox-img" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="物料放大预览" class="max-w-full max-h-full rounded-lg shadow-2xl object-contain" onclick="event.stopPropagation()">
+      <button class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/30 transition" onclick="closeLightbox()">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <script>
+      // Lightbox for poster images
+      document.addEventListener('click', function(e) {
+        const img = e.target.closest('img');
+        if (img && img.src.includes('song-haoyun-assets/2026-health-supply')) {
+          openLightbox(img.src);
+        }
+      });
+      function openLightbox(src) {
+        const lb = document.getElementById('lightbox');
+        document.getElementById('lightbox-img').src = src;
+        lb.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeLightbox() {
+        document.getElementById('lightbox').classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+    </script>
+</body>
+</html>
