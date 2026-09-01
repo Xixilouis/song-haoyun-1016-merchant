@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>宋好运｜1016 世界粮食日</title>
+  <title>美团乡村儿童操场｜宋好运</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23117cc5'/%3E%3Cpath d='M18 35c8-1 11-6 14-17 3 11 6 16 14 17-8 1-11 6-14 17-3-11-6-16-14-17Z' fill='white'/%3E%3C/svg%3E">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&amp;family=Noto+Serif+SC:wght@400;600&amp;display=swap" rel="stylesheet">
   <style>
@@ -386,6 +387,125 @@
       .wfd-benefit-route span { padding: 6px 8px; }
     }
 
+    /* ===== Project home: keep the campaign discoverable, not expanded ===== */
+    #project-view {
+      --project-butter: #fff9e6;
+      --project-yellow: #ffd33d;
+      --project-amber: #ffb914;
+      --project-ink: #2f2a21;
+      --project-blue: #117cc5;
+      --project-sky: #edf8fd;
+      --home-blue: #117cc5;
+      --home-deep: #10547f;
+      --home-sky: #eaf6fc;
+      --home-yellow: #ffc933;
+      --home-green: #2e9d66;
+      --home-coral: #ee6a55;
+      --home-ink: #18384d;
+      --home-muted: #6d8290;
+      background: var(--project-butter);
+      color: var(--project-ink);
+      scrollbar-width: none;
+    }
+    #project-view::-webkit-scrollbar { display: none; }
+    #project-view button:focus-visible { outline: 3px solid rgba(17, 124, 197, .28); outline-offset: 3px; }
+    .project-agent-card {
+      position: relative;
+      width: 100%;
+      min-height: 154px;
+      display: grid;
+      grid-template-columns: 100px minmax(0, 1fr) 24px;
+      align-items: center;
+      gap: 10px;
+      overflow: hidden;
+      padding: 15px 13px 15px 10px;
+      border: 1px solid #cfe6f2;
+      border-radius: 22px;
+      color: #18384d;
+      background:
+        radial-gradient(circle at 8% 3%, rgba(255, 211, 61, .42), transparent 92px),
+        radial-gradient(circle at 94% 12%, rgba(255, 255, 255, .96), transparent 120px),
+        linear-gradient(135deg, #edf8fd 0%, #f8fcfe 62%, #fff8db 100%);
+      box-shadow: 0 12px 28px rgba(25, 88, 126, .10);
+      text-align: left;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+    .project-agent-card:hover { transform: translateY(-1px); border-color: #afd5e8; box-shadow: 0 16px 34px rgba(25, 88, 126, .14); }
+    .project-agent-card:active { transform: scale(.99); }
+    .project-agent-portrait { position: relative; align-self: stretch; min-height: 124px; }
+    .project-agent-halo {
+      position: absolute;
+      left: 4px;
+      bottom: -12px;
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #ffe06b, #ffc72f);
+      box-shadow: 0 12px 24px rgba(230, 167, 16, .18);
+    }
+    .project-agent-portrait img {
+      position: absolute;
+      z-index: 1;
+      left: -2px;
+      bottom: -15px;
+      width: 108px;
+      height: 139px;
+      object-fit: contain;
+      object-position: center bottom;
+      filter: drop-shadow(0 10px 12px rgba(18, 82, 120, .13));
+    }
+    .project-agent-copy { position: relative; z-index: 2; min-width: 0; }
+    .project-agent-kicker { display: flex; align-items: center; gap: 6px; color: var(--project-blue); font-size: 10px; font-weight: 800; }
+    .project-agent-kicker i { width: 6px; height: 6px; border-radius: 50%; background: #2e9d66; box-shadow: 0 0 0 4px rgba(46, 157, 102, .10); }
+    .project-agent-new { padding: 2px 6px; border-radius: 999px; color: #8b3000; background: #ffe2d5; font-size: 9px; font-style: normal; letter-spacing: .02em; }
+    .project-agent-copy h2 { margin: 5px 0 0; color: #18384d; font-size: 17px; line-height: 1.3; letter-spacing: -.25px; }
+    .project-agent-copy > p { margin: 4px 0 0; color: #5f7787; font-size: 11px; line-height: 1.45; }
+    .project-agent-highlights { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
+    .project-agent-highlights span { padding: 4px 7px; border: 1px solid rgba(17, 124, 197, .13); border-radius: 999px; color: #286889; background: rgba(255,255,255,.78); font-size: 9px; font-weight: 700; }
+    .project-agent-cta { display: block; margin-top: 8px; color: #0c6fae; font-size: 11px; font-weight: 800; }
+    .project-agent-arrow { color: #83a3b5; font-size: 24px; transition: transform .18s ease; }
+    .project-agent-card:hover .project-agent-arrow { transform: translateX(2px); }
+    @media (max-width: 380px) {
+      .project-agent-card { grid-template-columns: 88px minmax(0, 1fr) 18px; gap: 8px; padding-left: 7px; }
+      .project-agent-halo { width: 86px; height: 86px; }
+      .project-agent-portrait img { width: 98px; height: 128px; }
+      .project-agent-copy h2 { font-size: 16px; }
+      .project-agent-highlights span:nth-child(3) { display: none; }
+    }
+
+    /* The project page introduces the agent before the merchant enters 1016. */
+    .project-haoyun-feature {
+      margin: 0 16px 18px;
+      padding: 10px 11px 11px;
+      overflow: hidden;
+      border: 1px solid #d3e8f2;
+      border-radius: 25px;
+      background:
+        radial-gradient(circle at 4% 3%, rgba(255, 211, 61, .25), transparent 150px),
+        radial-gradient(circle at 98% 8%, rgba(76, 188, 242, .18), transparent 190px),
+        linear-gradient(180deg, #fbfeff 0%, #eef7fb 100%);
+      box-shadow: 0 16px 38px rgba(25, 88, 126, .11);
+    }
+    .project-haoyun-feature .home-agent-hero { padding-top: 0; }
+    .project-haoyun-feature .home-character-stage { height: 188px; }
+    .project-haoyun-feature .home-character-halo { width: 160px; height: 160px; bottom: 7px; }
+    .project-haoyun-feature .home-character { width: 154px; height: 181px; }
+    .project-haoyun-feature .home-float-note { cursor: pointer; }
+    .project-haoyun-feature .home-hero-copy { width: 100%; border: 0; background: transparent; color: inherit; cursor: pointer; }
+    .project-haoyun-feature .home-hero-copy h2 { margin: 0; color: var(--home-ink); font-size: 22px; line-height: 1.25; letter-spacing: -.5px; }
+    .project-haoyun-feature .home-hero-copy p { margin: 5px 0 0; color: var(--home-muted); font-size: 11px; line-height: 1.5; }
+    .project-haoyun-feature .home-recommendations { gap: 6px; margin-top: 12px; }
+    .project-haoyun-feature .home-recommendation { min-height: 42px; padding: 7px 10px; }
+    .project-haoyun-feature .home-recommendation-title { font-size: 11px; }
+    @media (max-width: 380px) {
+      .project-haoyun-feature { margin-inline: 12px; padding-inline: 10px; border-radius: 22px; }
+      .project-haoyun-feature .home-character-stage { height: 174px; }
+      .project-haoyun-feature .home-character { width: 146px; height: 168px; }
+      .project-haoyun-feature .home-character-halo { width: 146px; height: 146px; }
+      .project-haoyun-feature .home-hero-copy h2 { font-size: 21px; }
+      .project-haoyun-feature .home-hero-copy p { font-size: 10px; }
+    }
+
     /* ===== 1016 Merchant Agent Home: one agent, one activity card, four flows ===== */
     #entry-view.agent-home {
       --home-blue: #117cc5;
@@ -555,22 +675,51 @@
     }
     .home-new-label.is-blue { color: #0e5b8c; background: #e5f4fc; }
     .home-new-label.is-yellow { color: #735700; background: #fff3bd; }
+    .home-activity-wrap { position: relative; padding-top: 24px; }
     .home-activity-card {
       overflow: hidden;
-      margin-top: 16px;
+      margin-top: 0;
       border: 1px solid rgba(17, 124, 197, .16);
       border-radius: 23px;
       background: white;
       box-shadow: 0 17px 38px rgba(25, 88, 126, .12);
     }
+    .home-activity-companion {
+      position: absolute;
+      z-index: 6;
+      top: -8px;
+      right: 20px;
+      width: 82px;
+      height: 112px;
+      pointer-events: none;
+      filter: drop-shadow(0 10px 12px rgba(18, 82, 120, .16));
+    }
+    .home-activity-companion img { width: 100%; height: 100%; object-fit: contain; object-position: center bottom; }
+    .home-activity-companion-note {
+      position: absolute;
+      z-index: 7;
+      top: 2px;
+      right: 89px;
+      padding: 6px 9px;
+      border: 1px solid #c7e2ef;
+      border-radius: 13px 13px 4px 13px;
+      color: var(--home-deep);
+      background: rgba(255,255,255,.96);
+      box-shadow: 0 7px 18px rgba(42, 102, 137, .10);
+      font-size: 9px;
+      font-weight: 800;
+      white-space: nowrap;
+      pointer-events: none;
+    }
     .home-activity-toggle {
+      position: relative;
       width: 100%;
-      min-height: 78px;
+      min-height: 92px;
       display: grid;
-      grid-template-columns: 48px 1fr auto;
+      grid-template-columns: 48px minmax(0, 1fr);
       align-items: center;
       gap: 11px;
-      padding: 12px 14px;
+      padding: 14px 88px 14px 14px;
       border: 0;
       color: var(--home-ink);
       background:
@@ -609,6 +758,9 @@
       50% { transform: scale(1); opacity: 1; }
     }
     .home-collapse-arrow {
+      position: absolute;
+      right: 11px;
+      bottom: 9px;
       width: 30px;
       height: 30px;
       display: grid;
@@ -651,14 +803,29 @@
     }
     .home-benefit-icon.has-image { background: #eef5f8; }
     .home-benefit-icon.has-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .home-benefit-icon.store-visit-photo {
+      background-image: url('song-haoyun-assets/2026-demo-store-display-reference.jpg');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+    }
     .home-benefit-row:nth-child(2) .home-benefit-icon { color: #287b52; background: #e8f7ef; }
     .home-benefit-row:nth-child(3) .home-benefit-icon { color: #805f00; background: #fff3c2; }
     .home-benefit-row:nth-child(4) .home-benefit-icon { color: #944436; background: #ffebe6; }
+    .home-benefit-row .home-benefit-icon.store-visit-photo {
+      background: url('song-haoyun-assets/2026-demo-store-display-reference.jpg') center / cover no-repeat;
+    }
     .home-benefit-copy { min-width: 0; }
     .home-benefit-copy strong { display: block; font-size: 12px; line-height: 1.35; }
     .home-benefit-copy small { display: block; margin-top: 4px; overflow: hidden; color: var(--home-muted); font-size: 9px; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
     .home-benefit-go { color: #97aab4; font-size: 18px; }
     .home-service-note { margin: 11px 2px 0; color: #8497a2; text-align: center; font-size: 9px; line-height: 1.45; }
+    @media (max-width: 360px) {
+      .home-activity-toggle { padding-right: 78px; }
+      .home-activity-companion { right: 16px; width: 74px; height: 104px; }
+      .home-activity-companion-note { right: 80px; font-size: 8px; }
+      .home-activity-heading strong { font-size: 14px; }
+    }
     .home-agent-launcher {
       position: absolute;
       z-index: 25;
@@ -749,6 +916,9 @@
     .wfd-reference-visual figcaption strong { color: #173f58; }
     .wfd-reference-visual.is-merch { border-color: #f0c8d2; background: #fff0f3; }
     .wfd-reference-visual.is-merch img { height: 172px; object-position: center 52%; }
+    .wfd-reference-visual.is-story-horizontal img { height: 180px; }
+    .wfd-reference-visual.is-story-vertical img { height: 320px; object-position: top; }
+    .wfd-reference-visual.is-social-share img { height: 280px; object-position: top; }
     @media (max-width: 380px) {
       .home-float-note { padding: 7px 8px; font-size: 9px; }
       .home-character-stage { height: 194px; }
@@ -770,11 +940,104 @@
 </head>
 <body class="bg-gray-100 h-screen overflow-hidden flex justify-center">
 
+  <!-- ========== Project View: meet Song Haoyun, then enter the 1016 campaign ========== -->
+  <div id="project-view" class="w-full max-w-[600px] h-full shadow-2xl relative overflow-y-auto">
+    <header class="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-[#FFF9E6]/95 backdrop-blur">
+      <button class="w-8 h-8 flex items-center justify-center rounded-full" type="button" aria-label="返回">
+        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <h1 class="text-base font-semibold text-gray-900">美团乡村儿童操场</h1>
+      <button class="w-8 h-8 flex items-center justify-center rounded-full" type="button" aria-label="分享">
+        <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+      </button>
+    </header>
+
+    <div class="mx-4 mb-3 flex items-center gap-2 bg-[#FFF3CD] rounded-lg px-3 py-2">
+      <svg class="w-4 h-4 text-[#B8860B] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+      <span class="text-xs text-[#8B6914] truncate flex-1">8月荣誉物料名单公布，您的惊喜纪念已寄出</span>
+      <span class="text-xs text-blue-500 font-medium shrink-0">查看</span>
+    </div>
+
+    <section class="mx-4 mb-4 hero-gradient rounded-2xl p-5 relative overflow-hidden" aria-label="公益参与概览">
+      <div class="absolute top-2 right-2 w-20 h-20 rounded-full bg-white/20 flex items-center justify-center text-4xl text-white/80" aria-hidden="true">♡</div>
+      <div class="relative">
+        <div class="inline-flex items-center gap-1 px-2 py-0.5 bg-black/10 rounded-md mb-2">
+          <svg class="w-3 h-3 text-[#5D4037]" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <span class="text-[12px] font-medium text-[#5D4037]">美团公益商家</span>
+        </div>
+        <p class="text-sm text-[#5D4037] mb-1">已参与 <strong>美团乡村儿童操场</strong> 公益计划</p>
+        <div class="flex items-baseline gap-1 mb-1"><strong class="text-4xl text-[#5D4037]">321</strong><span class="text-sm text-[#5D4037]">天</span></div>
+        <p class="text-xs text-[#5D4037]/70 mb-3">最新签约：2024-06-24</p>
+        <div class="bg-white/30 rounded-lg px-3 py-2 text-center"><p class="text-xs text-[#5D4037]">您的每笔订单都将为孩子们送去快乐和希望！</p></div>
+      </div>
+    </section>
+
+    <section class="project-haoyun-feature" aria-labelledby="project-haoyun-title">
+      <div class="home-agent-hero">
+        <div class="home-character-stage">
+          <span class="home-character-halo" aria-hidden="true"></span>
+          <img class="home-character" src="song-haoyun-assets/song-haoyun-wave-no-glasses-v3.png" alt="宋好运挥手欢迎公益商家">
+          <button class="home-float-note" type="button" onclick="openProjectRecommendation('material')">公益定制物料我来做</button>
+          <button class="home-float-note" type="button" onclick="openProjectRecommendation('health')">加入健康倡议伙伴</button>
+          <button class="home-float-note" type="button" onclick="openProjectRecommendation('material')">公益故事我来写</button>
+        </div>
+
+        <button class="home-hero-copy" type="button" onclick="showEntry()" aria-label="认识宋好运并进入 1016 世界粮食日活动">
+          <h2 id="project-haoyun-title">Hi，我是宋好运</h2>
+          <p>做好事有好运，公益商家的事就找好运～</p>
+        </button>
+
+        <div class="home-recommendations" aria-label="宋好运推荐">
+          <button class="home-recommendation" type="button" data-home-update="benefits" onclick="openProjectRecommendation('overview')">
+            <span class="home-new-label">爆</span>
+            <span class="home-recommendation-title">成为健康倡议伙伴，看看 4 大活动权益</span>
+            <span class="home-recommendation-arrow" aria-hidden="true">›</span>
+          </button>
+          <button class="home-recommendation" type="button" data-home-update="health" onclick="openProjectRecommendation('health')">
+            <span class="home-new-label is-blue">荐</span>
+            <span class="home-recommendation-title">健康菜品认证有什么用？</span>
+            <span class="home-recommendation-arrow" aria-hidden="true">›</span>
+          </button>
+          <button class="home-recommendation" type="button" data-home-update="material" onclick="openProjectRecommendation('material')">
+            <span class="home-new-label is-yellow">新</span>
+            <span class="home-recommendation-title">新上线：活动限定物料定制</span>
+            <span class="home-recommendation-arrow" aria-hidden="true">›</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="mx-4 mb-4 bg-white rounded-xl p-4 shadow-sm flex items-center justify-between" aria-label="捐赠设置">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-[#FFF3CD] rounded-full flex items-center justify-center">
+          <svg class="w-5 h-5 text-[#B8860B]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div><h3 class="text-base font-bold text-gray-900">捐赠设置</h3><p class="text-xs text-gray-500">每单捐赠 <span class="text-orange-500 font-medium">0.2元</span>｜特殊物品 <span class="text-orange-500 font-medium">3个</span></p></div>
+      </div>
+      <button class="px-5 py-2 bg-[#FFD93D] text-[#5D4037] text-sm font-medium rounded-full hover:bg-[#FFC107] transition" type="button">去设置</button>
+    </section>
+
+    <section class="mx-4 mb-6 bg-white rounded-xl p-4 shadow-sm text-center" aria-label="捐赠成果说明">
+      <p class="text-sm font-medium text-gray-800 mb-2">您捐赠的善款将用于捐建乡村儿童操场，</p>
+      <p class="text-sm font-medium text-gray-800 mb-3">帮助乡村儿童快乐奔跑</p>
+      <p class="text-xs text-gray-500 leading-relaxed mb-4">每个乡村幼儿园的操场都由若干个拼接地板组成，每20元善款可折算1块拼接地板。各门店的善款独立使用，达到20元后折算为1块拼接地板。</p>
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div><p class="text-lg font-bold text-gray-900">1.10 <span class="text-sm font-normal">元</span></p><p class="text-xs text-gray-500">全部门店捐赠金额</p></div>
+        <div><p class="text-lg font-bold text-gray-900">0 <span class="text-sm font-normal">个</span></p><p class="text-xs text-gray-500">已生成拼接地板数</p></div>
+        <div><p class="text-lg font-bold text-gray-900">0 <span class="text-sm font-normal">个</span></p><p class="text-xs text-gray-500">已使用拼接地板数</p></div>
+        <div><p class="text-lg font-bold text-gray-900">2 <span class="text-sm font-normal">个</span></p><p class="text-xs text-gray-500">公益档案点赞数</p></div>
+      </div>
+      <p class="text-xs text-gray-500 leading-relaxed">当月满20元善款生成的拼接地板，会在下月底铺设操场时使用；建设进展以项目执行更新为准。</p>
+    </section>
+  </div>
+
   <!-- ========== Entry View: Song Haoyun 1016 Merchant Agent ========== -->
-  <div id="entry-view" class="agent-home w-full max-w-[600px] h-full shadow-2xl relative overflow-y-auto">
+  <div id="entry-view" class="view-hidden agent-home w-full max-w-[600px] h-full shadow-2xl relative overflow-y-auto">
 
     <header class="home-topbar">
-      <div class="home-brand-mark" aria-hidden="true">♧</div>
+      <button class="home-brand-mark" type="button" onclick="showProject()" aria-label="返回乡村儿童操场项目页">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      </button>
       <div class="home-identity">
         <strong>宋好运</strong>
         <span>公益商家专属 AI 伙伴</span>
@@ -788,50 +1051,22 @@
     </header>
 
     <main class="home-main">
-      <section class="home-agent-hero" aria-labelledby="home-agent-title">
-        <div class="home-character-stage">
-          <div class="home-character-halo" aria-hidden="true"></div>
-          <button class="home-float-note" type="button" onclick="openHomeRecommendation(this,'material')">公益定制物料我来做</button>
-          <button class="home-float-note" type="button" onclick="openHomeRecommendation(this,'health')">加入健康倡议伙伴</button>
-          <button class="home-float-note" type="button" onclick="openHomeRecommendation(this,'material')">公益故事我来写</button>
-          <img class="home-character" src="song-haoyun-assets/song-haoyun-wave-no-glasses-v3.png" alt="挥手打招呼的宋好运">
-        </div>
-        <div class="home-hero-copy">
-          <h1 id="home-agent-title">Hi，我是宋好运</h1>
-          <p>做好事有好运，公益商家的事就找宋好运～<br>我会陪你一步步参加 1016 世界粮食日活动。</p>
-        </div>
-        <div class="home-recommendations" aria-label="近期活动推荐">
-          <button class="home-recommendation" data-home-update="rights" type="button" onclick="openHomeRecommendation(this,'overview')">
-            <span class="home-new-label">爆</span>
-            <span class="home-recommendation-title">成为健康倡议伙伴，看看 4 大活动权益</span>
-            <span class="home-recommendation-arrow" aria-hidden="true">›</span>
-          </button>
-          <button class="home-recommendation" data-home-update="health" type="button" onclick="openHomeRecommendation(this,'health')">
-            <span class="home-new-label is-blue">荐</span>
-            <span class="home-recommendation-title">健康菜品认证有什么用？</span>
-            <span class="home-recommendation-arrow" aria-hidden="true">›</span>
-          </button>
-          <button class="home-recommendation" data-home-update="material" type="button" onclick="openHomeRecommendation(this,'material')">
-            <span class="home-new-label is-yellow">新</span>
-            <span class="home-recommendation-title">新上线：活动限定物料定制</span>
-            <span class="home-recommendation-arrow" aria-hidden="true">›</span>
-          </button>
-        </div>
-      </section>
-
+      <div class="home-activity-wrap">
+        <span class="home-activity-companion-note" aria-hidden="true">我陪你一步步参加</span>
+        <span class="home-activity-companion" aria-hidden="true"><img src="song-haoyun-assets/song-haoyun-wave-no-glasses-v3.png" alt=""></span>
       <article id="home-activity-card" class="home-activity-card">
         <button id="home-activity-toggle" class="home-activity-toggle" type="button" aria-expanded="true" aria-controls="home-activity-body" onclick="toggleHomeActivityCard()">
           <span class="home-activity-date">10·16</span>
           <span class="home-activity-heading">
             <small>2026 世界粮食日</small>
             <strong>AI 让每一家小店的善意<br>都有自己的样子</strong>
-            <span class="home-activity-status"><i aria-hidden="true"></i>首批伙伴招募准备中 <em>· 真实参与数待系统接入</em></span>
+            <span class="home-activity-status"><i aria-hidden="true"></i>已有 100,000+ 同行参与</span>
           </span>
           <span class="home-collapse-arrow" aria-hidden="true">⌄</span>
         </button>
         <div id="home-activity-body" class="home-activity-body">
           <button class="home-benefit-row" type="button" onclick="openWfdBenefit('material')">
-            <span class="home-benefit-icon has-image"><img src="song-haoyun-assets/2026-km-public-welfare-poster-reference.jpg" alt="公益商家海报参考"></span>
+            <span class="home-benefit-icon has-image"><img src="song-haoyun-assets/2026-public-welfare-story-horizontal.png" alt="公益商家故事横版海报"></span>
             <span class="home-benefit-copy"><strong>为你定制公益专属海报</strong><small>让每家小店的善意都有自己的样子</small></span>
             <span class="home-benefit-go" aria-hidden="true">›</span>
           </button>
@@ -846,12 +1081,13 @@
             <span class="home-benefit-go" aria-hidden="true">›</span>
           </button>
           <button class="home-benefit-row" type="button" onclick="openWfdBenefit('proof')">
-            <i class="home-benefit-icon">◎</i>
+            <span class="home-benefit-icon store-visit-photo" role="img" aria-label="公益门店物料布置参考"></span>
             <span class="home-benefit-copy"><strong>探店活动，帮你的善意被看见</strong><small>布置物料并返图，进入达人与官方传播候选池</small></span>
             <span class="home-benefit-go" aria-hidden="true">›</span>
           </button>
         </div>
       </article>
+      </div>
 
       <p class="home-service-note">活动体验版 · 可完整了解流程和预览物料；报名、审核、抽选及权益结果以正式系统回执为准</p>
     </main>
@@ -867,7 +1103,7 @@
   <div id="chat-view" class="view-hidden w-full max-w-[600px] bg-gray-50 h-full shadow-2xl flex flex-col">
     <!-- Agent Identity Bar -->
       <div class="flex items-center px-4 py-2 bg-white border-b shrink-0 relative">
-        <button onclick="showEntry()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition mr-1">
+        <button onclick="showEntry()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition mr-1" aria-label="返回宋好运活动页">
           <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
           </svg>
@@ -1064,20 +1300,32 @@
 
     // ===== View Switching =====
 function showChat() {
-document.getElementById('entry-view').classList.add('view-hidden');
-const chat = document.getElementById('chat-view');
-chat.classList.remove('view-hidden');
-chat.classList.add('view-enter');
-requestAnimationFrame(() => {
-chat.classList.add('view-enter-active');
-chat.classList.remove('view-enter');
-});
-setTimeout(() => chat.classList.remove('view-enter-active'), 300);
+      document.getElementById('project-view').classList.add('view-hidden');
+      document.getElementById('entry-view').classList.add('view-hidden');
+      const chat = document.getElementById('chat-view');
+      chat.classList.remove('view-hidden');
+      chat.classList.add('view-enter');
+      requestAnimationFrame(() => {
+        chat.classList.add('view-enter-active');
+        chat.classList.remove('view-enter');
+      });
+      setTimeout(() => chat.classList.remove('view-enter-active'), 300);
 }
 
 function showEntry() {
       document.getElementById('chat-view').classList.add('view-hidden');
-      document.getElementById('entry-view').classList.remove('view-hidden');
+      document.getElementById('project-view').classList.add('view-hidden');
+      const entry = document.getElementById('entry-view');
+      entry.classList.remove('view-hidden');
+      entry.scrollTop = 0;
+    }
+
+    function showProject() {
+      document.getElementById('chat-view').classList.add('view-hidden');
+      document.getElementById('entry-view').classList.add('view-hidden');
+      const project = document.getElementById('project-view');
+      project.classList.remove('view-hidden');
+      project.scrollTop = 0;
     }
 
 
@@ -1109,6 +1357,15 @@ function showEntry() {
       } else {
         openWfdBenefit(type);
       }
+    }
+
+    function openProjectRecommendation(type) {
+      if (type === 'overview') {
+        showEntry();
+        return;
+      }
+      showChat();
+      setTimeout(() => openWfdBenefit(type), 320);
     }
 
     function openHomeMessages() {
@@ -1268,19 +1525,19 @@ function showEntry() {
         <div class="grid grid-cols-2 gap-3">
           <div>
             <div class="rounded-xl overflow-hidden border border-gray-200 mb-1.5 bg-gray-50">
-              <img src="song-haoyun-assets/2026-health-supply-horizontal-final.png" class="w-full h-28 object-cover" alt="横版海报预览">
+              <img src="song-haoyun-assets/2026-public-welfare-story-horizontal.png" class="w-full h-28 object-cover" alt="公益成果横版海报预览">
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-[12px] text-gray-500">横版 · 店铺页/公域</span>
+              <span class="text-[12px] text-gray-500">横版 · 公益成果</span>
               <span class="text-[12px] text-gray-400">16:9</span>
             </div>
           </div>
           <div>
             <div class="rounded-xl overflow-hidden border border-gray-200 mb-1.5 bg-gray-50">
-              <img src="song-haoyun-assets/2026-health-supply-vertical-final.png" class="w-full h-28 object-cover" alt="竖版海报预览">
+              <img src="song-haoyun-assets/2026-public-welfare-story-vertical.png" class="w-full h-28 object-cover object-top" alt="公益故事竖版海报预览">
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-[12px] text-gray-500">竖版 · 私域/门店</span>
+              <span class="text-[12px] text-gray-500">竖版 · 公益故事</span>
               <span class="text-[12px] text-gray-400">9:16</span>
             </div>
           </div>
@@ -1582,20 +1839,34 @@ function showEntry() {
             <h3 class="text-base font-bold text-gray-900">海报已生成</h3>
             <p class="text-xs text-gray-500 mt-0.5">${scopeLabel}物料，基于商家数据与您的回答生成。</p>
           </div>
-          <span class="px-2 py-0.5 bg-green-50 text-green-600 text-[12px] font-medium rounded-full">AI 已完成</span>
+          <span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[12px] font-medium rounded-full">版式预览</span>
         </div>
         <div class="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
-          <img src="${isH?'song-haoyun-assets/2026-health-supply-horizontal-final.png':'song-haoyun-assets/2026-health-supply-vertical-final.png'}" class="w-full ${isH?'h-40':'h-64'} object-cover" alt="公益海报">
+          <img src="${isH?'song-haoyun-assets/2026-public-welfare-story-horizontal.png':'song-haoyun-assets/2026-public-welfare-story-vertical.png'}" class="w-full ${isH?'h-40':'h-64'} object-cover ${isH?'':'object-top'}" alt="公益故事海报版式预览">
         </div>
+        <p class="text-xs text-gray-500">当前展示活动成品样张；正式接入后将替换为当前门店名称与经核验信息。</p>
         <div class="flex gap-2">
           <button onclick="storyGoStep4()" class="flex-1 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition">重新调整</button>
-          <button onclick="closeSheet()" class="flex-1 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-medium transition">下载海报</button>
+          <button onclick="downloadStoryMaterial(storyData.size)" class="flex-1 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-medium transition">下载示例</button>
         </div>
         <div class="sheet-final-actions">
           <button onclick="closeSheet()" class="btn-secondary">再做一项</button>
           <button onclick="closeSheet()" class="btn-primary">去传播并回传</button>
         </div>
       </div>`;
+    }
+
+    function downloadStoryMaterial(size) {
+      const isVertical = size === 'vertical';
+      const link = document.createElement('a');
+      link.href = isVertical
+        ? 'song-haoyun-assets/2026-public-welfare-story-vertical.png'
+        : 'song-haoyun-assets/2026-public-welfare-story-horizontal.png';
+      link.download = isVertical ? '2026世界粮食日-公益故事竖版示例.png' : '2026世界粮食日-公益故事横版示例.png';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      showWfdToast(isVertical ? '正在下载竖版示例' : '正在下载横版示例');
     }
 
     function selectStorySize(size) {
@@ -1667,13 +1938,13 @@ function showEntry() {
         </div>
         ${hasImg ? `<div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
           <div class="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden shrink-0">
-            <img src="song-haoyun-assets/2026-health-supply-horizontal-final.png" class="w-full h-full object-cover" alt="菜品">
+            <img src="song-haoyun-assets/2026-demo-raw-healthy-dish.jpg" class="w-full h-full object-cover" alt="体验示例菜品原图">
           </div>
           <div class="flex-1 min-w-0">
-            <div class="text-sm text-gray-700 font-medium truncate">全部门店 (4).png</div>
+            <div class="text-sm text-gray-700 font-medium truncate">清蒸时蔬鱼·体验原图.png</div>
             <div class="text-xs text-green-600 flex items-center gap-1 mt-0.5">
               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-              上传成功，可以开始认证
+              已选体验示例，尚未提交
             </div>
           </div>
         </div>` : ''}
@@ -2071,14 +2342,14 @@ function showEntry() {
           <h3 class="mt-2 text-[18px] font-bold text-[#12304b]">同一份善意，准备两种使用方式</h3>
           <p class="mt-1 text-[13px] leading-relaxed text-[#52697b]">横版适合门店电子屏、美团或点评页面；竖版适合朋友圈、社媒和打印分享。</p>
           <div class="wfd-format-grid mt-3">
-            <div class="wfd-format-sample">
-              <b>公益成果版 · 横版</b>
-              <span>突出门店参与信息与公益成果<br>适合公域页面和电子屏</span>
-            </div>
-            <div class="wfd-format-sample is-vertical">
-              <b>公益故事版</b>
-              <span>讲小店为什么坚持做好事<br>适合分享</span>
-            </div>
+            <figure class="overflow-hidden rounded-[15px] border border-[#d6e9f4] bg-white shadow-sm">
+              <img src="song-haoyun-assets/2026-public-welfare-story-horizontal.png" class="h-[108px] w-full object-cover" alt="公益成果横版成品海报">
+              <figcaption class="px-2 py-2 text-[10px] font-bold text-[#12304b]">公益成果版 · 横版</figcaption>
+            </figure>
+            <figure class="overflow-hidden rounded-[15px] border border-[#d6e9f4] bg-white shadow-sm">
+              <img src="song-haoyun-assets/2026-public-welfare-story-vertical.png" class="h-[108px] w-full object-cover object-top" alt="公益故事竖版成品海报">
+              <figcaption class="px-2 py-2 text-[10px] font-bold text-[#12304b]">公益故事版 · 竖版</figcaption>
+            </figure>
           </div>
           <div class="wfd-guide-head"><strong>打卡攻略</strong><span>看示例后，照着 4 步做</span></div>
           <div class="wfd-process-strip">
@@ -2179,19 +2450,21 @@ function showEntry() {
         ? `${escapeHtml(input.reason)}。${escapeHtml(input.message)}。世界粮食日，我们想把这份「${escapeHtml(input.attitude)}」的心意，分享给每一位来到小店的朋友。`
         : (stories[angle] || stories['日常坚持']);
       const versionLabel = angle === '公益成果' ? '公益成果版' : '公益故事版';
+      const storyAsset = angle === '公益成果'
+        ? 'song-haoyun-assets/2026-public-welfare-story-horizontal.png'
+        : 'song-haoyun-assets/2026-public-welfare-story-vertical.png';
       appendRichBotMessage(`
         <div class="wfd-benefit-card">
           <div class="flex items-center justify-between gap-2">
             <div class="inline-flex px-2 py-1 rounded-full bg-[#eaf7ff] text-[11px] font-bold text-[#0871c6]">海报预览已生成</div>
             <span class="text-[11px] text-[#5f7484]">${versionLabel}</span>
           </div>
-          <h3 class="mt-2 text-[18px] font-bold text-[#12304b]">${store} 的专属公益海报</h3>
-          <div class="wfd-story-poster mt-3">
-            <div class="relative z-[2] text-[11px] font-bold tracking-wider text-white/84">2026 世界粮食日 · 公益故事</div>
-            <div class="relative z-[2] mt-3 text-[18px] font-bold">做好事有好运</div>
-            <p class="relative z-[2] w-[86%] mt-2 text-[13px] wfd-story-copy text-white/96">${story}</p>
-            <div class="relative z-[2] mt-3 inline-flex rounded-full bg-[#ffd400] px-3 py-1 text-[11px] font-bold text-[#075cae]">${store}</div>
-          </div>
+          <h3 class="mt-2 text-[18px] font-bold text-[#12304b]">${versionLabel}版式预览</h3>
+          <figure class="wfd-reference-visual mt-3 ${angle === '公益成果' ? 'is-story-horizontal' : 'is-story-vertical'}">
+            <img src="${storyAsset}" alt="${versionLabel}成品样张">
+            <figcaption><strong>活动成品样张</strong> · 正式生成时替换为 ${store} 的门店名称和经核验内容</figcaption>
+          </figure>
+          <div class="mt-3 rounded-xl bg-[#f4f8fa] px-3 py-2.5 text-[12px] leading-relaxed text-[#52697b]"><strong class="text-[#12304b]">本次故事表达</strong><br>${story}</div>
           <div class="mt-3">
             <div class="wfd-role-row"><b>已有预览</b><span>已生成门店署名、故事文案与活动版式</span></div>
             <div class="wfd-role-row"><b>正式生成</b><span>需同步可公开门店信息并接入物料生成服务</span></div>
@@ -2222,8 +2495,8 @@ function showEntry() {
             <h3 class="mt-1 text-[18px] font-bold text-[#12304b]">让 ${store} 的善意，有自己的样子</h3>
             <p class="mt-1 text-[13px] leading-relaxed text-[#52697b]">不是通用活动海报。你可以做强调门店信息的公益成果版，也可以做适合分享的公益故事版。</p>
             <figure class="wfd-reference-visual">
-              <img src="song-haoyun-assets/2026-km-public-welfare-poster-reference.jpg" alt="公益商家横版海报参考样张">
-              <figcaption><strong>横版参考样张</strong> · 适合电子屏、店铺页和公域页面；图中门店与数据仅作版式示意</figcaption>
+              <img src="song-haoyun-assets/2026-public-welfare-story-horizontal.png" alt="公益商家横版成品海报样张">
+              <figcaption><strong>横版成品样张</strong> · 适合电子屏、店铺页和公域页面；图中商家与数据仅作活动示例</figcaption>
             </figure>
             <div class="wfd-guide-head"><strong>打卡攻略</strong><span>看示例 → 选版本 → 点选生成</span></div>
             <div class="wfd-process-strip">
@@ -2244,10 +2517,16 @@ function showEntry() {
             <div class="flex items-center justify-between gap-2"><span class="wfd-benefit-no">2</span><span class="inline-flex px-2 py-1 rounded-full bg-[#eaf7ff] text-[11px] font-bold text-[#0871c6]">可选加分</span></div>
             <h3 class="mt-1 text-[18px] font-bold text-[#12304b]">健康菜品认证，有什么用？</h3>
             <p class="mt-1 text-[13px] leading-relaxed text-[#52697b]">生成专属健康菜品海报；通过活动标准与人工审核后，还可参与主会场、频道页或搜索等公益流量资源筛选。</p>
-            <figure class="wfd-reference-visual">
-              <img src="song-haoyun-assets/2026-km-healthy-dish-poster-reference.jpg" alt="健康菜品横版海报参考样张">
-              <figcaption><strong>健康菜品画面参考</strong> · 菜品名称、图片与认证结果将在正式流程中按门店实际信息生成</figcaption>
-            </figure>
+            <div class="mt-3 grid grid-cols-2 gap-2">
+              <figure class="overflow-hidden rounded-xl border border-[#d4eaf8] bg-white shadow-sm">
+                <img src="song-haoyun-assets/2026-demo-raw-healthy-dish.jpg" alt="未经排版的健康菜品体验原图" class="w-full h-[112px] object-cover">
+                <figcaption class="px-2 py-2 text-[10px] leading-snug text-[#52697b]"><strong class="text-[#12304b]">上传原图</strong><br>真实菜品，不加文字</figcaption>
+              </figure>
+              <figure class="overflow-hidden rounded-xl border border-[#d4eaf8] bg-white shadow-sm">
+                <img src="song-haoyun-assets/2026-km-healthy-dish-poster-reference.jpg" alt="健康菜品横版海报参考样张" class="w-full h-[112px] object-cover">
+                <figcaption class="px-2 py-2 text-[10px] leading-snug text-[#52697b]"><strong class="text-[#12304b]">生成海报</strong><br>认证结果以审核为准</figcaption>
+              </figure>
+            </div>
             <div class="wfd-guide-head"><strong>打卡攻略</strong><span>先看示例，再准备一道代表菜</span></div>
             <div class="wfd-process-strip">
               <span>上传菜品</span><span>规则认证</span><span>人工审核</span><span>生成海报</span>
@@ -2265,9 +2544,9 @@ function showEntry() {
           <div class="wfd-benefit-card">
             <div class="flex items-center justify-between gap-2"><span class="wfd-benefit-no">3</span><span class="inline-flex px-2 py-1 rounded-full bg-[#fff8cf] text-[11px] font-bold text-[#725900]">分享返图</span></div>
             <h3 class="mt-1 text-[18px] font-bold text-[#12304b]">分享海报，进入盲盒周边抽选流程</h3>
-            <figure class="wfd-reference-visual is-merch">
-              <img src="song-haoyun-assets/2026-km-blindbox-merch-reference.jpg" alt="2026世界粮食日毛绒盲盒周边视觉参考">
-              <figcaption><strong>毛绒盲盒周边参考</strong> · 款式、数量、抽选及发放规则以正式活动页和真实通知为准</figcaption>
+            <figure class="wfd-reference-visual is-social-share">
+              <img src="song-haoyun-assets/2026-demo-social-share-reference.jpg" alt="脱敏后的朋友圈分享体验示例">
+              <figcaption><strong>分享截图体验示例</strong> · 商家和互动信息已脱敏；该图不代表真实发布或抽选结果</figcaption>
             </figure>
             <div class="wfd-guide-head"><strong>打卡攻略</strong><span>发布前先保存专属海报</span></div>
             <div class="wfd-process-strip">
@@ -2286,9 +2565,15 @@ function showEntry() {
             <div class="flex items-center justify-between gap-2"><span class="wfd-benefit-no">4</span><span class="inline-flex px-2 py-1 rounded-full bg-[#eaf7ff] text-[11px] font-bold text-[#0871c6]">线下回传权益</span></div>
             <h3 class="mt-1 text-[18px] font-bold text-[#12304b]">布置门店并返图，进入探店候选池</h3>
             <p class="mt-1 text-[13px] leading-relaxed text-[#52697b]">把活动物料打印或展示在店内，再拍一张能同时看清物料和门店环境的照片。</p>
-            <div class="mt-3 grid grid-cols-[96px_1fr] gap-3 items-center rounded-2xl bg-gradient-to-br from-[#eef9ff] to-[#fff8cf] border border-[#d4eaf8] p-3">
-              <div class="overflow-hidden rounded-xl bg-white p-1 shadow-sm"><img src="song-haoyun-assets/2026-world-food-day-main-kv.jpg" alt="门店物料返图示例" class="w-full h-[82px] object-cover rounded-lg"></div>
-              <div class="text-[12px] leading-relaxed text-[#52697b]"><strong class="text-[#12304b]">返图示例</strong><br>物料完整清楚<br>能识别门店环境<br>画面整洁明亮</div>
+            <div class="mt-3 grid grid-cols-2 gap-2">
+              <figure class="overflow-hidden rounded-xl border border-[#d4eaf8] bg-white shadow-sm">
+                <img src="song-haoyun-assets/2026-demo-store-display-reference.jpg" alt="活动物料在门店内展示的体验返图" class="w-full h-[112px] object-cover">
+                <figcaption class="px-2 py-2 text-[10px] leading-snug text-[#52697b]"><strong class="text-[#12304b]">门店返图示例</strong><br>同时拍到物料和环境</figcaption>
+              </figure>
+              <figure class="overflow-hidden rounded-xl border border-[#d4eaf8] bg-white shadow-sm">
+                <img src="song-haoyun-assets/2026-demo-creator-preview-unpublished.jpg" alt="未发布的达人探店传播体验预览" class="w-full h-[112px] object-cover object-top">
+                <figcaption class="px-2 py-2 text-[10px] leading-snug text-[#52697b]"><strong class="text-[#12304b]">传播预览示例</strong><br>未发布，不代表入选</figcaption>
+              </figure>
             </div>
             <div class="wfd-guide-head"><strong>打卡攻略</strong><span>照着示例拍，避免只拍物料特写</span></div>
             <div class="wfd-process-strip">
