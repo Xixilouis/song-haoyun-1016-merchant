@@ -2518,24 +2518,22 @@ function showEntry() {
       wfdState.stage = safeVersion === 'horizontal' ? 'horizontal-builder' : 'vertical-builder';
       const card = safeVersion === 'horizontal' ? `
         <div class="wfd-benefit-card">
-          <div class="inline-flex px-2 py-1 rounded-full bg-[#eaf7ff] text-[11px] font-bold text-[#0871c6]">横版海报 · 确认信息</div>
-          <h3 class="mt-2 text-[18px] font-bold text-[#12304b]">确认这家门店，直接生成横版</h3>
+          <h3 class="text-[18px] font-bold text-[#12304b]">确认门店，生成横版海报</h3>
+          <figure class="wfd-reference-visual mt-3 is-story-horizontal">
+            <img src="song-haoyun-assets/2026-public-welfare-story-horizontal.png" alt="横版公益海报样张">
+          </figure>
           <label class="block mt-3">
             <span class="block mb-1.5 text-[11px] font-bold text-[#52697b]">海报上展示的门店名称</span>
             <input id="wfd-story-store-name" class="wfd-store-name-input" value="${store}" maxlength="20" aria-label="海报门店名称">
           </label>
-          <div class="wfd-metric-grid">
-            <div class="wfd-metric is-pending"><strong>待同步</strong><span>已参与捐建操场</span></div>
-            <div class="wfd-metric is-pending"><strong>待同步</strong><span>已帮助乡村儿童</span></div>
-            <div class="wfd-metric is-pending"><strong>待同步</strong><span>公益计划参与天数</span></div>
-          </div>
-          <p class="mt-3 text-[11px] leading-relaxed text-[#607786]">正式产品会同步三项经核验的公益数据；体验版先展示版式，不填写未经核验的门店数字。</p>
+          <p class="mt-3 text-[12px] leading-relaxed text-[#607786]">系统会读取“参与捐建操场、帮助乡村儿童、公益计划参与天数”三项经核验数据并写入海报。体验版不填写未经核验的门店数字。</p>
           <button type="button" data-wfd-action="story-generate-horizontal" class="w-full wfd-primary mt-3">确认信息，生成横版海报</button>
-          <button type="button" data-wfd-action="store-picker" class="w-full wfd-secondary mt-2">切换门店</button>
         </div>` : `
         <div class="wfd-benefit-card">
-          <div class="inline-flex px-2 py-1 rounded-full bg-[#fff4bf] text-[11px] font-bold text-[#725900]">竖版海报 · 问题示意</div>
-          <h3 class="mt-2 text-[18px] font-bold text-[#12304b]">先讲真实的事，再让好运帮你表达</h3>
+          <h3 class="text-[18px] font-bold text-[#12304b]">先讲真实的事，再生成竖版海报</h3>
+          <figure class="wfd-reference-visual mt-3 is-story-vertical">
+            <img src="song-haoyun-assets/2026-public-welfare-story-vertical.png" alt="竖版公益故事海报样张">
+          </figure>
           <p class="mt-1 text-[12px] leading-relaxed text-[#607786]">这是答题形式示意，题目后续还可以调整。当前门店：<strong>${store}</strong></p>
           <label class="block mt-3">
             <span class="block mb-1.5 text-[11px] font-bold text-[#52697b]">海报上展示的门店名称</span>
@@ -2655,32 +2653,13 @@ function showEntry() {
         : 'song-haoyun-assets/2026-public-welfare-story-vertical.png';
       appendRichBotMessage(`
         <div class="wfd-benefit-card">
-          <div class="flex items-center justify-between gap-2">
-            <div class="inline-flex px-2 py-1 rounded-full bg-[#eaf7ff] text-[11px] font-bold text-[#0871c6]">海报预览已生成</div>
-            <span class="text-[11px] text-[#5f7484]">${isHorizontal ? '横版 · 直接生成' : style + ' · 真实故事'}</span>
-          </div>
-          <h3 class="mt-2 text-[18px] font-bold text-[#12304b]">${versionLabel}已生成</h3>
+          <h3 class="text-[18px] font-bold text-[#12304b]">${versionLabel}已生成</h3>
           <figure class="wfd-reference-visual mt-3 ${isHorizontal ? 'is-story-horizontal' : 'is-story-vertical'}">
             <img src="${storyAsset}" alt="${versionLabel}成品样张">
-            <figcaption><strong>活动成品样张</strong> · 正式生成时替换为 ${store} 的门店名称和经核验内容</figcaption>
           </figure>
-          <div class="mt-3 rounded-xl bg-[#f4f8fa] px-3 py-2.5 text-[12px] leading-relaxed text-[#52697b]"><strong class="text-[#12304b]">${isHorizontal ? '数据说明' : '根据你提供的内容整理'}</strong><br>${story}</div>
-          <div class="mt-3">
-            <div class="wfd-role-row"><b>本次选择</b><span>${versionLabel} · ${store}</span></div>
-            <div class="wfd-role-row"><b>正式生成</b><span>需同步可公开门店信息、核验数据并接入物料服务</span></div>
-            <div class="wfd-role-row"><b>接下来</b><span>可以继续做健康菜品，也可以查看分享返图与探店步骤</span></div>
-          </div>
-          <button type="button" data-wfd-action="${isHorizontal ? 'download-horizontal' : 'download-vertical'}" class="w-full wfd-secondary mt-3">保存${isHorizontal ? '横版' : '竖版'}体验样张</button>
-          <div class="grid grid-cols-2 gap-2 mt-3">
-            <button type="button" data-wfd-action="story-regenerate" class="wfd-secondary">重新选择</button>
-            <button type="button" data-wfd-action="benefit-health" class="wfd-primary">继续做健康菜品</button>
-          </div>
-          <div class="grid grid-cols-2 gap-2 mt-2">
-            <button type="button" data-wfd-action="benefit-share" class="wfd-secondary">看分享抽选步骤</button>
-            <button type="button" data-wfd-action="benefit-proof" class="wfd-secondary">看探店返图步骤</button>
-          </div>
-          <button type="button" data-wfd-action="physical-material" class="w-full wfd-secondary mt-2">申领实体证书或活动海报</button>
-          <p class="mt-2 text-[12px] text-gray-500">当前生成的是可操作流程中的版式预览，不代表个性化文件已写入正式活动系统。</p>
+          <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]"><strong>${store}</strong> · ${isHorizontal ? '使用经核验的三项公益数据' : style + '表达：' + story}</p>
+          <p class="mt-2 text-[11px] leading-relaxed text-gray-500">当前是活动体验样张；正式生成需同步可公开门店信息、核验数据并接入物料服务。其他活动可直接从底部快捷入口继续。</p>
+          <button type="button" data-wfd-action="${isHorizontal ? 'download-horizontal' : 'download-vertical'}" class="w-full wfd-primary mt-3">保存${isHorizontal ? '横版' : '竖版'}体验样张</button>
         </div>
       `);
     }
@@ -2720,72 +2699,35 @@ function showEntry() {
       } else if (type === 'health') {
         card = `
           <div class="wfd-benefit-card">
-            <div class="flex items-center justify-between gap-2"><span class="wfd-benefit-no">2</span><span class="inline-flex px-2 py-1 rounded-full bg-[#eaf7ff] text-[11px] font-bold text-[#0871c6]">可选加分</span></div>
-            <h3 class="mt-1 text-[18px] font-bold text-[#12304b]">健康菜品认证，有什么用？</h3>
-            <p class="mt-1 text-[13px] leading-relaxed text-[#52697b]">先由 AI 识别菜品信息并生成专属海报；再进入人工审核。审核通过后，有机会获得健康倡议标签或活动流量。</p>
-            <div class="mt-3 grid grid-cols-2 gap-2">
-              <figure class="overflow-hidden rounded-xl border border-[#d4eaf8] bg-white shadow-sm">
-                <img src="song-haoyun-assets/2026-demo-raw-healthy-dish.jpg" alt="未经排版的健康菜品体验原图" class="w-full h-[112px] object-cover">
-                <figcaption class="px-2 py-2 text-[10px] leading-snug text-[#52697b]"><strong class="text-[#12304b]">推荐上传</strong><br>能看清菜名、价格和菜品</figcaption>
-              </figure>
-              <figure class="overflow-hidden rounded-xl border border-[#d4eaf8] bg-white shadow-sm">
-                <img src="song-haoyun-assets/2026-km-healthy-dish-poster-reference.jpg" alt="健康菜品横版海报参考样张" class="w-full h-[112px] object-cover">
-                <figcaption class="px-2 py-2 text-[10px] leading-snug text-[#52697b]"><strong class="text-[#12304b]">生成效果</strong><br>通过 AI 初审后生成海报</figcaption>
-              </figure>
-            </div>
-            <p class="mt-3 text-[12px] leading-relaxed text-[#52697b]"><strong class="text-[#12304b]">怎么上传：</strong>优先选择菜单截图、外卖菜品页或菜品信息图；只上传看不出菜名和价格的实拍图，可能无法完成认证。</p>
-            <div class="wfd-process-strip mt-3"><span>上传信息图</span><span>AI 初审</span><span>生成海报</span><span>人工审核</span></div>
+            <h3 class="text-[18px] font-bold text-[#12304b]">认证健康菜品，争取活动权益</h3>
+            <figure class="wfd-reference-visual mt-3 is-story-horizontal">
+              <img src="song-haoyun-assets/2026-km-healthy-dish-poster-reference.jpg" alt="健康菜品海报参考样张">
+            </figure>
+            <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">上传能看清<strong>菜名、价格和菜品</strong>的菜单截图、外卖菜品页或信息图。宋好运先识别并生成海报；信息不完整会说明原因并让你重传，通过后再进入人工审核。</p>
+            <p class="mt-2 text-[12px] leading-relaxed text-[#607786]">人工审核通过后，才有机会获得健康倡议标签或活动流量。当前按摩/足疗不开放，完整品类名单待补。</p>
             <button type="button" data-wfd-action="health-upload" class="w-full wfd-primary mt-3">上传菜品信息图</button>
-            <button type="button" data-wfd-action="health-reject-demo" class="w-full wfd-secondary mt-2">看初审不通过示意</button>
-            <button type="button" data-wfd-action="followup" data-wfd-followup="health-example" class="wfd-followup">什么样的菜品照片更合适？</button>
-            <div class="wfd-fact-note">本期品类名单待业务确认；当前示意中，按摩/足疗暂不开放。是否获得标签和流量，以人工审核结果为准。</div>
-            <p class="mt-2 text-[12px] text-center text-gray-500">体验版不会真实上传、认证或发放流量权益。</p>
           </div>`;
       } else if (type === 'share') {
         card = `
           <div class="wfd-benefit-card">
-            <div class="flex items-center justify-between gap-2"><span class="wfd-benefit-no">3</span><span class="inline-flex px-2 py-1 rounded-full bg-[#fff8cf] text-[11px] font-bold text-[#725900]">分享返图</span></div>
-            <h3 class="mt-1 text-[18px] font-bold text-[#12304b]">分享海报，进入盲盒周边抽选流程</h3>
-            <figure class="wfd-reference-visual is-social-share">
+            <h3 class="text-[18px] font-bold text-[#12304b]">分享海报，参与盲盒周边抽选</h3>
+            <figure class="wfd-reference-visual mt-3 is-social-share">
               <img src="song-haoyun-assets/2026-demo-social-share-reference.jpg" alt="脱敏后的朋友圈分享体验示例">
-              <figcaption><strong>分享截图体验示例</strong> · 商家和互动信息已脱敏；该图不代表真实发布或抽选结果</figcaption>
             </figure>
-            <div class="wfd-guide-head"><strong>打卡攻略</strong><span>发布前先保存专属海报</span></div>
-            <div class="wfd-process-strip">
-              <span>生成海报</span><span>发布分享</span><span>回传截图</span><span>等待抽选</span>
-            </div>
-            <div class="mt-3 rounded-xl bg-[#f4f8fa] px-3 py-2.5 text-[12px] leading-relaxed text-[#52697b]"><strong class="text-[#12304b]">推荐分享文案</strong><br>世界粮食日，我们想把小店的一点善意分享给你。做好事有好运，也谢谢每一位顾客和我们一起把温暖传下去。</div>
-            <button type="button" data-wfd-action="share-copy" class="w-full wfd-secondary mt-3">复制分享文案</button>
+            <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">发布门店专属海报后，把能看清发布内容的截图传回来。宋好运完成校验后进入后置抽选；活动结束后由商家端或宋好运通知结果。</p>
+            <p class="mt-2 text-[12px] leading-relaxed text-[#607786]">收货信息可以在校验通过后选填，也可以先跳过。</p>
             <button type="button" data-wfd-action="share-upload" class="w-full wfd-primary mt-3">回传分享截图</button>
-            <button type="button" data-wfd-action="story-start" class="w-full wfd-secondary mt-2">我还没有物料，先生成故事</button>
-            <button type="button" data-wfd-action="followup" data-wfd-followup="share-example" class="wfd-followup">分享截图里需要包含什么？</button>
-            <p class="mt-2 text-[12px] text-gray-500">截图校验通过后进入后置抽选；可提前预填收货信息，也可以跳过。活动结束后通过商家端/宋好运通知结果。</p>
           </div>`;
       } else {
         card = `
           <div class="wfd-benefit-card">
-            <div class="flex items-center justify-between gap-2"><span class="wfd-benefit-no">4</span><span class="inline-flex px-2 py-1 rounded-full bg-[#eaf7ff] text-[11px] font-bold text-[#0871c6]">线下回传权益</span></div>
-            <h3 class="mt-1 text-[18px] font-bold text-[#12304b]">布置门店并返图，进入探店候选池</h3>
-            <p class="mt-1 text-[13px] leading-relaxed text-[#52697b]">把活动物料打印或展示在店内，再拍一张能同时看清物料和门店环境的照片。</p>
-            <div class="mt-3 grid grid-cols-2 gap-2">
-              <figure class="overflow-hidden rounded-xl border border-[#d4eaf8] bg-white shadow-sm">
-                <img src="song-haoyun-assets/2026-demo-store-display-reference.jpg" alt="活动物料在门店内展示的体验返图" class="w-full h-[112px] object-cover">
-                <figcaption class="px-2 py-2 text-[10px] leading-snug text-[#52697b]"><strong class="text-[#12304b]">门店返图示例</strong><br>同时拍到物料和环境</figcaption>
-              </figure>
-              <figure class="overflow-hidden rounded-xl border border-[#d4eaf8] bg-white shadow-sm">
-                <img src="song-haoyun-assets/2026-demo-creator-preview-unpublished.jpg" alt="未发布的达人探店传播体验预览" class="w-full h-[112px] object-cover object-top">
-                <figcaption class="px-2 py-2 text-[10px] leading-snug text-[#52697b]"><strong class="text-[#12304b]">传播预览示例</strong><br>未发布，不代表入选</figcaption>
-              </figure>
-            </div>
-            <div class="wfd-guide-head"><strong>打卡攻略</strong><span>照着示例拍，避免只拍物料特写</span></div>
-            <div class="wfd-process-strip">
-              <span>下载物料</span><span>门店布置</span><span>拍照返图</span><span>进入候选</span>
-            </div>
-            <div class="mt-3 rounded-xl bg-[#f4f8fa] px-3 py-2.5 text-[12px] leading-relaxed text-[#52697b]">线上线下公益氛围完整的门店，会优先进入达人探店或官方账号传播候选。返图通过后只需留下联系电话，不再重复填写门店地址。</div>
+            <h3 class="text-[18px] font-bold text-[#12304b]">布置门店并返图，进入探店候选池</h3>
+            <figure class="wfd-reference-visual mt-3 is-story-horizontal">
+              <img src="song-haoyun-assets/2026-demo-store-display-reference.jpg" alt="活动物料在门店内展示的体验返图">
+            </figure>
+            <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">把活动物料展示在店内，再拍一张<strong>同时看清物料和门店环境</strong>的照片。宋好运校验通过后，只需留下联系电话，不再填写门店地址。</p>
+            <p class="mt-2 text-[12px] leading-relaxed text-[#607786]">通过仅代表进入候选池，是否探店或传播以正式通知为准。</p>
             <button type="button" data-wfd-action="proof-upload" class="w-full wfd-primary mt-3">上传门店布置返图</button>
-            <button type="button" data-wfd-action="benefit-material" class="w-full wfd-secondary mt-2">先看可打印的专属物料</button>
-            <button type="button" data-wfd-action="followup" data-wfd-followup="proof-example" class="wfd-followup">怎样拍一张合格的门店返图？</button>
-            <p class="mt-2 text-[12px] text-center text-gray-500">是否入选及探店安排以正式通知为准；体验版不会真实提交联系电话。</p>
           </div>`;
       }
 
@@ -2830,36 +2772,16 @@ function showEntry() {
         wfdState.healthStatus = 'review-pending';
         appendRichBotMessage(`
           <div class="wfd-benefit-card text-[14px] leading-relaxed">
-            <div class="inline-flex px-2 py-1 rounded-full bg-[#eaf7ff] text-[11px] font-bold text-[#0871c6]">AI 初审通过 · 体验示意</div>
-            <h3 class="mt-2 text-[18px] font-bold text-[#12304b]">健康菜品海报已生成</h3>
-            <p class="mt-1 text-[12px] text-[#607786]">下面演示“初审通过”分支，不代表这张图片已经被真实识别或审核。</p>
+            <h3 class="text-[18px] font-bold text-[#12304b]">健康菜品海报已生成</h3>
             <figure class="wfd-reference-visual mt-3 is-story-horizontal">
               <img src="song-haoyun-assets/2026-km-healthy-dish-poster-reference.jpg" alt="健康菜品海报体验示例">
-              <figcaption><strong>生成效果示意</strong> · 正式版使用商家上传的菜品和经确认的信息</figcaption>
             </figure>
-            <div class="wfd-inline-status"><strong>下一步：等待人工审核</strong><br>请按活动后续确认的命名规范修改菜品名称。审核通过后，才有机会获得健康倡议标签或活动流量。</div>
-            <div class="grid grid-cols-2 gap-2 mt-3">
-              <button type="button" data-wfd-action="benefit-share" class="wfd-secondary">分享赢好礼</button>
-              <button type="button" data-wfd-action="benefit-proof" class="wfd-secondary">返图有惊喜</button>
-            </div>
-            <button type="button" data-wfd-action="health-upload" class="w-full wfd-primary mt-2">重新上传</button>
-            <p class="mt-2 text-[11px] text-gray-500">体验版文件只在本机选择，不会上传服务器或进入真实审核池。</p>
+            <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">这是“初审通过”后的效果示意，下一步进入人工审核。审核通过后，才有机会获得健康倡议标签或活动流量。</p>
+            <p class="mt-2 text-[11px] text-gray-500">体验版没有真实识别、上传或进入审核池。</p>
+            <button type="button" data-wfd-action="health-upload" class="w-full wfd-primary mt-3">重新上传</button>
           </div>`);
       }, 720);
       event.target.value = '';
-    }
-
-    function showWfdHealthRejectDemo() {
-      appendUserMessage('如果健康菜品初审不通过怎么办？');
-      setTimeout(() => appendRichBotMessage(`
-        <div class="wfd-benefit-card">
-          <div class="inline-flex px-2 py-1 rounded-full bg-[#fff2f0] text-[11px] font-bold text-[#b3402d]">AI 初审未通过 · 体验示意</div>
-          <h3 class="mt-2 text-[18px] font-bold text-[#12304b]">补充完整信息后可以重新上传</h3>
-          <p class="mt-1 text-[12px] leading-relaxed text-[#607786]">常见原因是图片看不清菜名、价格或菜品内容，或者门店品类不在本期开放范围。按摩/足疗当前明确不开放。</p>
-          <div class="wfd-inline-status"><strong>这一步不会进入人工审核</strong><br>请改用菜单截图、外卖菜品页或完整菜品信息图，再重新提交。</div>
-          <button type="button" data-wfd-action="health-upload" class="w-full wfd-primary mt-3">重新上传菜品信息图</button>
-          <p class="mt-2 text-[11px] text-gray-500">完整品类名单待业务侧补充后更新。</p>
-        </div>`), 360);
     }
 
     function showWfdShareInfo() {
@@ -2888,30 +2810,30 @@ function showEntry() {
         typing.classList.add('hidden');
         appendRichBotMessage(`
           <div class="wfd-benefit-card">
-            <div class="inline-flex px-2 py-1 rounded-full bg-[#fff4bf] text-[11px] font-bold text-[#725900]">截图校验通过 · 体验示意</div>
-            <h3 class="mt-2 text-[18px] font-bold text-[#12304b]">已进入后置抽选流程</h3>
-            <p class="mt-1 text-[12px] leading-relaxed text-[#607786]">正式版会在活动结束后统一抽选，并通过商家端/宋好运通知结果，不在这里即时开奖。</p>
-            <div class="wfd-inline-status"><strong>收货信息可以现在预填，也可以跳过</strong><br>跳过不影响当前体验；正式中奖后再按活动规则补齐。</div>
+            <h3 class="text-[18px] font-bold text-[#12304b]">截图通过，等待活动后抽选</h3>
+            <figure class="wfd-reference-visual mt-3 is-social-share">
+              <img src="song-haoyun-assets/2026-demo-social-share-reference.jpg" alt="分享截图通过示意">
+            </figure>
+            <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">正式版会在活动结束后统一抽选，并通过商家端或宋好运通知。下面的收货信息是选填，留空继续即可跳过。</p>
             <div class="wfd-contact-form">
               <label><span>收件人</span><input id="wfd-share-name" placeholder="体验版请勿填写真实姓名"></label>
               <label><span>手机号</span><input id="wfd-share-phone" inputmode="tel" placeholder="体验版请勿填写真实手机号"></label>
               <label><span>收货地址</span><textarea id="wfd-share-address" placeholder="体验版请勿填写真实地址"></textarea></label>
             </div>
-            <div class="grid grid-cols-2 gap-2 mt-3">
-              <button type="button" data-wfd-action="share-contact-skip" class="wfd-secondary">暂不填写</button>
-              <button type="button" data-wfd-action="share-contact-save" class="wfd-primary">预填完成</button>
-            </div>
+            <button type="button" data-wfd-action="share-contact-save" class="w-full wfd-primary mt-3">继续，等待抽选</button>
             <p class="mt-2 text-[11px] text-gray-500">体验版不会保存或上传以上内容。</p>
           </div>`);
       }, 700);
       event.target.value = '';
     }
 
-    function finishShareContact(skip) {
-      wfdState.shareContactSaved = !skip;
-      appendBotMessage(skip
-        ? '已跳过收货信息。当前仅展示“待后置抽选”的体验状态；正式结果以商家端通知为准。'
-        : '已完成收货信息预填的交互体验。体验版没有保存或上传你填写的内容。');
+    function finishShareContact() {
+      const filled = ['wfd-share-name', 'wfd-share-phone', 'wfd-share-address']
+        .some(id => (document.getElementById(id)?.value || '').trim());
+      wfdState.shareContactSaved = filled;
+      appendBotMessage(filled
+        ? '已完成收货信息预填的交互体验。体验版没有保存或上传你填写的内容。'
+        : '已跳过收货信息。当前仅展示“待后置抽选”的体验状态；正式结果以商家端通知为准。');
     }
 
     function chooseWfdProof() {
@@ -2930,9 +2852,11 @@ function showEntry() {
         typing.classList.add('hidden');
         appendRichBotMessage(`
           <div class="wfd-benefit-card">
-            <div class="inline-flex px-2 py-1 rounded-full bg-[#eaf7ff] text-[11px] font-bold text-[#0871c6]">返图符合要求 · 体验示意</div>
-            <h3 class="mt-2 text-[18px] font-bold text-[#12304b]">再留一个联系电话，就能进入候选池</h3>
-            <p class="mt-1 text-[12px] leading-relaxed text-[#607786]">门店地址使用系统已有信息，不需要重复填写。若被选中，活动运营会通过下面的电话确认探店安排。</p>
+            <h3 class="text-[18px] font-bold text-[#12304b]">返图通过，再留一个联系电话</h3>
+            <figure class="wfd-reference-visual mt-3 is-story-horizontal">
+              <img src="song-haoyun-assets/2026-demo-store-display-reference.jpg" alt="门店返图通过示意">
+            </figure>
+            <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">门店地址使用系统已有信息，不需要重复填写。若被选中，活动运营会通过下面的电话确认探店安排。</p>
             <div class="wfd-contact-form">
               <label><span>联系电话</span><input id="wfd-proof-phone" inputmode="tel" placeholder="体验示意：138****0000，请勿填写真实号码"></label>
             </div>
@@ -2957,15 +2881,13 @@ function showEntry() {
       appendUserMessage('我还想申领实体证书或活动海报');
       setTimeout(() => appendRichBotMessage(`
         <div class="wfd-benefit-card">
-          <div class="inline-flex px-2 py-1 rounded-full bg-[#eaf7ff] text-[11px] font-bold text-[#0871c6]">实体物料 · 复用原申请流程</div>
-          <h3 class="mt-2 text-[18px] font-bold text-[#12304b]">本次可申请两种实体物料</h3>
-          <div class="mt-3 space-y-2">
-            <div class="wfd-role-row"><b>活动证书</b><span>面向本次活动范围内、已签约乡村儿童操场项目的商家</span></div>
-            <div class="wfd-role-row"><b>活动海报</b><span>沿用现有商家物料申请、供应商制作和履约链路</span></div>
-          </div>
-          <p class="mt-3 text-[12px] leading-relaxed text-[#52697b]">宋好运负责讲清楚并打开原物料申请页，不在对话里另做一套特殊申请流程。</p>
+          <h3 class="text-[18px] font-bold text-[#12304b]">申请实体证书或活动海报</h3>
+          <figure class="wfd-reference-visual mt-3 is-story-horizontal">
+            <img src="song-haoyun-assets/2026-km-public-welfare-poster-reference.jpg" alt="公益实体物料示例">
+          </figure>
+          <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">宋好运只负责说明并打开原物料申请页；申请、供应商制作和履约沿用现有链路，不在对话里另做复杂流程。</p>
           <button type="button" data-wfd-action="physical-jump" class="w-full wfd-primary mt-3">打开原物料申请页</button>
-          <p class="mt-2 text-[11px] text-gray-500">体验版只演示跳转入口；未收到原系统回执前，不会显示“已申领”。品牌批量场景仍走线下运营。</p>
+          <p class="mt-2 text-[11px] text-gray-500">体验版只演示跳转；未收到原系统回执前，不显示“已申领”。</p>
         </div>`), 280);
     }
 
@@ -2977,16 +2899,10 @@ function showEntry() {
       appendUserMessage('查一下我的世界粮食日参与进度');
       setTimeout(() => appendRichBotMessage(`
         <div class="wfd-benefit-card text-[14px] text-gray-700">
-          <strong class="text-[17px] text-gray-900">本次活动体验进度</strong>
-          <div class="mt-3 space-y-2 text-[13px]">
-            <div class="rounded-xl bg-gray-50 px-3 py-2.5 flex justify-between gap-3"><span>选择活动任务</span><strong>${wfdState.joined ? '本机已选择' : '待选择'}</strong></div>
-            <div class="rounded-xl bg-gray-50 px-3 py-2.5 flex justify-between gap-3"><span>公益海报</span><strong>${wfdState.storyGenerated ? '已生成版式预览' : '待生成'}</strong></div>
-            <div class="rounded-xl bg-gray-50 px-3 py-2.5 flex justify-between gap-3"><span>活动示例物料</span><strong>${wfdState.downloaded ? '已下载示例' : '待查看'}</strong></div>
-            <div class="rounded-xl bg-gray-50 px-3 py-2.5 flex justify-between gap-3"><span>健康供给</span><strong>${wfdState.healthSelected ? '已选文件，未提交' : '待回传'}</strong></div>
-            <div class="rounded-xl bg-gray-50 px-3 py-2.5 flex justify-between gap-3"><span>分享截图</span><strong>${wfdState.shareSelected ? '已选文件，未提交' : '待回传'}</strong></div>
-            <div class="rounded-xl bg-gray-50 px-3 py-2.5 flex justify-between gap-3"><span>门店返图</span><strong>${wfdState.proofSelected ? '已选文件，未提交' : '待回传'}</strong></div>
-          </div>
-          <p class="mt-3 text-[12px] text-gray-500">这里仅记录本机体验状态，不能作为真实报名、抽选、审核、流量或探店回执。</p>
+          <h3 class="text-[18px] font-bold text-[#12304b]">本次活动体验进度</h3>
+          <figure class="wfd-reference-visual mt-3 is-story-horizontal"><img src="song-haoyun-assets/2026-world-food-day-main-kv.jpg" alt="世界粮食日活动"></figure>
+          <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">公益海报：${wfdState.storyGenerated ? '已生成体验预览' : '待生成'}；健康菜品：${wfdState.healthSelected ? '已选择文件' : '待上传'}；分享截图：${wfdState.shareSelected ? '已选择文件' : '待上传'}；门店返图：${wfdState.proofSelected ? '已选择文件' : '待上传'}。</p>
+          <p class="mt-2 text-[11px] text-gray-500">这里只记录本机体验状态，不代表真实业务回执。</p>
           <button type="button" data-wfd-action="story-start" class="w-full wfd-primary mt-3">继续做公益海报</button>
         </div>
       `), 360);
@@ -3014,11 +2930,9 @@ function showEntry() {
       else if (action === 'benefit-share') openWfdBenefit('share');
       else if (action === 'benefit-proof') openWfdBenefit('proof');
       else if (action === 'health-upload') document.getElementById('wfd-health-input').click();
-      else if (action === 'health-reject-demo') showWfdHealthRejectDemo();
       else if (action === 'share-copy') copyWfdShareText();
       else if (action === 'share-upload') document.getElementById('wfd-share-input').click();
-      else if (action === 'share-contact-skip') finishShareContact(true);
-      else if (action === 'share-contact-save') finishShareContact(false);
+      else if (action === 'share-contact-save') finishShareContact();
       else if (action === 'proof-upload') chooseWfdProof();
       else if (action === 'proof-contact-save') finishProofContact();
       else if (action === 'physical-material') showPhysicalMaterialCard();
