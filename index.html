@@ -2368,11 +2368,13 @@ function showEntry() {
       const fields = [...original.querySelectorAll('input, select, textarea')];
       copy.querySelectorAll('input, select, textarea').forEach((node, index) => {
         const source = fields[index];
-        // Persist story drafts, never receipt names, phone numbers or addresses.
-        const value = source.closest('[data-wfd-form="story"]') ? source.value : '';
+        // Keep public story/dish drafts, never recipient names, phones or addresses.
+        const value = source.closest('[data-wfd-form="story"], [data-wfd-form="health-rights"]') ? source.value : '';
         if (node.tagName === 'SELECT') [...node.options].forEach(option => option.toggleAttribute('selected', option.value === value));
         else if (node.tagName === 'TEXTAREA') node.textContent = value;
         else node.setAttribute('value', value);
+        // A refreshed form must ask for the merchant's confirmation again.
+        if (node.type === 'checkbox') node.toggleAttribute('checked', source.disabled && source.checked);
       });
       message.html = copy.innerHTML;
       saveCurrentChat();
@@ -2381,6 +2383,17 @@ function showEntry() {
 
     document.addEventListener('input', event => {
       if (event.target.closest('[data-wfd-form="story"]')) saveWfdRichState(event.target);
+      const rightsForm = event.target.closest('[data-wfd-form="health-rights"]');
+      if (rightsForm) {
+        const check = wfdHealthChecks.get(rightsForm.dataset.wfdHealthId);
+        if (check && check.storeId === currentStoreId && check.rightsStatus !== 'review-pending') {
+          check.dishNameDraft = rightsForm.querySelector('[data-wfd-field="dish-name"]').value;
+          const error = rightsForm.querySelector('[data-wfd-rights-error]');
+          error.textContent = '';
+          error.classList.add('hidden');
+          saveWfdRichState(event.target);
+        }
+      }
     });
 
     function appendActivityCard(html) {
@@ -2877,12 +2890,113 @@ function showEntry() {
       if (check.generated || target.disabled) return;
       check.generated = true;
       target.disabled = true;
-      const poster = registerWfdPoster({ label: '健康菜品海报', storeId: check.storeId, storeName: check.storeName, src: 'song-haoyun-assets/2026-km-healthy-dish-poster-reference.jpg', filename: '2026世界粮食日-健康菜品海报.jpg' });
+      const poster = registerWfdPoster({ label: '健康菜品海报', healthCheckId: check.id, storeId: check.storeId, storeName: check.storeName, src: 'song-haoyun-assets/2026-km-healthy-dish-poster-reference.jpg', filename: '2026世界粮食日-健康菜品海报.jpg' });
+      check.posterId = poster.id;
       wfdStateForStore(check.storeId).healthStatus = 'poster-ready-demo';
-      appendRichBotMessage(`<div class="wfd-benefit-card" data-wfd-poster="${poster.id}"><h3 class="text-[18px] font-bold text-[#12304b]">健康菜品海报已生成</h3><figure class="wfd-reference-visual mt-3 is-story-horizontal"><img src="${poster.src}" alt="健康菜品海报"></figure><p class="mt-3 text-[13px] text-[#52697b]">${escapeHtml(poster.storeName)} · 可以保存后分享，或布置到门店再返图。健康倡议标签和流量权益仍需人工审核。</p>${renderWfdDownload(poster)}</div>`);
+      appendRichBotMessage(`<div class="wfd-benefit-card" data-wfd-poster="${poster.id}"><h3 class="text-[18px] font-bold text-[#12304b]">健康菜品海报已生成</h3><figure class="wfd-reference-visual mt-3 is-story-horizontal"><img src="${poster.src}" alt="健康菜品海报"></figure><p class="mt-3 text-[13px] text-[#52697b]">${escapeHtml(poster.storeName)} · 可以保存后分享，或布置到门店再返图。</p>${renderWfdDownload(poster)}${renderWfdHealthRightsEntry(poster)}</div>`);
       appendWfdPosterFollowup(poster);
       target.textContent = '已生成，可在下方保存';
       saveWfdRichState(target);
+    }
+
+    function getWfdHealthCheck(poster) {
+      if (!poster || !poster.label.includes('健康')) return null;
+      const linked = wfdHealthChecks.get(poster.healthCheckId);
+      if (linked && linked.storeId === poster.storeId) return linked;
+      // Only recover an old unlinked result when the relationship is unambiguous.
+      const candidates = [...wfdHealthChecks.values()].filter(check => check.storeId === poster.storeId && check.generated && (!check.posterId || check.posterId === poster.id));
+      const oldPosters = [...wfdPosters.values()].filter(item => item.storeId === poster.storeId && item.label.includes('健康') && !item.healthCheckId);
+      if (candidates.length !== 1 || oldPosters.length !== 1) return null;
+      const check = candidates[0];
+      check.posterId = poster.id;
+      poster.healthCheckId = check.id;
+      return check;
+    }
+
+    function getWfdPoi(storeId) {
+      return STORES.find(store => store.id === storeId)?.name.match(/\((\d+)\)$/)?.[1] || '';
+    }
+
+    function renderWfdHealthRightsEntry(poster) {
+      const check = getWfdHealthCheck(poster);
+      const status = check?.rightsStatus;
+      const next = status === 'review-pending' ? '查看权益申请进度' : status === 'rename-required' ? '继续确认菜品改名' : '核对门店，申请标签和流量';
+      return `<p class="mt-4 text-[13px] leading-relaxed text-[#52697b]"><strong class="text-[#12304b]">还可以申请哪些权益？</strong><br>审核通过后，有机会获得「健康生活倡议商家」标签，并参与主会场、频道页或搜索等公益流量资源筛选。</p><p class="mt-2 text-[12px] text-[#52697b]">${status === 'review-pending' ? '门店和改名信息已提交，等待人工审核。是否入选、展示位置以审核及资源安排为准。' : '先核对门店 POI，再按活动要求修改菜品名称，提交人工审核。菜品认证通过不代表权益已生效。'}</p><button type="button" data-wfd-action="health-rights" data-wfd-poster-id="${poster.id}" class="w-full wfd-secondary mt-3">${next}</button>`;
+    }
+
+    function readWfdHealthRightsCheck(target) {
+      const check = wfdHealthChecks.get(target.dataset.wfdHealthId);
+      if (!check || check.result !== 'pass' || check.status !== 'certified-demo' || !check.generated) { showWfdToast('请先完成这道菜品的认证并生成海报'); return null; }
+      if (check.storeId !== currentStoreId) { showWfdToast('门店已切换，请切回认证时的门店再确认'); return null; }
+      return check;
+    }
+
+    function openWfdHealthRights(posterId) {
+      const poster = posterId ? wfdPosters.get(posterId) : latestWfdPoster('health');
+      if (!poster) { appendBotMessage('申请标签和流量权益，需要先完成菜品认证。认证通过后，我会请你核对门店 POI 和菜品改名信息。'); renderWfdBenefitCard('health', true); return; }
+      if (poster.storeId !== currentStoreId) { showWfdToast('请切回这张海报所属门店再申请权益'); return; }
+      const check = getWfdHealthCheck(poster);
+      if (!check || check.result !== 'pass' || check.status !== 'certified-demo') {
+        appendRichBotMessage(`<div class="wfd-benefit-card" data-wfd-store-id="${poster.storeId}"><h3 class="text-[18px] font-bold text-[#12304b]">请重新确认菜品信息</h3><p class="mt-3 text-[13px] text-[#52697b]">这张海报未关联到完整的菜品认证记录，请重新上传认证后申请权益。已保存的海报不受影响。</p><button type="button" data-wfd-action="health-upload" class="w-full wfd-primary mt-3">上传菜品信息图</button></div>`);
+        return;
+      }
+      if (check.rightsStatus === 'review-pending') { showWfdHealthRightsReview(check); return; }
+      if (check.rightsStatus === 'rename-required') { renderWfdHealthRename(check); return; }
+      const poi = getWfdPoi(check.storeId);
+      appendRichBotMessage(`<div class="wfd-benefit-card"><h3 class="text-[18px] font-bold text-[#12304b]">先确认参与权益的门店</h3><p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">标签与流量申请会关联到下面这家门店，请核对：</p><p class="mt-3 text-[14px] font-semibold text-[#12304b]">${escapeHtml(check.storeName)}</p><p class="mt-1 text-[13px] text-[#52697b]">门店 POI：${escapeHtml(poi || '暂未获取到')}</p><p class="mt-2 text-[12px] text-[#52697b]">只为这家门店申请，不会同步到同品牌其他门店。</p><button type="button" data-wfd-action="health-poi-confirm" data-wfd-health-id="${check.id}" class="w-full wfd-primary mt-3" ${poi ? '' : 'disabled'}>是这家门店，继续</button><button type="button" data-wfd-action="store-picker" class="w-full wfd-secondary mt-2">不是这家，切换门店</button><p class="mt-2 text-[11px] text-gray-500">切换后，需使用对应门店的菜品重新认证。</p></div>`);
+    }
+
+    function confirmWfdHealthPoi(target) {
+      const check = readWfdHealthRightsCheck(target);
+      if (!check) return;
+      if (check.rightsStatus === 'review-pending') { showWfdHealthRightsReview(check); return; }
+      const poi = getWfdPoi(check.storeId);
+      if (!poi) { showWfdToast('暂未获取到门店 POI，请稍后再试'); return; }
+      if (check.rightsStatus !== 'rename-required') {
+        check.confirmedPoi = poi;
+        check.rightsStatus = 'rename-required';
+        appendUserMessage('确认参与门店：' + check.storeName + '（POI：' + poi + '）');
+      }
+      target.disabled = true;
+      target.textContent = '门店已确认';
+      saveWfdRichState(target);
+      renderWfdHealthRename(check);
+    }
+
+    function renderWfdHealthRename(check) {
+      const existing = document.querySelector(`[data-wfd-form="health-rights"][data-wfd-health-id="${check.id}"]`);
+      if (existing) { existing.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+      // The campaign's exact naming prefix is awaiting business confirmation.
+      // Do not invent a prefix or pretend this page changes the merchant backend.
+      appendRichBotMessage(`<div class="wfd-benefit-card" data-wfd-form="health-rights" data-wfd-health-id="${check.id}"><h3 class="text-[18px] font-bold text-[#12304b]">再确认一下菜品改名</h3><p class="mt-2 text-[12px] text-[#607786]">${escapeHtml(check.storeName)} · POI：${escapeHtml(check.confirmedPoi)}</p><p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">请在商家后台找到这道已认证菜品，按活动要求修改名称并保存，再把修改后的完整菜名填在下面。仅在这里填写，不会修改店内商品名称。</p><div class="wfd-contact-form"><label><span>修改后的菜品名称</span><input data-wfd-field="dish-name" value="${escapeHtml(check.dishNameDraft || '')}" maxlength="60" placeholder="填写商家后台保存后的完整菜名"></label></div><label class="flex items-start gap-2 mt-3 text-[12px] leading-relaxed text-[#52697b]"><input type="checkbox" data-wfd-field="rename-confirmed" class="mt-1 shrink-0">我已在商家后台修改并保存，确认上述门店与菜品信息无误</label><p role="alert" data-wfd-rights-error class="hidden mt-2 text-[12px] text-red-600"></p><button type="button" data-wfd-action="health-rights-submit" data-wfd-health-id="${check.id}" class="w-full wfd-primary mt-3">确认改名，提交人工审核</button><p class="mt-2 text-[11px] text-gray-500">提交后审核门店品类、菜品与命名信息；通过后才有机会获得标签及流量权益。</p></div>`);
+    }
+
+    function submitWfdHealthRights(target) {
+      const check = readWfdHealthRightsCheck(target);
+      if (!check) return;
+      if (check.rightsStatus === 'review-pending') { showWfdHealthRightsReview(check); return; }
+      if (check.rightsStatus !== 'rename-required' || check.confirmedPoi !== getWfdPoi(check.storeId)) { showWfdToast('请先核对参与门店的 POI'); return; }
+      const form = target.closest('[data-wfd-form="health-rights"]');
+      const nameInput = form.querySelector('[data-wfd-field="dish-name"]');
+      const name = nameInput.value.trim();
+      const confirmed = form.querySelector('[data-wfd-field="rename-confirmed"]').checked;
+      const error = form.querySelector('[data-wfd-rights-error]');
+      error.textContent = !name || name.length > 60 ? '请填写修改后的完整菜品名称（60 字以内）。' : !confirmed ? '请先在商家后台保存改名，并勾选确认。' : '';
+      error.classList.toggle('hidden', !error.textContent);
+      if (error.textContent) { saveWfdRichState(target); if (!name) nameInput.focus(); return; }
+      check.renamedDishName = name;
+      check.dishNameDraft = name;
+      check.renameConfirmed = true;
+      check.rightsStatus = 'review-pending';
+      target.disabled = true;
+      target.textContent = '已提交，等待人工审核';
+      form.querySelectorAll('input').forEach(input => { input.disabled = true; });
+      saveWfdRichState(target);
+      showWfdHealthRightsReview(check);
+    }
+
+    function showWfdHealthRightsReview(check) {
+      appendRichBotMessage(`<div class="wfd-benefit-card"><h3 class="text-[18px] font-bold text-[#12304b]">权益申请待人工审核</h3><p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">参与门店：${escapeHtml(check.storeName)}<br>门店 POI：${escapeHtml(check.confirmedPoi)}<br>修改后菜名：${escapeHtml(check.renamedDishName)}</p><p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">审核通过后，有机会获得「健康生活倡议商家」标签，并参与主会场、频道页或搜索等公益流量资源筛选。提交不代表已获权益，实际展示位置以审核及资源安排为准。</p><p class="mt-2 text-[12px] text-[#52697b]">等待期间，可以先保存海报，继续分享或门店返图。</p><button type="button" data-wfd-action="show-poster" data-wfd-poster-id="${check.posterId}" class="w-full wfd-primary mt-3">查看海报，继续分享 / 返图</button></div>`);
     }
 
     function showWfdShareInfo() {
@@ -3048,7 +3162,7 @@ function showEntry() {
 
     function showWfdSavedPoster(poster) {
       if (!poster) { appendBotMessage('这家门店还没有生成海报，可以先点底部“做公益海报”或“健康菜品”。'); return; }
-      appendRichBotMessage(`<div class="wfd-benefit-card" data-wfd-poster="${poster.id}"><h3 class="text-[18px] font-bold text-[#12304b]">你的${escapeHtml(poster.label)}</h3><figure class="wfd-reference-visual mt-3 ${poster.label.includes('竖版') ? 'is-story-vertical' : 'is-story-horizontal'}"><img src="${escapeHtml(poster.src)}" alt="${escapeHtml(poster.label)}"></figure><p class="mt-3 text-[13px] text-[#52697b]">${escapeHtml(poster.storeName)} · 可继续保存、分享或门店返图。</p>${renderWfdDownload(poster)}</div>`);
+      appendRichBotMessage(`<div class="wfd-benefit-card" data-wfd-poster="${poster.id}"><h3 class="text-[18px] font-bold text-[#12304b]">你的${escapeHtml(poster.label)}</h3><figure class="wfd-reference-visual mt-3 ${poster.label.includes('竖版') ? 'is-story-vertical' : 'is-story-horizontal'}"><img src="${escapeHtml(poster.src)}" alt="${escapeHtml(poster.label)}"></figure><p class="mt-3 text-[13px] text-[#52697b]">${escapeHtml(poster.storeName)} · 可继续保存、分享或门店返图。</p>${renderWfdDownload(poster)}${poster.label.includes('健康') ? renderWfdHealthRightsEntry(poster) : ''}</div>`);
       appendWfdPosterFollowup(poster);
     }
 
@@ -3083,7 +3197,7 @@ function showEntry() {
 
     function showWfdProgress(skipUser) {
       if (!skipUser) appendUserMessage('查一下我的世界粮食日参与进度');
-      const health = { idle: '未上传', checking: '认证中', rejected: '认证未通过', unknown: '认证未完成，可重试', 'certified-demo': '认证通过，待生成海报', 'poster-ready-demo': '海报已生成；流量权益待人工审核' };
+      const health = { idle: '未上传', checking: '认证中', rejected: '认证未通过', unknown: '认证未完成，可重试', 'certified-demo': '认证通过，待生成海报', 'poster-ready-demo': '海报已生成' };
       const submissionStatus = kind => {
         const entry = [...wfdSubmissions.values()].reverse().find(item => item.kind === kind && item.storeId === currentStoreId);
         return entry ? ({ checking: '校验中', rejected: '未通过，请重传', unknown: '暂不可用，可重试', 'contact-optional': '已通过，可选填收货信息', 'phone-required': '已通过，待确认电话', 'draw-pending-demo': '待活动后抽选', 'candidate-demo': '已进入候选池' }[entry.status] || '状态待确认') : '未上传';
@@ -3092,15 +3206,19 @@ function showEntry() {
       const storeName = getWfdStoreName();
       const storyProgress = latestWfdPoster('story') ? '海报已生成' : '待生成';
       const healthProgress = health[wfdState.healthStatus] || '未上传';
+      const healthPoster = latestWfdPoster('health');
+      const rightsCheck = getWfdHealthCheck(healthPoster);
+      const rightsProgress = !healthPoster ? '待完成菜品认证并生成海报' : !rightsCheck ? '待补全菜品认证记录' : ({ 'rename-required': 'POI 已确认，待确认菜品改名', 'review-pending': '已提交，待人工审核' }[rightsCheck.rightsStatus] || '待核对门店 POI，再确认菜品改名');
       const shareProgress = submissionStatus('share');
       const proofProgress = submissionStatus('proof');
       wfdLater(() => appendRichBotMessage(`
         <div class="wfd-benefit-card text-[14px] text-gray-700">
           <h3 class="text-[18px] font-bold text-[#12304b]">本次活动参与进度</h3>
           <p class="mt-2 text-[12px] text-[#607786]">当前门店：${escapeHtml(storeName)}</p>
-          <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">公益海报：${storyProgress}<br>健康菜品：${healthProgress}<br>分享截图：${shareProgress}<br>门店返图：${proofProgress}</p>
+          <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">公益海报：${storyProgress}<br>健康菜品：${healthProgress}<br>标签与流量：${rightsProgress}<br>分享截图：${shareProgress}<br>门店返图：${proofProgress}</p>
           <p class="mt-2 text-[11px] text-gray-500">点击底部对应活动，可以继续上次的步骤。</p>
           <button type="button" data-wfd-action="${latest ? 'show-poster' : 'story-start'}" ${latest ? 'data-wfd-poster-id="' + latest.id + '"' : ''} class="w-full wfd-primary mt-3">${latest ? '查看最近一张海报' : '开始做公益海报'}</button>
+          ${healthPoster ? `<button type="button" data-wfd-action="health-rights" data-wfd-poster-id="${healthPoster.id}" class="w-full wfd-secondary mt-2">${rightsCheck?.rightsStatus === 'review-pending' ? '查看权益申请' : '继续申请标签和流量'}</button>` : ''}
         </div>
       `), 360);
     }
@@ -3132,6 +3250,9 @@ function showEntry() {
       else if (action === 'benefit-proof') openWfdBenefit('proof');
       else if (action === 'health-upload') startWfdUpload('health', target);
       else if (action === 'health-generate') generateWfdHealthPoster(target);
+      else if (action === 'health-rights') openWfdHealthRights(target.dataset.wfdPosterId);
+      else if (action === 'health-poi-confirm') confirmWfdHealthPoi(target);
+      else if (action === 'health-rights-submit') submitWfdHealthRights(target);
       else if (action === 'share-copy') copyWfdShareText();
       else if (action === 'share-upload') startWfdUpload('share', target);
       else if (action === 'share-contact-save') finishShareContact(target);
@@ -3210,6 +3331,10 @@ function showEntry() {
         }
         if (/进度|状态|审核结果|认证结果|通过了吗|中奖|抽选结果|入选/.test(text)) {
           showWfdProgress(true);
+          return;
+        }
+        if (/标签|流量|改菜名|菜品改名|修改菜品名|确认\s*poi|核对\s*poi/i.test(text)) {
+          openWfdHealthRights();
           return;
         }
         if (/实体|纸质|申请.{0,6}(物料|证书)|申领|邮寄/.test(text)) {
