@@ -984,42 +984,44 @@
       box-shadow: 0 12px 30px rgba(25,88,126,.11);
     }
     .wfd-activity-head {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) 70px;
+      align-items: center;
+      gap: 10px;
       padding: 14px;
       background:
         radial-gradient(circle at 95% 10%, rgba(255,209,0,.34), transparent 88px),
         linear-gradient(135deg, #edf9ff, #fffdf2);
     }
     .wfd-activity-head small { color: #117cc5; font-size: 10px; font-weight: 800; }
-    .wfd-activity-head h3 { margin: 3px 0 0; color: #18384d; font-size: 17px; line-height: 1.32; }
-    .wfd-activity-head p { margin: 5px 0 0; color: #6d8290; font-size: 11px; }
-    .wfd-activity-list { padding: 4px 10px 10px; }
+    .wfd-activity-head h3 { margin: 5px 0 0; color: #18384d; font-size: 16px; font-weight: 800; line-height: 1.4; }
+    .wfd-activity-head p { margin: 8px 0 0; color: #6d8290; font-size: 10px; }
+    .wfd-activity-date { display: grid; place-items: center; width: 44px; height: 48px; border-radius: 15px; background: #117cc5; color: #fff; font-size: 13px; font-weight: 800; }
+    .wfd-activity-participants { display: flex; align-items: center; gap: 5px; }
+    .wfd-activity-participants::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #51b784; }
+    .wfd-activity-companion { width: 70px; height: 108px; object-fit: contain; object-position: center bottom; }
+    .wfd-activity-list { padding: 0; }
     .wfd-activity-row {
       width: 100%;
       display: grid;
-      grid-template-columns: 38px minmax(0,1fr) 18px;
+      grid-template-columns: 42px minmax(0,1fr) 12px;
       gap: 10px;
       align-items: center;
       min-height: 66px;
-      padding: 9px 4px;
-      border-bottom: 1px solid #edf2f5;
+      padding: 11px 14px;
+      border-top: 1px solid #edf2f5;
+      background: #fff;
       text-align: left;
     }
-    .wfd-activity-row:last-child { border-bottom: 0; }
-    .wfd-activity-icon {
-      width: 38px;
-      height: 38px;
-      display: grid;
-      place-items: center;
-      border-radius: 13px;
-      background: #eaf6fc;
-      color: #117cc5;
-      font-size: 18px;
-    }
-    .wfd-activity-row:nth-child(3) .wfd-activity-icon { background: #fff4bf; color: #725900; }
-    .wfd-activity-row strong { display: block; color: #18384d; font-size: 13px; }
-    .wfd-activity-row span:not(.wfd-activity-icon):not(.wfd-activity-arrow) { display: block; margin-top: 3px; color: #6d8290; font-size: 11px; line-height: 1.42; }
+    .wfd-activity-row:hover { background: #f7fcff; }
+    .wfd-activity-row:focus-visible { outline: 2px solid #117cc5; outline-offset: -3px; }
+    .wfd-activity-thumbnail { width: 42px; height: 42px; border-radius: 14px; object-fit: cover; background: #eef5f8; }
+    .wfd-activity-copy { min-width: 0; }
+    .wfd-activity-copy strong { display: block; color: #18384d; font-size: 13px; line-height: 1.4; }
+    .wfd-activity-copy small { display: block; margin-top: 4px; color: #6d8290; font-size: 10px; line-height: 1.5; }
     .wfd-activity-arrow { color: #93aab6; font-size: 18px; }
-    .wfd-card-only { width: min(100%, 500px); margin-left: 40px; }
+    .wfd-card-only { width: 100%; max-width: 500px; margin-inline: auto; }
+    .wfd-activity-note { margin: 10px 8px 0; color: #8497a2; font-size: 10px; line-height: 1.5; }
     .wfd-choice-grid { display: grid; grid-template-columns: 1.35fr .85fr; gap: 9px; }
     .wfd-choice-card {
       overflow: hidden;
@@ -1068,9 +1070,17 @@
       .project-haoyun-main { grid-template-columns: 76px minmax(0,1fr) 18px; gap: 8px; }
       .project-haoyun-avatar { width: 74px; height: 88px; }
       .project-haoyun-copy h2 { font-size: 17px; }
-      .wfd-card-only { margin-left: 34px; }
+      .wfd-activity-head { grid-template-columns: 38px minmax(0, 1fr) 54px; gap: 8px; padding: 12px; }
+      .wfd-activity-date { width: 38px; height: 44px; font-size: 12px; }
+      .wfd-activity-head h3 { font-size: 14px; }
+      .wfd-activity-companion { width: 54px; height: 96px; }
       .wfd-choice-card img { height: 116px; }
       .wfd-metric span { font-size: 10px; }
+    }
+
+    @media (max-width: 340px) {
+      .wfd-activity-head { grid-template-columns: minmax(0, 1fr) 54px; }
+      .wfd-activity-date { display: none; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1169,84 +1179,17 @@
     </section>
   </div>
 
-  <!-- ========== Entry View: Song Haoyun 1016 Merchant Agent ========== -->
-  <div id="entry-view" class="view-hidden agent-home w-full max-w-[600px] h-full shadow-2xl relative overflow-y-auto">
-
-    <header class="home-topbar">
-      <button class="home-brand-mark" type="button" onclick="showProject()" aria-label="返回乡村儿童操场项目页">
-        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-      </button>
-      <div class="home-identity">
-        <strong>宋好运</strong>
-        <span>公益商家专属 AI 伙伴</span>
-      </div>
-      <button class="home-message-button" type="button" aria-label="查看活动消息" onclick="openHomeMessages()">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M18 8a6 6 0 00-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/>
-        </svg>
-        <span class="home-message-dot" id="home-message-dot"></span>
-      </button>
-    </header>
-
-    <main class="home-main">
-      <div class="home-activity-wrap">
-        <span class="home-activity-companion-note" aria-hidden="true">我陪你一步步参加</span>
-        <span class="home-activity-companion" aria-hidden="true"><img src="song-haoyun-assets/song-haoyun-wave-no-glasses-v3.png" alt=""></span>
-      <article id="home-activity-card" class="home-activity-card">
-        <div class="home-activity-toggle">
-          <span class="home-activity-date">10·16</span>
-          <span class="home-activity-heading">
-            <small>2026 世界粮食日</small>
-            <strong>AI 让每一家小店的善意<br>都有自己的样子</strong>
-            <span class="home-activity-status"><i aria-hidden="true"></i>已有 100,000+ 同行参与</span>
-          </span>
-        </div>
-        <div id="home-activity-body" class="home-activity-body">
-          <button class="home-benefit-row" type="button" onclick="openWfdBenefit('material')">
-            <span class="home-benefit-icon has-image"><img src="song-haoyun-assets/2026-public-welfare-story-horizontal.png" alt="公益商家故事横版海报"></span>
-            <span class="home-benefit-copy"><strong>为你定制公益专属海报</strong><small>让每家小店的善意都有自己的样子</small></span>
-            <span class="home-benefit-go" aria-hidden="true">›</span>
-          </button>
-          <button class="home-benefit-row" type="button" onclick="openWfdBenefit('health')">
-            <span class="home-benefit-icon has-image"><img src="song-haoyun-assets/2026-km-healthy-dish-poster-reference.jpg" alt="健康菜品海报参考"></span>
-            <span class="home-benefit-copy"><strong>健康认证，争取专属公益流量</strong><small>上传健康菜品，通过规则与审核后参与筛选</small></span>
-            <span class="home-benefit-go" aria-hidden="true">›</span>
-          </button>
-          <button class="home-benefit-row" type="button" onclick="openWfdBenefit('share')">
-            <span class="home-benefit-icon has-image"><img src="song-haoyun-assets/2026-km-blindbox-merch-reference.jpg" alt="毛绒盲盒周边参考"></span>
-            <span class="home-benefit-copy"><strong>毛绒盲盒周边限量送</strong><small>分享定制海报并返图，进入活动抽选流程</small></span>
-            <span class="home-benefit-go" aria-hidden="true">›</span>
-          </button>
-          <button class="home-benefit-row" type="button" onclick="openWfdBenefit('proof')">
-            <span class="home-benefit-icon store-visit-photo" role="img" aria-label="公益门店物料布置参考"></span>
-            <span class="home-benefit-copy"><strong>探店活动，帮你的善意被看见</strong><small>布置物料并返图，进入达人与官方传播候选池</small></span>
-            <span class="home-benefit-go" aria-hidden="true">›</span>
-          </button>
-        </div>
-      </article>
-      </div>
-
-      <p class="home-service-note">本期面向外卖餐饮、到餐及部分服务零售商家；按摩/足疗暂不开放。活动结果以正式系统回执为准。</p>
-    </main>
-
-    <button class="home-agent-launcher" type="button" onclick="showChat()">
-      <span class="home-launcher-avatar"><img src="song-haoyun-assets/song-haoyun-wave-no-glasses-v3.png" alt=""></span>
-      <span class="home-agent-placeholder">问好运：我适合先参加哪一项？</span>
-      <span class="home-agent-send" aria-hidden="true">↑</span>
-    </button>
-  </div>
-
   <!-- ========== Chat View ========== -->
   <div id="chat-view" class="view-hidden w-full max-w-[600px] bg-gray-50 h-full shadow-2xl flex flex-col">
     <!-- Agent Identity Bar -->
       <div class="flex items-center px-4 py-2 bg-white border-b shrink-0 relative">
-        <button onclick="showEntry()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition mr-1" aria-label="返回宋好运活动页">
+        <button onclick="showProject()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition mr-1" aria-label="返回乡村儿童操场项目页">
           <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
           </svg>
         </button>
-        <div class="font-semibold text-gray-900 text-[15px]">宋好运</div>
-        <button onclick="toggleMenu()" class="ml-auto w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+        <div><div class="font-semibold text-gray-900 text-[15px]">宋好运</div><p class="text-[10px] text-gray-500">公益商家专属 AI 伙伴</p></div>
+        <button onclick="toggleMenu()" class="ml-auto w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition" aria-label="会话菜单">
           <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
           </svg>
@@ -1273,10 +1216,7 @@
     <div class="flex-1 overflow-y-auto" id="main-scroll">
       <div class="px-4 pt-3 pb-1">
         <div class="flex items-center justify-between gap-3 rounded-2xl border border-[#d6eaf4] bg-white px-3 py-2.5 shadow-sm">
-          <div class="min-w-0">
-            <div class="text-[10px] font-bold text-[#117cc5]">2026 世界粮食日 · 10月16日</div>
-            <div class="mt-0.5 text-[12px] font-semibold text-[#18384d]">让每一家小店的善意都有自己的样子</div>
-          </div>
+          <span class="text-[11px] font-semibold text-[#52697b]">当前门店</span>
           <button onclick="openStorePicker()" class="shrink-0 rounded-full bg-[#eef8fd] px-2.5 py-1.5 text-[#10547f]">
             <span id="current-store-name" class="text-[10px] font-bold">暖食记·望江路店（体验）</span>
             <span class="text-[10px]" aria-hidden="true">⌄</span>
@@ -1290,28 +1230,7 @@
         <!-- History hint -->
         <div class="flex items-center justify-center gap-2 py-2 text-[10px] text-gray-400">宋好运会把每一步放进对话卡片里</div>
         <div class="space-y-3" id="welcome-msg">
-          <div class="flex gap-2">
-            <img data-song-avatar src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
-                 class="w-8 h-8 rounded-full object-cover shrink-0 mt-1 border-2 border-white shadow-sm" alt="宋好运">
-            <div class="wfd-agent-message bg-white rounded-2xl rounded-tl-md p-3.5 text-[14px] text-gray-700 leading-relaxed shadow-sm border border-gray-100">
-              <p><strong class="text-gray-900">老板你好 🍀</strong><br>今年世界粮食日，我可以陪你挑一项最合适的活动开始。</p>
-            </div>
-          </div>
-          <div class="wfd-card-only">
-            <div class="wfd-activity-panel">
-              <div class="wfd-activity-head">
-                <small>2026 世界粮食日 · 4 项活动按需参加</small>
-                <h3>让每一家小店的善意，都有自己的样子</h3>
-                <p>已有 100,000+ 同行参与</p>
-              </div>
-              <div class="wfd-activity-list">
-                <button class="wfd-activity-row" type="button" onclick="openWfdBenefit('material')"><span class="wfd-activity-icon">▣</span><span><strong>定制公益专属海报</strong><span>横版直接生成，竖版讲真实故事</span></span><span class="wfd-activity-arrow">›</span></button>
-                <button class="wfd-activity-row" type="button" onclick="openWfdBenefit('health')"><span class="wfd-activity-icon">✓</span><span><strong>认证健康菜品</strong><span>人工审核后有机会获得公益流量</span></span><span class="wfd-activity-arrow">›</span></button>
-                <button class="wfd-activity-row" type="button" onclick="openWfdBenefit('share')"><span class="wfd-activity-icon">礼</span><span><strong>分享赢好礼</strong><span>上传分享截图，进入后置抽选</span></span><span class="wfd-activity-arrow">›</span></button>
-                <button class="wfd-activity-row" type="button" onclick="openWfdBenefit('proof')"><span class="wfd-activity-icon">图</span><span><strong>返图有惊喜</strong><span>上传门店布置，进入探店候选池</span></span><span class="wfd-activity-arrow">›</span></button>
-              </div>
-            </div>
-          </div>
+          <div id="initial-activity-card" class="wfd-card-only"></div>
         </div>
 
         <div id="messages" class="space-y-3 mt-3"></div>
@@ -1443,9 +1362,9 @@
 
     // ===== View Switching =====
 function showChat() {
-      document.getElementById('project-view').classList.add('view-hidden');
-      document.getElementById('entry-view').classList.add('view-hidden');
       const chat = document.getElementById('chat-view');
+      if (!chat.classList.contains('view-hidden')) return;
+      document.getElementById('project-view').classList.add('view-hidden');
       chat.classList.remove('view-hidden');
       chat.classList.add('view-enter');
       requestAnimationFrame(() => {
@@ -1456,16 +1375,16 @@ function showChat() {
 }
 
 function showEntry() {
-      document.getElementById('chat-view').classList.add('view-hidden');
-      document.getElementById('project-view').classList.add('view-hidden');
-      const entry = document.getElementById('entry-view');
-      entry.classList.remove('view-hidden');
-      entry.scrollTop = 0;
+      // The activity card and every following step live in this same conversation.
+      showChat();
+      if (document.getElementById('welcome-msg').style.display === 'none' &&
+          !document.querySelector('#messages .wfd-activity-panel')) {
+        appendActivityCard(renderWfdActivityCard());
+      }
     }
 
     function showProject() {
       document.getElementById('chat-view').classList.add('view-hidden');
-      document.getElementById('entry-view').classList.add('view-hidden');
       const project = document.getElementById('project-view');
       project.classList.remove('view-hidden');
       project.scrollTop = 0;
@@ -2415,6 +2334,40 @@ function showEntry() {
       proof: '门店返图后，怎么进入探店候选池？'
     };
 
+    // One lightweight, data-driven overview for first entry and every re-open.
+    const WFD_ACTIVITY_ITEMS = [
+      { action: 'material', image: '2026-public-welfare-story-horizontal.png', title: '为你定制公益专属海报', subtitle: '让每家小店的善意都有自己的样子' },
+      { action: 'health', image: '2026-km-healthy-dish-poster-reference.jpg', title: '健康认证，争取专属公益流量', subtitle: '上传健康菜品，通过规则与审核后参与筛选' },
+      { action: 'share', image: '2026-km-blindbox-merch-reference.jpg', title: '毛绒盲盒周边限量送', subtitle: '分享定制海报并返图，进入活动抽选流程' },
+      { action: 'proof', image: '2026-demo-store-display-reference.jpg', title: '探店活动，帮你的善意被看见', subtitle: '布置物料并返图，进入达人与官方传播候选池' }
+    ];
+
+    function renderWfdActivityCard() {
+      return `
+        <article class="wfd-activity-panel" aria-label="世界粮食日活动">
+          <div class="wfd-activity-head">
+            <span class="wfd-activity-date">10·16</span>
+            <div>
+              <small>2026 世界粮食日</small>
+              <h3>AI 让每一家小店的善意<br>都有自己的样子</h3>
+              <p class="wfd-activity-participants">已有 100,000+ 同行参与</p>
+            </div>
+            <img class="wfd-activity-companion" src="song-haoyun-assets/song-haoyun-wave-no-glasses-v3.png" alt="">
+          </div>
+          <div class="wfd-activity-list">
+            ${WFD_ACTIVITY_ITEMS.map(item => `
+              <button class="wfd-activity-row" type="button" data-wfd-action="benefit-${item.action}">
+                <img class="wfd-activity-thumbnail" src="song-haoyun-assets/${item.image}" alt="">
+                <span class="wfd-activity-copy"><strong>${item.title}</strong><small>${item.subtitle}</small></span>
+                <span class="wfd-activity-arrow" aria-hidden="true">›</span>
+              </button>
+            `).join('')}
+          </div>
+        </article>
+        <p class="wfd-activity-note">本期面向外卖餐饮、到餐及部分服务零售商家；按摩/足疗暂不开放。活动结果以正式系统回执为准。</p>
+      `;
+    }
+
     const WFD_FOLLOWUPS = {
       format: {
         question: '我该选横版，还是竖版？',
@@ -2452,27 +2405,13 @@ function showEntry() {
 
     function openWfdBenefit(type) {
       showChat();
-      if (type === 'flow') setTimeout(showWorldFoodDayOverview, 320);
-      else setTimeout(() => renderWfdBenefitCard(type), 320);
+      if (type === 'flow') showWorldFoodDayOverview();
+      else renderWfdBenefitCard(type);
     }
 
     function showWorldFoodDayOverview(skipUser) {
       if (!skipUser) appendUserMessage('打开世界粮食日活动');
-      setTimeout(() => appendActivityCard(`
-        <div class="wfd-activity-panel">
-          <div class="wfd-activity-head">
-            <small>2026 世界粮食日 · 4 项活动按需参加</small>
-            <h3>选一项开始，我会把步骤放进对话里</h3>
-            <p>已有 100,000+ 同行参与</p>
-          </div>
-          <div class="wfd-activity-list">
-            <button class="wfd-activity-row" type="button" data-wfd-action="benefit-material"><span class="wfd-activity-icon">▣</span><span><strong>定制公益专属海报</strong><span>横版直接生成，竖版讲真实故事</span></span><span class="wfd-activity-arrow">›</span></button>
-            <button class="wfd-activity-row" type="button" data-wfd-action="benefit-health"><span class="wfd-activity-icon">✓</span><span><strong>认证健康菜品</strong><span>人工审核后有机会获得公益流量</span></span><span class="wfd-activity-arrow">›</span></button>
-            <button class="wfd-activity-row" type="button" data-wfd-action="benefit-share"><span class="wfd-activity-icon">礼</span><span><strong>分享赢好礼</strong><span>上传分享截图，进入后置抽选</span></span><span class="wfd-activity-arrow">›</span></button>
-            <button class="wfd-activity-row" type="button" data-wfd-action="benefit-proof"><span class="wfd-activity-icon">图</span><span><strong>返图有惊喜</strong><span>上传门店布置，进入探店候选池</span></span><span class="wfd-activity-arrow">›</span></button>
-          </div>
-        </div>
-      `), 260);
+      setTimeout(() => appendActivityCard(renderWfdActivityCard()), 260);
     }
 
     function startWorldFoodDayAgentFlow() {
@@ -3976,6 +3915,7 @@ function showBenefits() {
 
     // ===== Init: restore current chat history =====
     (function initChat() {
+      document.getElementById('initial-activity-card').innerHTML = renderWfdActivityCard();
       loadCurrentChat();
       if (chatHistory.length > 0) {
         document.getElementById('messages').innerHTML = '';
