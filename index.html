@@ -1066,6 +1066,11 @@
     .wfd-contact-form label span { display: block; margin-bottom: 5px; color: #52697b; font-size: 11px; font-weight: 700; }
     .wfd-inline-status { margin-top: 11px; padding: 10px 11px; border-radius: 13px; background: #edf8fd; color: #315c73; font-size: 12px; line-height: 1.55; }
     .wfd-inline-status strong { color: #0e648f; }
+    .wfd-download-link { display: block; margin-top: 12px; padding: 12px; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 700; }
+    .wfd-next-action { border: 0; padding: 6px 0; color: #117cc5; background: transparent; font-size: 13px; text-align: left; text-decoration: underline; text-underline-offset: 3px; }
+    .wfd-demo-options { margin-top: 10px; color: #6d8290; font-size: 11px; }
+    .wfd-demo-options select { display: block; margin-top: 6px; width: 100%; border: 1px solid #d6eaf4; border-radius: 8px; padding: 7px; background: #fff; }
+    .wfd-benefit-card button:disabled { opacity: .55; cursor: default; }
     @media (max-width: 380px) {
       .project-haoyun-main { grid-template-columns: 76px minmax(0,1fr) 18px; gap: 8px; }
       .project-haoyun-avatar { width: 74px; height: 88px; }
@@ -1218,7 +1223,7 @@
         <div class="flex items-center justify-between gap-3 rounded-2xl border border-[#d6eaf4] bg-white px-3 py-2.5 shadow-sm">
           <span class="text-[11px] font-semibold text-[#52697b]">当前门店</span>
           <button onclick="openStorePicker()" class="shrink-0 rounded-full bg-[#eef8fd] px-2.5 py-1.5 text-[#10547f]">
-            <span id="current-store-name" class="text-[10px] font-bold">暖食记·望江路店（体验）</span>
+            <span id="current-store-name" class="text-[10px] font-bold">暖食记·望江路店</span>
             <span class="text-[10px]" aria-hidden="true">⌄</span>
           </button>
         </div>
@@ -1287,7 +1292,7 @@
           <button onclick="sendMessage()" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap transition shrink-0">发送</button>
         </div>
         <div class="flex items-center justify-center mt-1">
-          <span class="text-[12px] text-gray-400">AI 生成内容需由商家确认</span>
+          <span class="text-[10px] text-gray-400">Demo：结果为模拟、图片为预置；不提交业务，请勿填真实个人信息。</span>
           <button onclick="showPrivacy()" class="text-[12px] text-gray-400 hover:text-gray-600 underline font-medium">AI隐私协议</button>
         </div>
       </div>
@@ -1469,7 +1474,7 @@ function showEntry() {
       '世界粮食日': '10月16日是世界粮食日。宋好运会陪商家从专属公益海报开始，再按需完成健康菜品、线上分享或门店返图，帮助每一家小店把自己的善意讲清楚。',
       '世界粮食日活动规则': '参与流程分为：看示例与权益 → 选择一个任务 → 确认门店或菜品信息 → 生成物料 → 在线上分享或门店铺设 → 回传凭证。报名、审核、抽选、流量和探店结果以正式系统回执为准。'
     };
-    const DEFAULT_REPLY = '我先帮你把问题归到 1016 活动流程里。你可以问我：怎么参加、四大权益、公益海报、健康菜品、盲盒周边、探店活动，或查询当前体验进度。';
+    const DEFAULT_REPLY = '我先帮你把问题归到 1016 活动流程里。你可以问我：怎么参加、四大权益、公益海报、健康菜品、盲盒周边、探店活动，或查询当前参与进度。';
 
     // ===== Task Progress State =====
     let taskState = { story: false, dish: false };
@@ -1484,8 +1489,48 @@ function showEntry() {
     // ===== Chat History State =====
     let chatHistory = [];
     let awaitingFeedback = false;
-    const CHAT_KEY = 'songhao_current_chat_v2';
-    const SESSIONS_KEY = 'songhao_chat_sessions_v2';
+    let wfdConversationVersion = 0;
+    let wfdPosterSequence = 0;
+    const wfdPosters = new Map();
+    const wfdHealthChecks = new Map();
+    const wfdSubmissions = new Map();
+    const wfdStoreStates = new Map();
+    const WFD_QA_MODE = new URLSearchParams(location.search).has('qa');
+    const WFD_RUNTIME_KEY = 'songhao_wfd_runtime_v4' + (WFD_QA_MODE ? '_qa' : '');
+
+    function wfdStateForStore(id) {
+      if (!wfdStoreStates.has(id)) wfdStoreStates.set(id, { stage: 'idle', storyGenerated: false, healthStatus: 'idle', healthSelected: false, shareSelected: false, proofSelected: false });
+      return wfdStoreStates.get(id);
+    }
+
+    function saveWfdRuntime() {
+      try { localStorage.setItem(WFD_RUNTIME_KEY, JSON.stringify({ currentStoreId, posters: [...wfdPosters], checks: [...wfdHealthChecks], submissions: [...wfdSubmissions], states: [...wfdStoreStates] })); } catch (e) {}
+    }
+
+    function loadWfdRuntime() {
+      try {
+        const data = JSON.parse(localStorage.getItem(WFD_RUNTIME_KEY) || '{}');
+        for (const [name, map] of [['posters', wfdPosters], ['checks', wfdHealthChecks], ['submissions', wfdSubmissions], ['states', wfdStoreStates]]) {
+          if (Array.isArray(data[name])) data[name].forEach(([key, value]) => map.set(key, value));
+        }
+        if (STORES.some(store => store.id === data.currentStoreId)) currentStoreId = data.currentStoreId;
+      } catch (e) {}
+      wfdState = wfdStateForStore(currentStoreId);
+      for (const check of wfdHealthChecks.values()) {
+        if (check.status === 'checking') { check.status = 'unknown'; check.result = 'error'; wfdStateForStore(check.storeId).healthStatus = 'unknown'; }
+      }
+      for (const entry of wfdSubmissions.values()) {
+        if (entry.status === 'checking') { entry.status = 'unknown'; entry.result = 'error'; }
+      }
+      document.getElementById('current-store-name').textContent = STORES.find(store => store.id === currentStoreId).name.split('(')[0];
+    }
+
+    function wfdLater(callback, delay) {
+      const conversation = wfdConversationVersion;
+      return setTimeout(() => { if (conversation !== wfdConversationVersion) return; callback(); saveWfdRuntime(); }, delay);
+    }
+    const CHAT_KEY = 'songhao_current_chat_v3' + (WFD_QA_MODE ? '_qa' : '');
+    const SESSIONS_KEY = 'songhao_chat_sessions_v3' + (WFD_QA_MODE ? '_qa' : '');
 
     function saveCurrentChat() {
       try { localStorage.setItem(CHAT_KEY, JSON.stringify(chatHistory)); } catch (e) {}
@@ -1493,7 +1538,7 @@ function showEntry() {
     function loadCurrentChat() {
       try {
         const raw = localStorage.getItem(CHAT_KEY);
-        if (raw) chatHistory = JSON.parse(raw) || [];
+        if (raw) { const parsed = JSON.parse(raw); chatHistory = Array.isArray(parsed) ? parsed : []; }
       } catch (e) { chatHistory = []; }
     }
     function getSessions() {
@@ -2259,7 +2304,7 @@ function showEntry() {
       div.className = 'flex gap-3 justify-end';
       div.innerHTML = `
           <div class="chat-bubble-user text-white rounded-2xl rounded-tr-md px-4 py-2 text-sm max-w-[80%] leading-relaxed shadow-sm">
-            ${text}
+            ${escapeHtml(text)}
           </div>
       `;
       container.appendChild(div);
@@ -2275,7 +2320,7 @@ function showEntry() {
       div.innerHTML = `
         <img src="${AVATAR}" class="w-7 h-7 rounded-full object-cover shrink-0 mt-1">
         <div class="bg-white rounded-2xl rounded-tl-md px-4 pt-0.5 pb-1.5 text-sm text-gray-700 max-w-[80%] leading-relaxed shadow-sm border border-gray-100 whitespace-pre-line">
-          ${text}
+          ${escapeHtml(text)}
         </div>
       `;
       container.appendChild(div);
@@ -2292,10 +2337,10 @@ function showEntry() {
 
     function getWfdStoreName() {
       const node = document.getElementById('current-store-name');
-      return node ? node.textContent.trim() : '暖食记·望江路店（体验）';
+      return node ? node.textContent.trim() : '暖食记·望江路店';
     }
 
-    function appendRichBotMessage(html) {
+    function appendRichBotMessage(html, options = {}) {
       const container = document.getElementById('messages');
       const div = document.createElement('div');
       div.className = 'flex gap-2';
@@ -2305,8 +2350,38 @@ function showEntry() {
         <div class="wfd-agent-message">${html}</div>
       `;
       container.appendChild(div);
-      requestAnimationFrame(() => div.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+      const message = { role: 'bot', kind: 'rich', html, id: 'message-' + Date.now() + '-' + (++wfdPosterSequence), time: Date.now() };
+      div.dataset.chatId = message.id;
+      chatHistory.push(message);
+      saveCurrentChat();
+      saveWfdRuntime();
+      if (options.scroll !== false) requestAnimationFrame(() => div.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+      return div;
     }
+
+    function saveWfdRichState(target) {
+      const wrapper = target.closest('[data-chat-id]');
+      const message = chatHistory.find(item => item.id === wrapper?.dataset.chatId);
+      if (!message) return;
+      const original = wrapper.querySelector('.wfd-agent-message');
+      const copy = original.cloneNode(true);
+      const fields = [...original.querySelectorAll('input, select, textarea')];
+      copy.querySelectorAll('input, select, textarea').forEach((node, index) => {
+        const source = fields[index];
+        // Persist story drafts, never receipt names, phone numbers or addresses.
+        const value = source.closest('[data-wfd-form="story"]') ? source.value : '';
+        if (node.tagName === 'SELECT') [...node.options].forEach(option => option.toggleAttribute('selected', option.value === value));
+        else if (node.tagName === 'TEXTAREA') node.textContent = value;
+        else node.setAttribute('value', value);
+      });
+      message.html = copy.innerHTML;
+      saveCurrentChat();
+      saveWfdRuntime();
+    }
+
+    document.addEventListener('input', event => {
+      if (event.target.closest('[data-wfd-form="story"]')) saveWfdRichState(event.target);
+    });
 
     function appendActivityCard(html) {
       const container = document.getElementById('messages');
@@ -2315,6 +2390,8 @@ function showEntry() {
       div.style.scrollMarginTop = '12px';
       div.innerHTML = html;
       container.appendChild(div);
+      chatHistory.push({ role: 'bot', kind: 'activity', html, time: Date.now() });
+      saveCurrentChat();
       requestAnimationFrame(() => div.scrollIntoView({ behavior: 'smooth', block: 'start' }));
     }
 
@@ -2391,7 +2468,7 @@ function showEntry() {
       const item = WFD_FOLLOWUPS[key];
       if (!item) return;
       appendUserMessage(item.question);
-      setTimeout(() => appendBotMessage(item.answer), 280);
+      wfdLater(() => appendBotMessage(item.answer), 280);
     }
 
     function openWorldFoodDayAgent(mode) {
@@ -2411,7 +2488,7 @@ function showEntry() {
 
     function showWorldFoodDayOverview(skipUser) {
       if (!skipUser) appendUserMessage('打开世界粮食日活动');
-      setTimeout(() => appendActivityCard(renderWfdActivityCard()), 260);
+      wfdLater(() => appendActivityCard(renderWfdActivityCard()), 260);
     }
 
     function startWorldFoodDayAgentFlow() {
@@ -2429,7 +2506,7 @@ function showEntry() {
     function startWfdStoryFlow(skipUser) {
       if (!skipUser) appendUserMessage('我想做一张门店专属公益海报');
       wfdState.stage = 'story-intro';
-      setTimeout(() => appendRichBotMessage(`
+      wfdLater(() => appendRichBotMessage(`
         <div class="wfd-benefit-card">
           <div class="inline-flex px-2 py-1 rounded-full bg-[#fff4bf] text-[11px] font-bold text-[#725900]">公益专属海报</div>
           <h3 class="mt-2 text-[18px] font-bold text-[#12304b]">直接点一张示例，选择横版或竖版</h3>
@@ -2444,7 +2521,7 @@ function showEntry() {
               <span>竖版海报<em>朋友圈、门店 · 先讲故事</em></span>
             </button>
           </div>
-          <p class="mt-3 text-[12px] leading-relaxed text-[#607786]">选横版：确认门店 → 生成；选竖版：回答示意问题 → 自由补充 → 选择风格 → 生成。</p>
+          <p class="mt-3 text-[12px] leading-relaxed text-[#607786]">选横版：确认门店 → 生成；选竖版：回答问题 → 自由补充 → 选择风格 → 生成。</p>
           <div class="wfd-fact-note"><strong>真实故事原则：</strong>只整理你确认过的内容，没有提供的经历和经营效果不会写进海报。</div>
         </div>
       `), 280);
@@ -2456,53 +2533,53 @@ function showEntry() {
       appendUserMessage(safeVersion === 'horizontal' ? '选择横版海报' : '选择竖版海报');
       wfdState.stage = safeVersion === 'horizontal' ? 'horizontal-builder' : 'vertical-builder';
       const card = safeVersion === 'horizontal' ? `
-        <div class="wfd-benefit-card">
+        <div class="wfd-benefit-card" data-wfd-form="story" data-store-id="${currentStoreId}">
           <h3 class="text-[18px] font-bold text-[#12304b]">确认门店，生成横版海报</h3>
           <figure class="wfd-reference-visual mt-3 is-story-horizontal">
             <img src="song-haoyun-assets/2026-public-welfare-story-horizontal.png" alt="横版公益海报样张">
           </figure>
           <label class="block mt-3">
             <span class="block mb-1.5 text-[11px] font-bold text-[#52697b]">海报上展示的门店名称</span>
-            <input id="wfd-story-store-name" class="wfd-store-name-input" value="${store}" maxlength="20" aria-label="海报门店名称">
+            <input data-wfd-field="store-name" class="wfd-store-name-input" value="${store}" maxlength="20" aria-label="海报门店名称">
           </label>
-          <p class="mt-3 text-[12px] leading-relaxed text-[#607786]">系统会读取“参与捐建操场、帮助乡村儿童、公益计划参与天数”三项经核验数据并写入海报。体验版不填写未经核验的门店数字。</p>
+          <p class="mt-3 text-[12px] leading-relaxed text-[#607786]">海报会展示参与捐建操场、帮助乡村儿童、公益计划参与天数三项公益成果，以门店已核验数据为准。</p>
           <button type="button" data-wfd-action="story-generate-horizontal" class="w-full wfd-primary mt-3">确认信息，生成横版海报</button>
         </div>` : `
-        <div class="wfd-benefit-card">
+        <div class="wfd-benefit-card" data-wfd-form="story" data-store-id="${currentStoreId}">
           <h3 class="text-[18px] font-bold text-[#12304b]">先讲真实的事，再生成竖版海报</h3>
           <figure class="wfd-reference-visual mt-3 is-story-vertical">
             <img src="song-haoyun-assets/2026-public-welfare-story-vertical.png" alt="竖版公益故事海报样张">
           </figure>
-          <p class="mt-1 text-[12px] leading-relaxed text-[#607786]">这是答题形式示意，题目后续还可以调整。当前门店：<strong>${store}</strong></p>
+          <p class="mt-1 text-[12px] leading-relaxed text-[#607786]">选择最贴近你的答案，也可以自由补充。当前门店：<strong>${store}</strong></p>
           <label class="block mt-3">
             <span class="block mb-1.5 text-[11px] font-bold text-[#52697b]">海报上展示的门店名称</span>
-            <input id="wfd-story-store-name" class="wfd-store-name-input" value="${store}" maxlength="20" aria-label="海报门店名称">
+            <input data-wfd-field="store-name" class="wfd-store-name-input" value="${store}" maxlength="20" aria-label="海报门店名称">
           </label>
           <label class="wfd-question-block">
             <span>1. 为什么加入公益？</span>
-            <select id="wfd-story-reason"><option value="">请选择一个最接近的原因</option><option>想为孩子们做一点力所能及的事</option><option>做生意也想回馈社会</option><option>受到顾客和身边人的善意感染</option><option>一直在做，希望继续坚持</option></select>
+            <select data-wfd-field="reason"><option value="">请选择一个最接近的原因</option><option>想为孩子们做一点力所能及的事</option><option>做生意也想回馈社会</option><option>受到顾客和身边人的善意感染</option><option>一直在做，希望继续坚持</option></select>
           </label>
           <label class="wfd-question-block">
             <span>2. 门店真实做过哪件事？</span>
-            <select id="wfd-story-action"><option value="">请选择真实发生过的行动</option><option>持续参与订单捐赠</option><option>在门店展示公益物料</option><option>向顾客介绍过公益项目</option><option>刚刚加入，目前还没有其他行动</option></select>
+            <select data-wfd-field="action"><option value="">请选择真实发生过的行动</option><option>持续参与订单捐赠</option><option>在门店展示公益物料</option><option>向顾客介绍过公益项目</option><option>刚刚加入，目前还没有其他行动</option></select>
           </label>
           <label class="wfd-question-block">
             <span>3. 最想对顾客说什么？</span>
-            <select id="wfd-story-message"><option value="">请选择一句最接近的话</option><option>谢谢你们和小店一起把好事做下去</option><option>每一份日常支持，都让善意走得更远</option><option>认真做好每一餐，也是我们的坚持</option><option>欢迎和我们一起关注乡村儿童成长</option></select>
+            <select data-wfd-field="message"><option value="">请选择一句最接近的话</option><option>谢谢你们和小店一起把好事做下去</option><option>每一份日常支持，都让善意走得更远</option><option>认真做好每一餐，也是我们的坚持</option><option>欢迎和我们一起关注乡村儿童成长</option></select>
           </label>
           <label class="wfd-question-block">
             <span>自由补充：一个真实原因或小故事（选填）</span>
-            <textarea id="wfd-story-detail" maxlength="120" placeholder="例如：店主小时候也在乡村长大，所以看到操场项目时很有共鸣。没有真实细节可以留空，我们不会替你编。"></textarea>
+            <textarea data-wfd-field="detail" maxlength="120" placeholder="例如：店主小时候也在乡村长大，所以看到操场项目时很有共鸣。没有真实细节可以留空，我们不会替你编。"></textarea>
           </label>
           <label class="wfd-question-block">
             <span>想用什么风格表达？</span>
-            <select id="wfd-story-style"><option>温暖真诚</option><option>简洁有力</option><option>轻松自然</option></select>
+            <select data-wfd-field="style"><option>温暖真诚</option><option>简洁有力</option><option>轻松自然</option></select>
           </label>
           <div class="wfd-fact-note"><strong>真实性确认：</strong>AI 只改写你选择和填写的内容，不添加“顾客更多了”“生意变好了”等未经确认的事实。</div>
           <button type="button" data-wfd-action="story-generate-form" class="w-full wfd-primary mt-3">确认内容，生成竖版海报</button>
-          <p class="mt-2 text-[11px] text-gray-500">点击后直接生成完整海报；不再增加一层故事文案确认。</p>
+          <p class="mt-2 text-[11px] text-gray-500">确认后，我们会根据以上真实内容生成海报。</p>
         </div>`;
-      setTimeout(() => appendRichBotMessage(card), 280);
+      wfdLater(() => appendRichBotMessage(card), 280);
     }
 
     function generateWfdStory(angle) {
@@ -2521,53 +2598,89 @@ function showEntry() {
       }, 720);
     }
 
-    function readWfdStoryStoreName() {
-      const name = (document.getElementById('wfd-story-store-name')?.value || getWfdStoreName()).trim();
-      storyData.storeName = name || getWfdStoreName();
-      return storyData.storeName;
+    function readWfdStoryForm(target) {
+      const form = target?.closest('[data-wfd-form="story"]');
+      if (!form || form.dataset.storeId !== currentStoreId) {
+        showWfdToast('门店已切换，请从当前门店重新开始生成');
+        return null;
+      }
+      const read = field => (form.querySelector(`[data-wfd-field="${field}"]`)?.value || '').trim();
+      if (!read('store-name')) { showWfdToast('请填写海报上展示的门店名称'); return null; }
+      return { storeName: read('store-name'), storeId: form.dataset.storeId, reason: read('reason'), action: read('action'), message: read('message'), detail: read('detail'), style: read('style') };
     }
 
-    function generateWfdHorizontal() {
-      const storeName = readWfdStoryStoreName();
+    function generateWfdHorizontal(target) {
+      const data = readWfdStoryForm(target);
+      if (!data || target.disabled) return;
+      const { storeName } = data;
+      target.disabled = true;
+      const conversation = wfdConversationVersion;
       appendUserMessage('确认“' + storeName + '”，生成横版海报');
       const typing = document.getElementById('typing');
       typing.classList.remove('hidden');
       scrollToBottom();
       setTimeout(() => {
+        if (conversation !== wfdConversationVersion) return;
         typing.classList.add('hidden');
-        wfdState.storyGenerated = true;
-        wfdState.joined = true;
-        wfdState.stage = 'story-ready';
-        renderWfdStoryResult({ version: 'horizontal', storeName });
+        Object.assign(wfdStateForStore(data.storeId), { storyGenerated: true, joined: true, stage: 'story-ready' });
+        renderWfdStoryResult({ ...data, version: 'horizontal' });
+        target.textContent = '已生成，可在下方保存';
+        saveWfdRichState(target);
       }, 720);
     }
 
-    function generateWfdStoryFromForm() {
-      const readValue = id => document.getElementById(id)?.value || '';
-      const data = {
-        version: 'vertical',
-        storeName: readWfdStoryStoreName(),
-        reason: readValue('wfd-story-reason'),
-        action: readValue('wfd-story-action'),
-        message: readValue('wfd-story-message'),
-        detail: readValue('wfd-story-detail').trim(),
-        style: readValue('wfd-story-style')
-      };
+    function generateWfdStoryFromForm(target) {
+      const values = readWfdStoryForm(target);
+      if (!values || target.disabled) return;
+      const data = { ...values, version: 'vertical' };
       if (!data.reason || !data.action || !data.message) {
         showWfdToast('请先完成 3 道固定题');
         return;
       }
+      target.disabled = true;
+      const conversation = wfdConversationVersion;
       appendUserMessage('已确认真实内容，用“' + data.style + '”风格生成竖版海报');
       const typing = document.getElementById('typing');
       typing.classList.remove('hidden');
       scrollToBottom();
       setTimeout(() => {
+        if (conversation !== wfdConversationVersion) return;
         typing.classList.add('hidden');
-        wfdState.storyGenerated = true;
-        wfdState.joined = true;
-        wfdState.stage = 'story-ready';
+        Object.assign(wfdStateForStore(data.storeId), { storyGenerated: true, joined: true, stage: 'story-ready' });
         renderWfdStoryResult(data);
+        target.textContent = '已生成，可在下方保存';
+        saveWfdRichState(target);
       }, 720);
+    }
+
+    function registerWfdPoster(data) {
+      const poster = { ...data, id: 'poster-' + Date.now() + '-' + (++wfdPosterSequence), storeId: data.storeId || currentStoreId };
+      wfdPosters.set(poster.id, poster);
+      return poster;
+    }
+
+    function renderWfdDownload(poster) {
+      return `<a class="wfd-primary wfd-download-link" href="${escapeHtml(poster.src)}" download="${escapeHtml(poster.filename)}" data-wfd-action="download-poster" data-wfd-poster-id="${poster.id}">保存${escapeHtml(poster.label)}</a>`;
+    }
+
+    function appendWfdPosterFollowup(poster) {
+      appendRichBotMessage(`
+        <div class="wfd-benefit-card" data-wfd-followup-for="${poster.id}" data-wfd-poster-id="${poster.id}">
+          <p class="text-[13px] leading-relaxed text-[#52697b]">接下来，把这张<strong>${escapeHtml(poster.label)}</strong>分享出去，或布置到门店后返图。两项按需参加。</p>
+          <p class="mt-1 text-[11px] text-gray-500">沿用：${escapeHtml(poster.storeName)} · ${escapeHtml(poster.label)}</p>
+          <div class="mt-2 flex flex-wrap gap-x-4">
+            <button type="button" class="wfd-next-action" data-wfd-action="poster-share" data-wfd-poster-id="${poster.id}">分享海报，参与盲盒抽选</button>
+            <button type="button" class="wfd-next-action" data-wfd-action="poster-proof" data-wfd-poster-id="${poster.id}">门店布置返图，参与探店筛选</button>
+            ${poster.label.includes('健康') ? '<button type="button" class="wfd-next-action" data-wfd-action="health-upload">换一道菜，重新认证</button>' : ''}
+          </div>
+        </div>`, { scroll: false });
+    }
+
+    function openWfdPosterParticipation(id, type) {
+      const poster = wfdPosters.get(id);
+      if (!poster) { showWfdToast('这张海报记录已失效，请重新生成'); return; }
+      if (poster.storeId !== currentStoreId) { showWfdToast('请先切回这张海报所属门店，再继续分享或返图'); return; }
+      renderWfdBenefitCard(type, false, poster);
     }
 
     function renderWfdStoryResult(input) {
@@ -2582,29 +2695,31 @@ function showEntry() {
       const style = escapeHtml(data.style || '温暖真诚');
       let story = '横版海报将使用经核验的三项公益数据，正式接入后再写入门店成果。';
       if (!isHorizontal) {
-        if (style === '简洁有力') story = `${reason}。我们做过的事是：${action}。${detailSentence ? detailSentence + '。' : ''}${message}。`;
-        else if (style === '轻松自然') story = `为什么加入？${reason}。平时店里也会${action}。${detailSentence ? detailSentence + '。' : ''}想和大家说：${message}。`;
-        else story = `我们加入公益，是因为${reason}。在门店里，我们真实做过的是${action}。${detailSentence ? detailSentence + '。' : ''}${message}。`;
+        if (style === '简洁有力') story = `${reason}。${action === '刚刚加入，目前还没有其他行动' ? '我们刚刚加入，目前还没有其他行动' : '我们做过的事是：' + action}。${detailSentence ? detailSentence + '。' : ''}${message}。`;
+        else if (style === '轻松自然') story = `为什么加入？${reason}。${action === '刚刚加入，目前还没有其他行动' ? '我们刚刚加入，目前还没有其他行动' : '平时店里也会' + action}。${detailSentence ? detailSentence + '。' : ''}想和大家说：${message}。`;
+        else story = `我们加入公益，是因为${reason}。${action === '刚刚加入，目前还没有其他行动' ? '我们刚刚加入，目前还没有其他行动' : '在门店里，我们真实做过的是' + action}。${detailSentence ? detailSentence + '。' : ''}${message}。`;
       }
       const versionLabel = isHorizontal ? '横版海报' : '竖版故事海报';
       const storyAsset = isHorizontal
         ? 'song-haoyun-assets/2026-public-welfare-story-horizontal.png'
         : 'song-haoyun-assets/2026-public-welfare-story-vertical.png';
+      const poster = registerWfdPoster({ storeId: data.storeId, storeName: data.storeName || getWfdStoreName(), label: versionLabel, src: storyAsset, filename: '2026世界粮食日-' + versionLabel + '.png' });
       appendRichBotMessage(`
-        <div class="wfd-benefit-card">
+        <div class="wfd-benefit-card" data-wfd-poster="${poster.id}">
           <h3 class="text-[18px] font-bold text-[#12304b]">${versionLabel}已生成</h3>
           <figure class="wfd-reference-visual mt-3 ${isHorizontal ? 'is-story-horizontal' : 'is-story-vertical'}">
             <img src="${storyAsset}" alt="${versionLabel}成品样张">
           </figure>
-          <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]"><strong>${store}</strong> · ${isHorizontal ? '使用经核验的三项公益数据' : style + '表达：' + story}</p>
-          <p class="mt-2 text-[11px] leading-relaxed text-gray-500">当前是活动体验样张；正式生成需同步可公开门店信息、核验数据并接入物料服务。其他活动可直接从底部快捷入口继续。</p>
-          <button type="button" data-wfd-action="${isHorizontal ? 'download-horizontal' : 'download-vertical'}" class="w-full wfd-primary mt-3">保存${isHorizontal ? '横版' : '竖版'}体验样张</button>
+          <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]"><strong>${store}</strong> · ${isHorizontal ? '把小店的善意分享给更多人' : story}</p>
+          ${renderWfdDownload(poster)}
         </div>
       `);
+      appendWfdPosterFollowup(poster);
     }
 
-    function renderWfdBenefitCard(type, skipUser) {
+    function renderWfdBenefitCard(type, skipUser, poster) {
       if (!skipUser) appendUserMessage(WFD_BENEFIT_PROMPTS[type] || '查看活动权益');
+      if (showWfdModuleState(type, poster?.id)) return;
       if (type === 'material') {
         startWfdStoryFlow(true);
         return;
@@ -2642,9 +2757,10 @@ function showEntry() {
             <figure class="wfd-reference-visual mt-3 is-story-horizontal">
               <img src="song-haoyun-assets/2026-km-healthy-dish-poster-reference.jpg" alt="健康菜品海报参考样张">
             </figure>
-            <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">上传能看清<strong>菜名、价格和菜品</strong>的菜单截图、外卖菜品页或信息图。宋好运先识别并生成海报；信息不完整会说明原因并让你重传，通过后再进入人工审核。</p>
+            <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">上传能看清<strong>菜名、价格和菜品</strong>的菜单截图、外卖菜品页或信息图。先进行菜品认证，认证通过后才能生成并下载海报；未通过会说明原因并让你重传。</p>
             <p class="mt-2 text-[12px] leading-relaxed text-[#607786]">人工审核通过后，才有机会获得健康倡议标签或活动流量。当前按摩/足疗不开放，完整品类名单待补。</p>
             <button type="button" data-wfd-action="health-upload" class="w-full wfd-primary mt-3">上传菜品信息图</button>
+            ${renderWfdDemoOptions('health')}
           </div>`;
       } else if (type === 'share') {
         card = `
@@ -2656,6 +2772,7 @@ function showEntry() {
             <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">发布门店专属海报后，把能看清发布内容的截图传回来。宋好运完成校验后进入后置抽选；活动结束后由商家端或宋好运通知结果。</p>
             <p class="mt-2 text-[12px] leading-relaxed text-[#607786]">收货信息可以在校验通过后选填，也可以先跳过。</p>
             <button type="button" data-wfd-action="share-upload" class="w-full wfd-primary mt-3">回传分享截图</button>
+            ${renderWfdDemoOptions('share')}
           </div>`;
       } else {
         card = `
@@ -2667,10 +2784,15 @@ function showEntry() {
             <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">把活动物料展示在店内，再拍一张<strong>同时看清物料和门店环境</strong>的照片。宋好运校验通过后，只需留下联系电话，不再填写门店地址。</p>
             <p class="mt-2 text-[12px] leading-relaxed text-[#607786]">通过仅代表进入候选池，是否探店或传播以正式通知为准。</p>
             <button type="button" data-wfd-action="proof-upload" class="w-full wfd-primary mt-3">上传门店布置返图</button>
+            ${renderWfdDemoOptions('proof')}
           </div>`;
       }
 
-      setTimeout(() => appendRichBotMessage(card), skipUser ? 40 : 320);
+      if (poster) {
+        card = card.replace('<div class="wfd-benefit-card">', `<div class="wfd-benefit-card" data-wfd-poster-id="${poster.id}"><p class="mb-2 text-[11px] text-[#607786]">本次沿用：${escapeHtml(poster.storeName)} · ${escapeHtml(poster.label)}。<a class="underline text-[#117cc5]" href="${escapeHtml(poster.src)}" download="${escapeHtml(poster.filename)}">保存这张海报</a></p>`);
+      }
+      card = card.replace('class="wfd-benefit-card"', `class="wfd-benefit-card" data-wfd-store-id="${poster?.storeId || currentStoreId}"`);
+      wfdLater(() => appendRichBotMessage(card), skipUser ? 40 : 320);
     }
 
     function switchWfdStyle() {
@@ -2678,16 +2800,11 @@ function showEntry() {
     }
 
     function downloadWfdMaterial(kind) {
-      wfdState.downloaded = true;
-      const isVertical = kind === 'vertical';
-      showWfdToast(isVertical ? '正在下载竖版示例' : '正在下载横版示例');
+      const poster = [...wfdPosters.values()].reverse().find(item => item.storeId === currentStoreId && (kind === 'vertical' ? item.label.includes('竖版') : item.label.includes('横版')));
+      if (!poster) { showWfdToast('请先生成对应版本的海报'); return; }
       const link = document.createElement('a');
-      link.href = isVertical
-        ? 'song-haoyun-assets/2026-health-supply-vertical-final.png'
-        : 'song-haoyun-assets/2026-health-supply-horizontal-final.png';
-      link.download = isVertical
-        ? '2026世界粮食日-健康供给-竖版物料.png'
-        : '2026世界粮食日-健康供给-横版物料.png';
+      link.href = poster.src;
+      link.download = poster.filename;
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -2697,30 +2814,75 @@ function showEntry() {
       openWfdBenefit('health');
     }
 
+    function renderWfdDemoOptions(type) {
+      if (!WFD_QA_MODE) return '';
+      return `<details class="wfd-demo-options"><summary>体验模式：演示通过，可切换失败场景</summary><label>本次演示结果<select data-wfd-demo="${type}" aria-label="${type === 'health' ? '菜品认证' : '图片校验'}演示结果"><option value="pass">通过（演示）</option><option value="reject">未通过（演示）</option><option value="error">识别暂不可用（演示）</option></select></label><p class="mt-1">无真实图片识别；这里只演示不同结果的交互，不按上传图片给出真实判断。</p></details>`;
+    }
+
+    function startWfdUpload(type, target) {
+      const input = document.getElementById('wfd-' + type + '-input');
+      const card = target.closest('.wfd-benefit-card');
+      const posterId = card?.dataset.wfdPosterId || '';
+      const poster = wfdPosters.get(posterId);
+      if (poster && poster.storeId !== currentStoreId) { showWfdToast('请切回这张海报所属门店再上传'); return; }
+      if (card?.dataset.wfdStoreId && card.dataset.wfdStoreId !== currentStoreId) { showWfdToast('门店已切换，请从底部重新进入活动，或切回原门店'); return; }
+      input.dataset.demoResult = card?.querySelector('[data-wfd-demo]')?.value || 'pass';
+      input.dataset.posterId = posterId;
+      input.dataset.storeId = currentStoreId;
+      input.dataset.storeName = poster?.storeName || getWfdStoreName();
+      input.value = '';
+      input.click();
+    }
+
     function handleWfdHealthSelected(event) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
-      wfdState.healthSelected = true;
-      wfdState.healthStatus = 'checking';
+      if (!file.type.startsWith('image/')) { showWfdToast('请选择图片文件'); event.target.value = ''; return; }
+      const check = { id: 'health-' + Date.now() + '-' + (++wfdPosterSequence), storeId: event.target.dataset.storeId || currentStoreId, storeName: event.target.dataset.storeName || getWfdStoreName(), result: event.target.dataset.demoResult || 'pass', status: 'checking', generated: false };
+      wfdHealthChecks.set(check.id, check);
+      const conversation = wfdConversationVersion;
+      const state = wfdStateForStore(check.storeId);
+      state.healthSelected = true;
+      state.healthStatus = 'checking';
       appendUserMessage('上传菜品信息图：' + file.name);
+      saveWfdRuntime();
       const typing = document.getElementById('typing');
       typing.classList.remove('hidden');
       scrollToBottom();
       setTimeout(() => {
+        if (conversation !== wfdConversationVersion) return;
         typing.classList.add('hidden');
-        wfdState.healthStatus = 'review-pending';
+        if (check.result !== 'pass') {
+          check.status = check.result === 'reject' ? 'rejected' : 'unknown';
+          state.healthStatus = check.result === 'reject' ? 'rejected' : 'unknown';
+          appendRichBotMessage(`<div class="wfd-benefit-card" data-wfd-store-id="${check.storeId}"><h3 class="text-[18px] font-bold text-[#12304b]">${check.result === 'reject' ? '菜品认证未通过' : '暂时无法完成认证'}</h3><p class="mt-3 text-[13px] text-[#52697b]">${check.result === 'reject' ? '菜品名称或价格不完整，暂不能生成海报。请补充清晰的菜单或菜品信息图后重传。' : '识别服务暂不可用，不代表菜品不合格。请稍后重新上传重试。'}</p><button type="button" data-wfd-action="health-upload" class="w-full wfd-primary mt-3">重新上传</button>${renderWfdDemoOptions('health')}</div>`);
+          return;
+        }
+        state.healthStatus = 'certified-demo';
+        check.status = 'certified-demo';
         appendRichBotMessage(`
           <div class="wfd-benefit-card text-[14px] leading-relaxed">
-            <h3 class="text-[18px] font-bold text-[#12304b]">健康菜品海报已生成</h3>
-            <figure class="wfd-reference-visual mt-3 is-story-horizontal">
-              <img src="song-haoyun-assets/2026-km-healthy-dish-poster-reference.jpg" alt="健康菜品海报体验示例">
-            </figure>
-            <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">这是“初审通过”后的效果示意，下一步进入人工审核。审核通过后，才有机会获得健康倡议标签或活动流量。</p>
-            <p class="mt-2 text-[11px] text-gray-500">体验版没有真实识别、上传或进入审核池。</p>
-            <button type="button" data-wfd-action="health-upload" class="w-full wfd-primary mt-3">重新上传</button>
+            <h3 class="text-[18px] font-bold text-[#12304b]">菜品认证通过</h3>
+            <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">现在可以生成健康菜品海报。菜品认证与门店流量权益审核是两回事：健康倡议标签和流量仍需后续人工审核与筛选。</p>
+            <button type="button" data-wfd-action="health-generate" data-wfd-health-id="${check.id}" class="w-full wfd-primary mt-3">生成健康菜品海报</button>
           </div>`);
       }, 720);
       event.target.value = '';
+    }
+
+    function generateWfdHealthPoster(target) {
+      const check = wfdHealthChecks.get(target.dataset.wfdHealthId);
+      if (!check || check.result !== 'pass' || check.status !== 'certified-demo') { showWfdToast('请先完成菜品认证'); return; }
+      if (check.storeId !== currentStoreId) { showWfdToast('请切回认证时的门店，或重新认证'); return; }
+      if (check.generated || target.disabled) return;
+      check.generated = true;
+      target.disabled = true;
+      const poster = registerWfdPoster({ label: '健康菜品海报', storeId: check.storeId, storeName: check.storeName, src: 'song-haoyun-assets/2026-km-healthy-dish-poster-reference.jpg', filename: '2026世界粮食日-健康菜品海报.jpg' });
+      wfdStateForStore(check.storeId).healthStatus = 'poster-ready-demo';
+      appendRichBotMessage(`<div class="wfd-benefit-card" data-wfd-poster="${poster.id}"><h3 class="text-[18px] font-bold text-[#12304b]">健康菜品海报已生成</h3><figure class="wfd-reference-visual mt-3 is-story-horizontal"><img src="${poster.src}" alt="健康菜品海报"></figure><p class="mt-3 text-[13px] text-[#52697b]">${escapeHtml(poster.storeName)} · 可以保存后分享，或布置到门店再返图。健康倡议标签和流量权益仍需人工审核。</p>${renderWfdDownload(poster)}</div>`);
+      appendWfdPosterFollowup(poster);
+      target.textContent = '已生成，可在下方保存';
+      saveWfdRichState(target);
     }
 
     function showWfdShareInfo() {
@@ -2737,42 +2899,92 @@ function showEntry() {
       }
     }
 
-    function handleWfdShareSelected(event) {
+    function beginWfdSubmission(event, kind) {
       const file = event.target.files && event.target.files[0];
-      if (!file) return;
-      wfdState.shareSelected = true;
-      appendUserMessage('上传分享截图：' + file.name);
+      if (!file) return null;
+      if (!file.type.startsWith('image/')) { showWfdToast('请选择图片文件'); event.target.value = ''; return null; }
+      const entry = { id: kind + '-' + Date.now() + '-' + (++wfdPosterSequence), kind, storeId: event.target.dataset.storeId || currentStoreId, storeName: event.target.dataset.storeName || getWfdStoreName(), posterId: event.target.dataset.posterId || '', result: event.target.dataset.demoResult || 'pass', status: 'checking', conversation: wfdConversationVersion };
+      wfdSubmissions.set(entry.id, entry);
+      saveWfdRuntime();
+      appendUserMessage((kind === 'share' ? '上传分享截图：' : '上传门店布置返图：') + file.name);
+      event.target.value = '';
+      return entry;
+    }
+
+    function wfdSubmissionContext(entry) {
+      const poster = wfdPosters.get(entry.posterId);
+      return `<p class="mt-2 text-[11px] text-[#607786]">本次门店：${escapeHtml(entry.storeName)}${poster ? ' · 沿用' + escapeHtml(poster.label) : ''}</p>`;
+    }
+
+    function showWfdSubmissionFailure(entry) {
+      if (entry.result === 'pass') return false;
+      entry.status = entry.result === 'reject' ? 'rejected' : 'unknown';
+      const reason = entry.kind === 'share' ? '请上传能看清发布账号、活动海报与发布状态的完整截图。' : '请上传能同时看清活动物料和门店环境的照片，普通门店照或海报特写不能代替返图。';
+      appendRichBotMessage(`<div class="wfd-benefit-card" data-wfd-poster-id="${entry.posterId}" data-wfd-store-id="${entry.storeId}"><h3 class="text-[18px] font-bold text-[#12304b]">${entry.result === 'reject' ? '图片校验未通过' : '暂时无法完成校验'}</h3>${wfdSubmissionContext(entry)}<p class="mt-3 text-[13px] text-[#52697b]">${entry.result === 'reject' ? '图片缺少必要信息。' + reason : '识别服务暂不可用，请稍后重试。当前还没有进入候选或抽选状态。'}</p><button type="button" data-wfd-action="${entry.kind}-upload" class="w-full wfd-primary mt-3">重新上传</button>${renderWfdDemoOptions(entry.kind)}</div>`);
+      return true;
+    }
+
+    function renderWfdSubmissionContact(entry) {
+      const share = entry.kind === 'share';
+      appendRichBotMessage(`
+        <div class="wfd-benefit-card" data-wfd-submission-id="${entry.id}">
+          <h3 class="text-[18px] font-bold text-[#12304b]">${share ? '截图已通过，等待活动后抽选' : '返图已通过，再留一个联系电话'}</h3>
+          ${wfdSubmissionContext(entry)}
+          <figure class="wfd-reference-visual mt-3 ${share ? 'is-social-share' : 'is-story-horizontal'}">
+            <img src="song-haoyun-assets/${share ? '2026-demo-social-share-reference.jpg' : '2026-demo-store-display-reference.jpg'}" alt="${share ? '分享截图' : '门店返图'}通过示意">
+          </figure>
+          <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">${share ? '活动结束后统一抽选，结果通过商家端或宋好运通知。收货信息选填，也可以留空继续。' : '门店地址无需重复填写。若被选中，活动运营会通过下面的电话确认探店安排。'}</p>
+          <div class="wfd-contact-form">
+            ${share ? '<label><span>收件人</span><input data-wfd-field="name" placeholder="填写收件人姓名（选填）"></label>' : ''}
+            <label><span>${share ? '手机号' : '联系电话'}</span><input data-wfd-field="phone" inputmode="tel" placeholder="请输入手机号"></label>
+            ${share ? '<label><span>收货地址</span><textarea data-wfd-field="address" placeholder="填写详细收货地址（选填）"></textarea></label>' : ''}
+          </div>
+          <button type="button" data-wfd-action="${entry.kind}-contact-save" class="w-full wfd-primary mt-3">${share ? '继续，等待抽选' : '确认电话，进入候选池'}</button>
+          ${share ? '' : '<p class="mt-2 text-[11px] text-gray-500">进入候选池不代表一定获得探店或官方传播。</p>'}
+        </div>`);
+    }
+
+    function handleWfdShareSelected(event) {
+      const entry = beginWfdSubmission(event, 'share');
+      if (!entry) return;
+      wfdStateForStore(entry.storeId).shareSelected = true;
       const typing = document.getElementById('typing');
       typing.classList.remove('hidden');
       scrollToBottom();
       setTimeout(() => {
+        if (entry.conversation !== wfdConversationVersion) return;
         typing.classList.add('hidden');
-        appendRichBotMessage(`
-          <div class="wfd-benefit-card">
-            <h3 class="text-[18px] font-bold text-[#12304b]">截图通过，等待活动后抽选</h3>
-            <figure class="wfd-reference-visual mt-3 is-social-share">
-              <img src="song-haoyun-assets/2026-demo-social-share-reference.jpg" alt="分享截图通过示意">
-            </figure>
-            <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">正式版会在活动结束后统一抽选，并通过商家端或宋好运通知。下面的收货信息是选填，留空继续即可跳过。</p>
-            <div class="wfd-contact-form">
-              <label><span>收件人</span><input id="wfd-share-name" placeholder="体验版请勿填写真实姓名"></label>
-              <label><span>手机号</span><input id="wfd-share-phone" inputmode="tel" placeholder="体验版请勿填写真实手机号"></label>
-              <label><span>收货地址</span><textarea id="wfd-share-address" placeholder="体验版请勿填写真实地址"></textarea></label>
-            </div>
-            <button type="button" data-wfd-action="share-contact-save" class="w-full wfd-primary mt-3">继续，等待抽选</button>
-            <p class="mt-2 text-[11px] text-gray-500">体验版不会保存或上传以上内容。</p>
-          </div>`);
+        if (showWfdSubmissionFailure(entry)) return;
+        entry.status = 'contact-optional';
+        renderWfdSubmissionContact(entry);
       }, 700);
-      event.target.value = '';
     }
 
-    function finishShareContact() {
-      const filled = ['wfd-share-name', 'wfd-share-phone', 'wfd-share-address']
-        .some(id => (document.getElementById(id)?.value || '').trim());
+    function readWfdSubmissionForm(target) {
+      const form = target?.closest('[data-wfd-submission-id]');
+      const entry = wfdSubmissions.get(form?.dataset.wfdSubmissionId);
+      if (!entry || target.disabled) return null;
+      if (entry.storeId !== currentStoreId) { showWfdToast('门店已切换，请切回本次上传所属门店再确认'); return null; }
+      return { entry, read: field => (form.querySelector(`[data-wfd-field="${field}"]`)?.value || '').trim() };
+    }
+
+    function isWfdDemoPhone(phone) { return /^(?:1[3-9]\d{9}|1[3-9]\d\*{4}\d{4})$/.test(phone); }
+
+    function finishShareContact(target) {
+      const data = readWfdSubmissionForm(target);
+      if (!data) return;
+      const { entry, read } = data;
+      const name = read('name'), phone = read('phone'), address = read('address');
+      const filled = !!(name || phone || address);
+      if (filled && (!name || !phone || !address)) { showWfdToast('收货信息请填写完整，或全部留空跳过'); return; }
+      if (filled && !isWfdDemoPhone(phone)) { showWfdToast('请填写正确的手机号'); return; }
+      entry.status = 'draw-pending-demo';
+      target.disabled = true;
       wfdState.shareContactSaved = filled;
       appendBotMessage(filled
-        ? '已完成收货信息预填的交互体验。体验版没有保存或上传你填写的内容。'
-        : '已跳过收货信息。当前仅展示“待后置抽选”的体验状态；正式结果以商家端通知为准。');
+        ? '收货信息已确认，接下来等待活动后抽选。结果会通过商家端或宋好运通知。'
+        : '已跳过收货信息，接下来等待活动后抽选。若被选中，再补充收货信息即可。');
+      saveWfdRichState(target);
     }
 
     function chooseWfdProof() {
@@ -2780,69 +2992,115 @@ function showEntry() {
     }
 
     function handleWfdProofSelected(event) {
-      const file = event.target.files && event.target.files[0];
-      if (!file) return;
-      wfdState.proofSelected = true;
-      appendUserMessage('上传门店布置返图：' + file.name);
+      const entry = beginWfdSubmission(event, 'proof');
+      if (!entry) return;
+      wfdStateForStore(entry.storeId).proofSelected = true;
       const typing = document.getElementById('typing');
       typing.classList.remove('hidden');
       scrollToBottom();
       setTimeout(() => {
+        if (entry.conversation !== wfdConversationVersion) return;
         typing.classList.add('hidden');
-        appendRichBotMessage(`
-          <div class="wfd-benefit-card">
-            <h3 class="text-[18px] font-bold text-[#12304b]">返图通过，再留一个联系电话</h3>
-            <figure class="wfd-reference-visual mt-3 is-story-horizontal">
-              <img src="song-haoyun-assets/2026-demo-store-display-reference.jpg" alt="门店返图通过示意">
-            </figure>
-            <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">门店地址使用系统已有信息，不需要重复填写。若被选中，活动运营会通过下面的电话确认探店安排。</p>
-            <div class="wfd-contact-form">
-              <label><span>联系电话</span><input id="wfd-proof-phone" inputmode="tel" placeholder="体验示意：138****0000，请勿填写真实号码"></label>
-            </div>
-            <button type="button" data-wfd-action="proof-contact-save" class="w-full wfd-primary mt-3">确认电话，进入候选池</button>
-            <p class="mt-2 text-[11px] text-gray-500">入池不代表一定获得探店或官方传播；体验版不会保存或上传号码。</p>
-          </div>`);
+        if (showWfdSubmissionFailure(entry)) return;
+        entry.status = 'phone-required';
+        renderWfdSubmissionContact(entry);
       }, 700);
-      event.target.value = '';
     }
 
-    function finishProofContact() {
-      const phone = (document.getElementById('wfd-proof-phone')?.value || '').trim();
+    function finishProofContact(target) {
+      const data = readWfdSubmissionForm(target);
+      if (!data) return;
+      const { entry, read } = data;
+      const phone = read('phone');
       if (!phone) {
-        showWfdToast('请填写一个体验号码，演示确认动作');
+        showWfdToast('请先填写联系电话');
         return;
       }
+      if (!isWfdDemoPhone(phone)) { showWfdToast('请填写正确的手机号'); return; }
+      entry.status = 'candidate-demo';
+      target.disabled = true;
       wfdState.proofContactSaved = true;
-      appendBotMessage('已完成进入探店候选池的交互体验。体验版没有保存或上传联系电话；是否入选以正式通知为准。');
+      appendBotMessage('联系电话已确认，已进入探店候选池。若被选中，活动运营会联系你确认安排。');
+      saveWfdRichState(target);
     }
 
-    function showPhysicalMaterialCard() {
-      appendUserMessage('我还想申领实体证书或活动海报');
-      setTimeout(() => appendRichBotMessage(`
+    function showPhysicalMaterialCard(skipUser) {
+      if (!skipUser) appendUserMessage('我还想申领实体证书或活动海报');
+      wfdLater(() => appendRichBotMessage(`
         <div class="wfd-benefit-card">
           <h3 class="text-[18px] font-bold text-[#12304b]">申请实体证书或活动海报</h3>
           <figure class="wfd-reference-visual mt-3 is-story-horizontal">
             <img src="song-haoyun-assets/2026-km-public-welfare-poster-reference.jpg" alt="公益实体物料示例">
           </figure>
-          <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">宋好运只负责说明并打开原物料申请页；申请、供应商制作和履约沿用现有链路，不在对话里另做复杂流程。</p>
-          <button type="button" data-wfd-action="physical-jump" class="w-full wfd-primary mt-3">打开原物料申请页</button>
-          <p class="mt-2 text-[11px] text-gray-500">体验版只演示跳转；未收到原系统回执前，不显示“已申领”。</p>
+          <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">想把公益物料摆进店里？实体证书和活动海报需通过物料申请入口领取，制作和寄送进度以申请页为准。</p>
+          <button type="button" data-wfd-action="physical-jump" class="w-full wfd-primary mt-3">查看领取说明</button>
+          <p class="mt-2 text-[11px] text-gray-500">申请入口暂未开放，不影响先保存电子海报。</p>
         </div>`), 280);
     }
 
     function simulatePhysicalMaterialJump() {
-      showWfdToast('体验示意：正式版将打开原物料申请页');
+      appendBotMessage('实体物料申请入口暂未开放，请稍后再来。你可以先保存电子海报，用于门店电子屏或线上分享。');
     }
 
-    function showWfdProgress() {
-      appendUserMessage('查一下我的世界粮食日参与进度');
-      setTimeout(() => appendRichBotMessage(`
+    function latestWfdPoster(kind) {
+      return [...wfdPosters.values()].reverse().find(poster => poster.storeId === currentStoreId && (!kind || (kind === 'health') === poster.label.includes('健康')));
+    }
+
+    function showWfdSavedPoster(poster) {
+      if (!poster) { appendBotMessage('这家门店还没有生成海报，可以先点底部“做公益海报”或“健康菜品”。'); return; }
+      appendRichBotMessage(`<div class="wfd-benefit-card" data-wfd-poster="${poster.id}"><h3 class="text-[18px] font-bold text-[#12304b]">你的${escapeHtml(poster.label)}</h3><figure class="wfd-reference-visual mt-3 ${poster.label.includes('竖版') ? 'is-story-vertical' : 'is-story-horizontal'}"><img src="${escapeHtml(poster.src)}" alt="${escapeHtml(poster.label)}"></figure><p class="mt-3 text-[13px] text-[#52697b]">${escapeHtml(poster.storeName)} · 可继续保存、分享或门店返图。</p>${renderWfdDownload(poster)}</div>`);
+      appendWfdPosterFollowup(poster);
+    }
+
+    function showWfdModuleState(type, posterId) {
+      if (type === 'health') {
+        const poster = latestWfdPoster('health');
+        const check = [...wfdHealthChecks.values()].reverse().find(item => item.storeId === currentStoreId);
+        if (!check) return false;
+        if (check.status === 'checking') { appendBotMessage('菜品正在认证，结果出来后就可以继续。'); return true; }
+        if (check.result === 'pass' && check.generated && poster) { showWfdSavedPoster(poster); return true; }
+        if (check.result === 'pass') {
+          appendRichBotMessage(`<div class="wfd-benefit-card"><h3 class="text-[18px] font-bold text-[#12304b]">菜品认证通过</h3><p class="mt-3 text-[13px] text-[#52697b]">可以继续生成海报；健康倡议标签与流量权益还需后续人工审核。</p><button type="button" data-wfd-action="health-generate" data-wfd-health-id="${check.id}" class="w-full wfd-primary mt-3">生成健康菜品海报</button></div>`);
+        } else {
+          appendRichBotMessage(`<div class="wfd-benefit-card" data-wfd-store-id="${check.storeId}"><h3 class="text-[18px] font-bold text-[#12304b]">${check.result === 'reject' ? '上次认证未通过' : '上次认证未完成'}</h3><p class="mt-3 text-[13px] text-[#52697b]">${check.result === 'reject' ? '缺少清晰菜名或价格，请补充后重传。' : '上次认证未完成，没有给出是否合格的判断，请重试。'}</p><button type="button" data-wfd-action="health-upload" class="w-full wfd-primary mt-3">重新上传</button>${renderWfdDemoOptions('health')}</div>`);
+        }
+        return true;
+      }
+      if (!['share', 'proof'].includes(type)) return false;
+      const entry = [...wfdSubmissions.values()].reverse().find(item => item.kind === type && item.storeId === currentStoreId && (!posterId || item.posterId === posterId));
+      if (!entry) return false;
+      if (entry.status === 'contact-optional' || entry.status === 'phone-required') {
+        const form = document.querySelector(`[data-wfd-submission-id="${entry.id}"]`);
+        if (form) { form.scrollIntoView({ behavior: 'smooth', block: 'start' }); return true; }
+        renderWfdSubmissionContact(entry);
+        return true;
+      }
+      if (entry.status === 'checking') { appendBotMessage('图片正在校验，结果出来后可继续。'); return true; }
+      if (entry.result !== 'pass') { showWfdSubmissionFailure(entry); return true; }
+      appendRichBotMessage(`<div class="wfd-benefit-card" data-wfd-poster-id="${entry.posterId}" data-wfd-store-id="${entry.storeId}"><h3 class="text-[18px] font-bold text-[#12304b]">${type === 'share' ? '待活动后抽选' : '已进入探店候选池'}</h3>${wfdSubmissionContext(entry)}<p class="mt-3 text-[13px] text-[#52697b]">${type === 'share' ? '不用重复填写收货信息。结果会通过商家端或宋好运通知，请留意活动消息。' : '联系电话已确认，无需重复填写。入池不等于入选，若被选中会联系你确认安排。'}</p><button type="button" data-wfd-action="${type}-upload" class="w-full wfd-primary mt-3">${type === 'share' ? '更换分享截图' : '更换门店返图'}</button>${renderWfdDemoOptions(type)}</div>`);
+      return true;
+    }
+
+    function showWfdProgress(skipUser) {
+      if (!skipUser) appendUserMessage('查一下我的世界粮食日参与进度');
+      const health = { idle: '未上传', checking: '认证中', rejected: '认证未通过', unknown: '认证未完成，可重试', 'certified-demo': '认证通过，待生成海报', 'poster-ready-demo': '海报已生成；流量权益待人工审核' };
+      const submissionStatus = kind => {
+        const entry = [...wfdSubmissions.values()].reverse().find(item => item.kind === kind && item.storeId === currentStoreId);
+        return entry ? ({ checking: '校验中', rejected: '未通过，请重传', unknown: '暂不可用，可重试', 'contact-optional': '已通过，可选填收货信息', 'phone-required': '已通过，待确认电话', 'draw-pending-demo': '待活动后抽选', 'candidate-demo': '已进入候选池' }[entry.status] || '状态待确认') : '未上传';
+      };
+      const latest = latestWfdPoster();
+      const storeName = getWfdStoreName();
+      const storyProgress = latestWfdPoster('story') ? '海报已生成' : '待生成';
+      const healthProgress = health[wfdState.healthStatus] || '未上传';
+      const shareProgress = submissionStatus('share');
+      const proofProgress = submissionStatus('proof');
+      wfdLater(() => appendRichBotMessage(`
         <div class="wfd-benefit-card text-[14px] text-gray-700">
-          <h3 class="text-[18px] font-bold text-[#12304b]">本次活动体验进度</h3>
-          <figure class="wfd-reference-visual mt-3 is-story-horizontal"><img src="song-haoyun-assets/2026-world-food-day-main-kv.jpg" alt="世界粮食日活动"></figure>
-          <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">公益海报：${wfdState.storyGenerated ? '已生成体验预览' : '待生成'}；健康菜品：${wfdState.healthSelected ? '已选择文件' : '待上传'}；分享截图：${wfdState.shareSelected ? '已选择文件' : '待上传'}；门店返图：${wfdState.proofSelected ? '已选择文件' : '待上传'}。</p>
-          <p class="mt-2 text-[11px] text-gray-500">这里只记录本机体验状态，不代表真实业务回执。</p>
-          <button type="button" data-wfd-action="story-start" class="w-full wfd-primary mt-3">继续做公益海报</button>
+          <h3 class="text-[18px] font-bold text-[#12304b]">本次活动参与进度</h3>
+          <p class="mt-2 text-[12px] text-[#607786]">当前门店：${escapeHtml(storeName)}</p>
+          <p class="mt-3 text-[13px] leading-relaxed text-[#52697b]">公益海报：${storyProgress}<br>健康菜品：${healthProgress}<br>分享截图：${shareProgress}<br>门店返图：${proofProgress}</p>
+          <p class="mt-2 text-[11px] text-gray-500">点击底部对应活动，可以继续上次的步骤。</p>
+          <button type="button" data-wfd-action="${latest ? 'show-poster' : 'story-start'}" ${latest ? 'data-wfd-poster-id="' + latest.id + '"' : ''} class="w-full wfd-primary mt-3">${latest ? '查看最近一张海报' : '开始做公益海报'}</button>
         </div>
       `), 360);
     }
@@ -2857,23 +3115,28 @@ function showEntry() {
       else if (action === 'story-start') startWfdStoryFlow();
       else if (action === 'story-builder') openWfdStoryBuilder(target.dataset.wfdVersion || 'story');
       else if (action === 'story-generate') generateWfdStory(target.dataset.wfdAngle || '日常坚持');
-      else if (action === 'story-generate-horizontal') generateWfdHorizontal();
-      else if (action === 'story-generate-form') generateWfdStoryFromForm();
+      else if (action === 'story-generate-horizontal') generateWfdHorizontal(target);
+      else if (action === 'story-generate-form') generateWfdStoryFromForm(target);
       else if (action === 'story-regenerate') startWfdStoryFlow();
       else if (action === 'store-picker') openStorePicker();
       else if (action === 'download') downloadWfdMaterial('horizontal');
       else if (action === 'download-horizontal') downloadWfdMaterial('horizontal');
       else if (action === 'download-vertical') downloadWfdMaterial('vertical');
+      else if (action === 'download-poster') { wfdState.downloaded = true; showWfdToast('已发起保存，请查看浏览器下载结果'); }
+      else if (action === 'poster-share') openWfdPosterParticipation(target.dataset.wfdPosterId, 'share');
+      else if (action === 'poster-proof') openWfdPosterParticipation(target.dataset.wfdPosterId, 'proof');
+      else if (action === 'show-poster') showWfdSavedPoster(wfdPosters.get(target.dataset.wfdPosterId));
       else if (action === 'benefit-material') openWfdBenefit('material');
       else if (action === 'benefit-health') openWfdBenefit('health');
       else if (action === 'benefit-share') openWfdBenefit('share');
       else if (action === 'benefit-proof') openWfdBenefit('proof');
-      else if (action === 'health-upload') document.getElementById('wfd-health-input').click();
+      else if (action === 'health-upload') startWfdUpload('health', target);
+      else if (action === 'health-generate') generateWfdHealthPoster(target);
       else if (action === 'share-copy') copyWfdShareText();
-      else if (action === 'share-upload') document.getElementById('wfd-share-input').click();
-      else if (action === 'share-contact-save') finishShareContact();
-      else if (action === 'proof-upload') chooseWfdProof();
-      else if (action === 'proof-contact-save') finishProofContact();
+      else if (action === 'share-upload') startWfdUpload('share', target);
+      else if (action === 'share-contact-save') finishShareContact(target);
+      else if (action === 'proof-upload') startWfdUpload('proof', target);
+      else if (action === 'proof-contact-save') finishProofContact(target);
       else if (action === 'physical-material') showPhysicalMaterialCard();
       else if (action === 'physical-jump') simulatePhysicalMaterialJump();
       else if (action === 'followup') showWfdFollowup(target.dataset.wfdFollowup || '');
@@ -2882,11 +3145,18 @@ function showEntry() {
     function renderMessage(msg) {
       const container = document.getElementById('messages');
       const div = document.createElement('div');
-      if (msg.role === 'user') {
+      if (msg.kind === 'activity' && typeof msg.html === 'string') {
+        div.className = 'wfd-card-only';
+        div.innerHTML = msg.html;
+      } else if (msg.kind === 'rich' && typeof msg.html === 'string') {
+        div.className = 'flex gap-2';
+        div.dataset.chatId = msg.id;
+        div.innerHTML = `<img src="${AVATAR}" class="w-8 h-8 rounded-full object-cover shrink-0 mt-1 border-2 border-white shadow-sm" alt="宋好运"><div class="wfd-agent-message">${msg.html}</div>`;
+      } else if (msg.role === 'user') {
         div.className = 'flex gap-3 justify-end';
         div.innerHTML = `
           <div class="chat-bubble-user text-white rounded-2xl rounded-tr-md px-4 py-2 text-sm max-w-[80%] leading-relaxed shadow-sm">
-            ${msg.text}
+            ${escapeHtml(msg.text)}
           </div>
         `;
       } else {
@@ -2894,7 +3164,7 @@ function showEntry() {
         div.innerHTML = `
           <img src="${AVATAR}" class="w-7 h-7 rounded-full object-cover shrink-0 mt-1">
           <div class="bg-white rounded-2xl rounded-tl-md px-4 pt-0.5 pb-1.5 text-sm text-gray-700 max-w-[80%] leading-relaxed shadow-sm border border-gray-100 whitespace-pre-line">
-            ${msg.text}
+            ${escapeHtml(msg.text)}
           </div>
         `;
       }
@@ -2917,11 +3187,42 @@ function showEntry() {
       document.getElementById('typing').classList.remove('hidden');
       scrollToBottom();
 
-      setTimeout(() => {
+      wfdLater(() => {
         document.getElementById('typing').classList.add('hidden');
+        if (awaitingFeedback && /^(取消|不用了|取消反馈|不反馈了)$/.test(text)) {
+          awaitingFeedback = false;
+          appendBotMessage('已取消反馈，可以继续参加活动。');
+          return;
+        }
+        if (awaitingFeedback && /海报|认证|菜品|分享|返图|进度|物料|世界粮食日/.test(text) && !/问题|不对|失败|不能|错误|没有/.test(text)) awaitingFeedback = false;
         if (awaitingFeedback && text !== '我要反馈') {
           awaitingFeedback = false;
-          appendBotMessage('收到，我已经记录这次反馈体验。正式版会同时带上原问题、原回答、当前门店和反馈时间，方便后续核查。');
+          appendBotMessage('收到，谢谢你把问题说清楚。我会结合这次对话改进回答。');
+          return;
+        }
+        if (/按摩|足疗/.test(text)) {
+          appendBotMessage('本期按摩、足疗暂不开放。其他品类能否参与，请以活动开放名单和门店资格为准。');
+          return;
+        }
+        if (/批量|品牌统一|多家门店|\d+\s*家店|\d+\s*家门店/.test(text)) {
+          appendBotMessage('本期品牌批量制作需通过运营协同办理。请先整理门店名单、统一展示名称和制作数量，再联系活动运营确认。单店海报可以直接在这里生成。');
+          return;
+        }
+        if (/进度|状态|审核结果|认证结果|通过了吗|中奖|抽选结果|入选/.test(text)) {
+          showWfdProgress(true);
+          return;
+        }
+        if (/实体|纸质|申请.{0,6}(物料|证书)|申领|邮寄/.test(text)) {
+          showPhysicalMaterialCard(true);
+          return;
+        }
+        if (/下载|保存/.test(text)) {
+          showWfdSavedPoster(latestWfdPoster());
+          return;
+        }
+        if (/分享|返图/.test(text) && !/生成|制作|定制/.test(text)) {
+          const type = /返图|布置/.test(text) && !/分享截图/.test(text) ? 'proof' : 'share';
+          renderWfdBenefitCard(type, true, latestWfdPoster());
           return;
         }
         if (text === '我要反馈' || text === '反馈这次回答') {
@@ -3611,9 +3912,9 @@ function showBenefits() {
 
     // ===== Store Picker =====
     const STORES = [
-      { id: '1', name: '暖食记·望江路店（体验）(1009026121719014)' },
-      { id: '2', name: '暖食记·滨江店（体验）(1014197511177266)' },
-      { id: '3', name: '暖食记·鼓楼店（体验）(1037263571)' }
+      { id: '1', name: '暖食记·望江路店(1009026121719014)' },
+      { id: '2', name: '暖食记·滨江店(1014197511177266)' },
+      { id: '3', name: '暖食记·鼓楼店(1037263571)' }
     ];
 
     let currentStoreId = '1';
@@ -3648,15 +3949,15 @@ function showBenefits() {
 
     function selectStore(id, name) {
       currentStoreId = id;
+      wfdState = wfdStateForStore(id);
       const displayName = name.split('(')[0];
       document.getElementById('current-store-name').textContent = displayName;
       storyData.storeName = displayName;
-      const storyNameInput = document.getElementById('wfd-story-store-name');
-      if (storyNameInput) storyNameInput.value = displayName;
       const storyStore = document.getElementById('story-scope-store');
       if (storyStore) storyStore.textContent = displayName;
       closeStoreSheet();
-      appendBotMessage('已切换到“' + displayName + '”。接下来的活动体验都会按这家门店继续。');
+      appendBotMessage('已切换到“' + displayName + '”。接下来的活动都会按这家门店继续。');
+      saveWfdRuntime();
     }
 
     function filterStores(keyword) {
@@ -3838,12 +4139,22 @@ function showBenefits() {
     }
 
     function doNewChat() {
+      wfdConversationVersion += 1;
+      for (const check of wfdHealthChecks.values()) {
+        if (check.status === 'checking') { check.status = 'unknown'; check.result = 'error'; wfdStateForStore(check.storeId).healthStatus = 'unknown'; }
+      }
+      for (const entry of wfdSubmissions.values()) {
+        if (entry.status === 'checking') { entry.status = 'unknown'; entry.result = 'error'; }
+      }
+      saveWfdRuntime();
+      document.getElementById('typing').classList.add('hidden');
       // 归档当前会话
       if (chatHistory.length > 0) {
         const sessions = getSessions();
+        const firstText = chatHistory.find(message => typeof message.text === 'string')?.text || '活动对话';
         sessions.unshift({
           id: 's' + Date.now(),
-          title: chatHistory[0] ? (chatHistory[0].text.length > 18 ? chatHistory[0].text.slice(0, 18) + '…' : chatHistory[0].text) : '会话',
+          title: firstText.length > 18 ? firstText.slice(0, 18) + '…' : firstText,
           updatedAt: Date.now(),
           messages: chatHistory.slice()
         });
@@ -3915,6 +4226,7 @@ function showBenefits() {
 
     // ===== Init: restore current chat history =====
     (function initChat() {
+      loadWfdRuntime();
       document.getElementById('initial-activity-card').innerHTML = renderWfdActivityCard();
       loadCurrentChat();
       if (chatHistory.length > 0) {
