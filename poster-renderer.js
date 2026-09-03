@@ -5,10 +5,10 @@ window.WfdPosterRenderer = (() => {
   function sourcePhoto() {
     if (!photoPromise) photoPromise = new Promise((resolve, reject) => {
       const image = new Image();
-      const timer = setTimeout(() => { photoPromise = null; reject(new Error('活动图片加载超时，请检查网络后重试')); }, 15000);
+      const timer = setTimeout(() => { photoPromise = null; reject(new Error('活动图片加载超时，请检查网络后重试')); }, 25000);
       image.onload = () => { clearTimeout(timer); resolve(image); };
       image.onerror = () => { clearTimeout(timer); photoPromise = null; reject(new Error('活动图片未加载，请检查网络后重试')); };
-      image.src = 'song-haoyun-assets/2026-public-welfare-story-vertical.png';
+      image.src = 'song-haoyun-assets/2026-public-welfare-story-vertical-web.jpg';
     });
     return photoPromise;
   }

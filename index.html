@@ -1658,7 +1658,7 @@ function showEntry() {
         <div class="grid grid-cols-2 gap-3">
           <div>
             <div class="rounded-xl overflow-hidden border border-gray-200 mb-1.5 bg-gray-50">
-              <img src="song-haoyun-assets/2026-public-welfare-story-horizontal.png" class="w-full h-28 object-cover" alt="公益成果横版海报预览">
+              <img src="song-haoyun-assets/2026-public-welfare-story-horizontal-web.jpg" class="w-full h-28 object-cover" alt="公益成果横版海报预览">
             </div>
             <div class="flex items-center justify-between">
               <span class="text-[12px] text-gray-500">横版 · 公益成果</span>
@@ -1667,7 +1667,7 @@ function showEntry() {
           </div>
           <div>
             <div class="rounded-xl overflow-hidden border border-gray-200 mb-1.5 bg-gray-50">
-              <img src="song-haoyun-assets/2026-public-welfare-story-vertical.png" class="w-full h-28 object-cover object-top" alt="公益故事竖版海报预览">
+              <img src="song-haoyun-assets/2026-public-welfare-story-vertical-web.jpg" class="w-full h-28 object-cover object-top" alt="公益故事竖版海报预览">
             </div>
             <div class="flex items-center justify-between">
               <span class="text-[12px] text-gray-500">竖版 · 公益故事</span>
@@ -1975,7 +1975,7 @@ function showEntry() {
           <span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[12px] font-medium rounded-full">版式预览</span>
         </div>
         <div class="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
-          <img src="${isH?'song-haoyun-assets/2026-public-welfare-story-horizontal.png':'song-haoyun-assets/2026-public-welfare-story-vertical.png'}" class="w-full ${isH?'h-40':'h-64'} object-cover ${isH?'':'object-top'}" alt="公益故事海报版式预览">
+          <img src="${isH?'song-haoyun-assets/2026-public-welfare-story-horizontal-web.jpg':'song-haoyun-assets/2026-public-welfare-story-vertical-web.jpg'}" class="w-full ${isH?'h-40':'h-64'} object-cover ${isH?'':'object-top'}" alt="公益故事海报版式预览">
         </div>
         <p class="text-xs text-gray-500">当前展示活动成品样张；正式接入后将替换为当前门店名称与经核验信息。</p>
         <div class="flex gap-2">
@@ -1993,8 +1993,8 @@ function showEntry() {
       const isVertical = size === 'vertical';
       const link = document.createElement('a');
       link.href = isVertical
-        ? 'song-haoyun-assets/2026-public-welfare-story-vertical.png'
-        : 'song-haoyun-assets/2026-public-welfare-story-horizontal.png';
+        ? 'song-haoyun-assets/2026-public-welfare-story-vertical-web.jpg'
+        : 'song-haoyun-assets/2026-public-welfare-story-horizontal-web.jpg';
       link.download = isVertical ? '2026世界粮食日-公益故事竖版示例.png' : '2026世界粮食日-公益故事横版示例.png';
       document.body.appendChild(link);
       link.click();
@@ -2449,7 +2449,7 @@ function showEntry() {
 
     // One lightweight, data-driven overview for first entry and every re-open.
     const WFD_ACTIVITY_ITEMS = [
-      { action: 'material', image: '2026-public-welfare-story-horizontal.png', title: '为你定制公益专属海报', subtitle: '让每家小店的善意都有自己的样子' },
+      { action: 'material', image: '2026-public-welfare-story-horizontal-web.jpg', title: '为你定制公益专属海报', subtitle: '让每家小店的善意都有自己的样子' },
       { action: 'health', image: '2026-km-healthy-dish-poster-reference.jpg', title: '健康认证，争取专属公益流量', subtitle: '上传健康菜品，通过规则与审核后参与筛选' },
       { action: 'share', image: '2026-km-blindbox-merch-reference.jpg', title: '毛绒盲盒周边限量送', subtitle: '分享定制海报并返图，进入活动抽选流程' },
       { action: 'proof', image: '2026-demo-store-display-reference.jpg', title: '探店活动，帮你的善意被看见', subtitle: '布置物料并返图，进入达人与官方传播候选池' }
@@ -2546,11 +2546,11 @@ function showEntry() {
           <h3 class="mt-2 text-[18px] font-bold text-[#12304b]">想做哪种公益海报？</h3>
           <div class="wfd-choice-grid mt-3">
             <article class="wfd-choice-card">
-              <button type="button" data-wfd-action="poster-reference" data-wfd-version="horizontal" class="wfd-choice-preview" aria-label="放大横版海报样式参考"><img src="song-haoyun-assets/2026-public-welfare-story-horizontal.png" alt="横版海报完整构图"></button>
+              <button type="button" data-wfd-action="poster-reference" data-wfd-version="horizontal" class="wfd-choice-preview" aria-label="放大横版海报样式参考"><img src="song-haoyun-assets/2026-public-welfare-story-horizontal-web.jpg" alt="横版海报完整构图"></button>
               <div class="wfd-choice-copy"><strong>横版海报</strong><p>门店电子屏、店铺页</p><button type="button" data-wfd-action="story-builder" data-wfd-version="horizontal" class="wfd-primary">制作横版</button></div>
             </article>
             <article class="wfd-choice-card">
-              <button type="button" data-wfd-action="poster-reference" data-wfd-version="vertical" class="wfd-choice-preview" aria-label="放大竖版海报样式参考"><img src="song-haoyun-assets/2026-public-welfare-story-vertical.png" alt="竖版海报完整构图"></button>
+              <button type="button" data-wfd-action="poster-reference" data-wfd-version="vertical" class="wfd-choice-preview" aria-label="放大竖版海报样式参考"><img src="song-haoyun-assets/2026-public-welfare-story-vertical-web.jpg" alt="竖版海报完整构图"></button>
               <div class="wfd-choice-copy"><strong>故事海报</strong><p>朋友圈、门店张贴</p><button type="button" data-wfd-action="story-builder" data-wfd-version="vertical" class="wfd-primary">制作竖版</button></div>
             </article>
           </div>
@@ -2776,7 +2776,7 @@ function showEntry() {
             <h3 class="mt-1 text-[18px] font-bold text-[#12304b]">让 ${store} 的善意，有自己的样子</h3>
             <p class="mt-1 text-[13px] leading-relaxed text-[#52697b]">不是通用活动海报。你可以做强调门店信息的公益成果版，也可以做适合分享的公益故事版。</p>
             <figure class="wfd-reference-visual">
-              <img src="song-haoyun-assets/2026-public-welfare-story-horizontal.png" alt="公益商家横版成品海报样张">
+              <img src="song-haoyun-assets/2026-public-welfare-story-horizontal-web.jpg" alt="公益商家横版成品海报样张">
               <figcaption><strong>横版成品样张</strong> · 适合电子屏、店铺页和公域页面；图中商家与数据仅作活动示例</figcaption>
             </figure>
             <div class="wfd-guide-head"><strong>打卡攻略</strong><span>看示例 → 选版本 → 点选生成</span></div>
@@ -3284,7 +3284,7 @@ function showEntry() {
       else if (action === 'join') startWorldFoodDayAgentFlow();
       else if (action === 'story-start') startWfdStoryFlow();
       else if (action === 'story-builder') openWfdStoryBuilder(target.dataset.wfdVersion || 'story');
-      else if (action === 'poster-reference') openLightbox('song-haoyun-assets/2026-public-welfare-story-' + (target.dataset.wfdVersion === 'horizontal' ? 'horizontal' : 'vertical') + '.png');
+      else if (action === 'poster-reference') openLightbox('song-haoyun-assets/2026-public-welfare-story-' + (target.dataset.wfdVersion === 'horizontal' ? 'horizontal' : 'vertical') + '-web.jpg');
       else if (action === 'preview-poster') previewWfdPersonalPoster(target.dataset.wfdPosterId);
       else if (action === 'story-generate') openWfdStoryBuilder(target.dataset.wfdAngle === '公益成果' ? 'horizontal' : 'vertical');
       else if (action === 'story-generate-horizontal') generateWfdHorizontal(target);
