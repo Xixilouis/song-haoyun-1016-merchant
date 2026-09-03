@@ -33,7 +33,7 @@ window.WfdPosterRenderer = (() => {
   function fitText(ctx, text, { x, y, width, height, size, weight = 400, color = '#0875c9', leading = 1.6 }) {
     let rows;
     do {
-      ctx.font = `${weight} ${size}px "Noto Sans SC", sans-serif`;
+      ctx.font = `${weight} ${size}px "PingFang SC", "Microsoft YaHei", sans-serif`;
       rows = lines(ctx, text, width);
       if (rows.length * size * leading <= height) break;
       size -= 1;
@@ -44,7 +44,7 @@ window.WfdPosterRenderer = (() => {
   }
   async function compose(content) {
     const image = await sourcePhoto();
-    if (document.fonts) await document.fonts.ready;
+    // Network fonts must never block making or saving a merchant's poster.
     const horizontal = content.version === 'horizontal';
     const canvas = document.createElement('canvas');
     canvas.width = horizontal ? 1920 : 1080;
